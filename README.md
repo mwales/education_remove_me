@@ -13,5 +13,6 @@ Links to online versions:
 * Stopwatch: http://www.codeskulptor.org/#user40_SOkC52icwX_16.py
 * Pong: http://www.codeskulptor.org/#user40_XyfJsGDOJD_30.py
 * Memory Game: http://www.codeskulptor.org/#user40_wcdsRSMgcM_12.py
+* BlackJack: http://www.codeskulptor.org/#user40_8JxNvmtNcQ_18.py
 
 
