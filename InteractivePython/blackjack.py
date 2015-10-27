@@ -219,8 +219,12 @@ class Deck:
 
 #define event handlers for buttons
 def deal():
-    global outcome, in_play, playerHand, dealerHand, dealerDeck, score
-    
+    global outcome, score, in_play, playerHand, dealerHand, dealerDeck, score
+
+    if in_play:
+        print "Whoops, I guess you forfeit..."
+        score -= 1
+
     dealerDeck = Deck()
     dealerDeck.shuffle()
     
