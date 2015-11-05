@@ -14,5 +14,6 @@ Links to online versions:
 * Pong: http://www.codeskulptor.org/#user40_XyfJsGDOJD_30.py
 * Memory Game: http://www.codeskulptor.org/#user40_wcdsRSMgcM_12.py
 * BlackJack: http://www.codeskulptor.org/#user40_8JxNvmtNcQ_18.py
+* Asteroids: http://www.codeskulptor.org/#user40_s5n6xLJzpG_23.py
 
 
