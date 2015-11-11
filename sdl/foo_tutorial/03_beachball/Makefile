@@ -5,7 +5,7 @@ OBJ_NAME = 03_beachball
 
 CC = g++
 
-COMPILER_FLAGS = -Wall
+COMPILER_FLAGS = -Wall -g
 
 LINKER_FLAGS = -lSDL2 -lSDL2_image
 

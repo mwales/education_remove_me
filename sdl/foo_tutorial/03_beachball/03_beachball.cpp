@@ -9,6 +9,7 @@
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 const int FRAMERATE = 60;
+const double ROTATION_PER_FRAME = 360 * 2 / (double) FRAMERATE;
 
 struct XYPair
 {
@@ -39,9 +40,14 @@ XYPair AddVector(XYPair const & a, XYPair const & b)
    return retVal;
 }
 
-void UpdatePosition(XYPair* position, XYPair* velocity, int const & maxX, int const & maxY)
+void UpdatePosition(XYPair* position, XYPair* velocity, double* angle, int const & maxX, int const & maxY)
 {
    *position = AddVector(*position, *velocity);
+   *angle += ROTATION_PER_FRAME;
+   if (*angle > 360.0)
+   {
+      *angle -= 360.0;
+   }
 
    // Check x bounds
    if (position->x < 0)
@@ -73,6 +79,29 @@ void UpdatePosition(XYPair* position, XYPair* velocity, int const & maxX, int co
    }
 }
 
+SDL_Texture* LoadTexture(char const * const path, SDL_Renderer* r)
+{
+   // Load images into textures
+   SDL_Surface* imageSurface = IMG_Load(path);
+
+   if (imageSurface == NULL)
+   {
+      printf("Error loading the %s image: %s\n", path, IMG_GetError());
+      return NULL;
+   }
+
+   SDL_Texture* retText = SDL_CreateTextureFromSurface(r, imageSurface);
+   if (retText == NULL)
+   {
+      printf("Error converting the surface (%s) to a texture:  %s\n", path, SDL_GetError());
+      return NULL;
+   }
+
+   SDL_FreeSurface(imageSurface);
+
+   return retText;
+}
+
 int main(int argc, char* argv[])
 {
    // Initiate random numbers
@@ -85,10 +114,11 @@ int main(int argc, char* argv[])
    XYPair pos = { (SCREEN_WIDTH - 100) / 2, (SCREEN_HEIGHT - 100) / 2 };
    XYPair vel = GetUnitVector(angleRad);
    vel = ScaleVector(vel, 200.0 / (float) FRAMERATE);
+   double angle = 0;
+
 
    SDL_Window* window = NULL;
-   SDL_Surface* screenSurface = NULL;
-
+   SDL_Renderer* renderer = NULL;
 
    if (SDL_Init(SDL_INIT_VIDEO) < 0)
    {
@@ -99,7 +129,6 @@ int main(int argc, char* argv[])
    SDL_LogSetAllPriority(SDL_LOG_PRIORITY_WARN);
    printf("Main\n");
 
-
    window = SDL_CreateWindow("Bouncing Ball", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
    if (window == NULL)
    {
@@ -107,18 +136,28 @@ int main(int argc, char* argv[])
       return -1;
    }
 
-   screenSurface = SDL_GetWindowSurface(window);
-
-   SDL_Surface* ball = IMG_Load("bb.png");
-   SDL_Surface* background = IMG_Load("bg.jpg");
-
-   if (ball == NULL)
+   renderer = SDL_CreateRenderer(window, -1, 0);
+   if (renderer == NULL)
    {
-      printf("Error loading the ball image: %s\n", SDL_GetError());
+      printf("Failed to create the renderer: %s\n", SDL_GetError());
       return -1;
    }
 
-   printf("Image loaded OK\n");
+   SDL_SetRenderDrawColor(renderer, 255,255,255,255);
+
+   // Load textures
+   IMG_Init(IMG_INIT_PNG|IMG_INIT_JPG);
+   SDL_Texture* ball = LoadTexture("bb.png", renderer);
+   SDL_Texture* bg = LoadTexture("bg.jpg", renderer);
+   IMG_Quit();
+
+   if ( (ball == NULL) || (bg == NULL) )
+   {
+      printf("Error loading the textures\n");
+      return -1;
+   }
+
+   printf("Images loaded OK\n");
 
    bool quit = false;
    while (!quit)
@@ -126,25 +165,18 @@ int main(int argc, char* argv[])
 
       Uint32 startTick = SDL_GetTicks();
 
-      if (SDL_MUSTLOCK(screenSurface))
-      {
-         SDL_UnlockSurface(screenSurface);
-         printf("Surface unlocked successfully\n");
-      }
+      SDL_Rect ballPos;
+      ballPos.h = 100;
+      ballPos.w = 100;
+      ballPos.x = pos.x;
+      ballPos.y = pos.y;
 
-      SDL_BlitScaled(background, NULL, screenSurface, NULL);
+      SDL_RenderClear(renderer);
+      SDL_RenderCopy(renderer, bg, NULL, NULL);
+      SDL_RenderCopyEx(renderer, ball, NULL, &ballPos, angle, NULL, SDL_FLIP_NONE);
+      SDL_RenderPresent(renderer);
 
-      SDL_Rect centerOfScreen = { (int) pos.x, (int) pos.y, 100, 100};
-      SDL_BlitScaled(ball, NULL, screenSurface, &centerOfScreen);
-
-
-      if (SDL_MUSTLOCK(screenSurface))
-      {
-         SDL_LockSurface(screenSurface);
-         printf("Surface locked successfully\n");
-      }
-
-      UpdatePosition(&pos, &vel, SCREEN_WIDTH - 100, SCREEN_HEIGHT - 100);
+      UpdatePosition(&pos, &vel, &angle, SCREEN_WIDTH - 100, SCREEN_HEIGHT - 100);
 
       Uint32 stopTick = SDL_GetTicks();
       Uint32 processingTime = (stopTick - startTick);
@@ -166,13 +198,15 @@ int main(int argc, char* argv[])
          }
       }
 
-      SDL_UpdateWindowSurface(window);
    }
 
-   SDL_DestroyWindow(window);
 
-   SDL_FreeSurface(ball);
-   SDL_FreeSurface(background);
+   SDL_DestroyTexture(ball);
+   SDL_DestroyTexture(bg);
+
+   SDL_DestroyRenderer(renderer);
+
+   SDL_DestroyWindow(window);
 
    SDL_Quit();
 
