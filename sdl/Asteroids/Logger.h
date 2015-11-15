@@ -5,11 +5,9 @@
 #include <sstream>
 #include <ostream>
 
-#define LOG_DEBUG() Logger(__FILE__, __LINE__)
-#define LOG_FATAL() Logger(__FILE__, __LINE__, Logger::LOG_LEVEL_FATAL)
-
-void LogDebug(char const * file, int lineNumber, std::string const msg);
-void LogFatal(char const * file, int lineNumber, std::string const msg);
+#define LOG_DEBUG()   Logger(__FILE__, __LINE__)
+#define LOG_WARNING() Logger(__FILE__, __LINE__, Logger::LOG_LEVEL_WARNING)
+#define LOG_FATAL()   Logger(__FILE__, __LINE__, Logger::LOG_LEVEL_FATAL)
 
 class Logger
 {

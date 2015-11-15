@@ -48,7 +48,7 @@ int main (int argc, char* argv[])
 
 
 
-   LOG_DEBUG() << "Here is some stuff";
+   LOG_WARNING() << "Here is some stuff";
 
    XYPair gv = GameMath::GetUnitVector(2);
 
