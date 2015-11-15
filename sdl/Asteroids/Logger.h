@@ -29,6 +29,7 @@ public:
    Logger& operator<< (std::string rhs);
    Logger& operator<< (int rhs);
    Logger& operator<< (float rhs);
+   Logger& operator<< (size_t rhs);
 
 protected:
 

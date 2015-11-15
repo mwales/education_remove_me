@@ -22,8 +22,7 @@
  *     GameMusic
  * Image
  *   AnimatedImage
- * 2dMath
- *   XYPair
+
  */
 
 
@@ -43,10 +42,6 @@
 
 int main (int argc, char* argv[])
 {
-   printf("Hello World\n");
-
-
-
 
    LOG_WARNING() << "Here is some stuff";
 
@@ -66,4 +61,7 @@ int main (int argc, char* argv[])
 
    LOG_FATAL() << "doh, gonna die now";
    LOG_DEBUG() << "Never get here";
+
+
+   /// @todo Need a cleanup, need to call IMG_Uninit() or whatever the heck it is called
 }
