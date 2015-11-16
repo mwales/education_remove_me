@@ -3,9 +3,10 @@
 
 bool ImageInfo::_runOnce = true;
 
-ImageInfo::ImageInfo(char* filename, SDL_Renderer* renderer):
+ImageInfo::ImageInfo(char const * filename, SDL_Renderer* renderer):
    _renderer(renderer)
  , _angle(0.0)
+ , _size(2)
  {
    if (_runOnce)
    {
@@ -36,6 +37,8 @@ ImageInfo::ImageInfo(char* filename, SDL_Renderer* renderer):
    }
 
    SDL_FreeSurface(s);
+
+   LOG_DEBUG() << "Loaded image:" << filename;
 }
 
 ImageInfo::~ImageInfo()
@@ -70,7 +73,10 @@ void ImageInfo::Draw(XYPair dst)
    pos.w = _size[0];
    pos.h = _size[1];
 
-   SDL_RenderCopyEx(_renderer, _texture, NULL, &pos, _angle, NULL, SDL_FLIP_NONE);
+   if (0 != SDL_RenderCopyEx(_renderer, _texture, NULL, &pos, _angle, NULL, SDL_FLIP_NONE))
+   {
+      LOG_WARNING() << "Render call failed:" << SDL_GetError();
+   }
 }
 
 void ImageInfo::Draw(XYPair dst, XYPair drawSize)
@@ -93,7 +99,18 @@ void ImageInfo::Draw(XYPair dst, XYPair drawSize)
    pos.w = drawSize[0];
    pos.h = drawSize[1];
 
-   SDL_RenderCopyEx(_renderer, _texture, NULL, &pos, _angle, NULL, SDL_FLIP_NONE);
+   if (0 != SDL_RenderCopyEx(_renderer, _texture, NULL, &pos, _angle, NULL, SDL_FLIP_NONE))
+   {
+      LOG_WARNING() << "Render call failed:" << SDL_GetError();
+   }
+}
+
+void ImageInfo::DrawFullScreen()
+{
+   if (0 != SDL_RenderCopy(_renderer, _texture, NULL, NULL))
+   {
+      LOG_WARNING() << "Render call failed:" << SDL_GetError();
+   }
 }
 
 XYPair ImageInfo::GetSize()

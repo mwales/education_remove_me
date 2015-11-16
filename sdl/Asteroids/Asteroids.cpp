@@ -37,6 +37,8 @@
 
 #include "GameMath.h"
 #include "Logger.h"
+#include "Graphics.h"
+#include "ImageInfo.h"
 
 
 
@@ -45,22 +47,27 @@ int main (int argc, char* argv[])
 
    LOG_WARNING() << "Here is some stuff";
 
-   XYPair gv = GameMath::GetUnitVector(2);
 
-   std::string crap = "My uv=";
-   crap += GameMath::VectorToString(gv);
 
-   LOG_DEBUG() << crap << "and magnitude" << GameMath::VectorMagnitude(gv);
+   Graphics g;
+   g.CreateWindow("Test", 1200, 1000);
 
-   Logger() << "I'm stupd";
-
-   LOG_DEBUG() << "stuff" << 134 << " hoes";
+   ImageInfo i("assets/splash.png", g.GetRenderer());
 
 
 
+   for(int counter = 0; counter < 10; counter++)
+   {
+      g.Clear();
+      i.DrawFullScreen();
+      g.Render();
 
-   LOG_FATAL() << "doh, gonna die now";
-   LOG_DEBUG() << "Never get here";
+      SDL_Delay(1000);
+   }
+
+
+
+
 
 
    /// @todo Need a cleanup, need to call IMG_Uninit() or whatever the heck it is called

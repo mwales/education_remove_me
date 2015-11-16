@@ -4,6 +4,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <SDL2/SDL.h>
+
 #include <execinfo.h>
 
 // Directly from backtrace manpage
@@ -78,6 +80,7 @@ Logger::~Logger()
          std::cout << "\x1b[41m\x1b[30m" << _oss.str() << "\x1b[0m" << std::endl;
 
          printBacktrace();
+         SDL_Quit();
          exit(0);
    }
 }

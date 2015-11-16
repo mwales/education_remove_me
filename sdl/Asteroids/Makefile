@@ -1,5 +1,5 @@
 # OBJS specifies files to compile
-OBJS = Asteroids.cpp GameMath.cpp Logger.cpp ImageInfo.cpp
+OBJS = Asteroids.cpp GameMath.cpp Logger.cpp ImageInfo.cpp Graphics.cpp
 
 
 OBJ_NAME = asteroids

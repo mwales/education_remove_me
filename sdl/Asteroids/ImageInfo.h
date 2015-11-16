@@ -10,7 +10,9 @@
  */
 class ImageInfo
 {
-   ImageInfo(char* filename, SDL_Renderer* renderer);
+public:
+
+   ImageInfo(char const * filename, SDL_Renderer* renderer);
 
    ~ImageInfo();
 
@@ -22,7 +24,12 @@ class ImageInfo
 
    void Draw(XYPair dst, XYPair drawSize);
 
+   void DrawFullScreen();
+
    XYPair GetSize();
+
+   /// Possibly useful if using a single image from a tiled image set
+   void SetSize(XYPair size);
 
 protected:
 
