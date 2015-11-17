@@ -39,6 +39,7 @@
 #include "Logger.h"
 #include "Graphics.h"
 #include "ImageInfo.h"
+#include "Mixer.h"
 
 
 
@@ -54,7 +55,11 @@ int main (int argc, char* argv[])
 
    ImageInfo i("assets/splash.png", g.GetRenderer());
 
+   Mixer m;
+   m.LoadMusic("assets/cobra.ogg");
+   m.PlayMusic(-1);
 
+   Mix_Chunk* missleSound = m.LoadSound("assets/missile.ogg");
 
    for(int counter = 0; counter < 10; counter++)
    {
@@ -62,6 +67,7 @@ int main (int argc, char* argv[])
       i.DrawFullScreen();
       g.Render();
 
+      m.PlaySound(missleSound);
       SDL_Delay(1000);
    }
 
