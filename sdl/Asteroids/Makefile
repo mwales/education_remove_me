@@ -1,6 +1,5 @@
 # OBJS specifies files to compile
-OBJS = Asteroids.cpp GameMath.cpp Logger.cpp ImageInfo.cpp Graphics.cpp Mixer.cpp
-
+OBJS = Asteroids.cpp GameMath.cpp Logger.cpp ImageInfo.cpp Graphics.cpp Mixer.cpp GameEntity.cpp GraphicEntity.cpp MovingEntity.cpp Scene.cpp TitleScene.cpp
 
 OBJ_NAME = asteroids
 

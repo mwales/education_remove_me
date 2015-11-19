@@ -8,9 +8,28 @@
 #include "Logger.h"
 
 
+XYPair::XYPair():
+   boost::numeric::ublas::vector<float>(2)
+{
+   // Intentionally empty
+}
+
+XYPair::XYPair(XYPair const & rhs)
+{
+   // Copy constructor
+   (*this) = rhs;
+}
+
+XYPair::XYPair(float x, float y):
+   boost::numeric::ublas::vector<float>(2)
+{
+   (*this)[0] = x;
+   (*this)[1] = y;
+}
+
 XYPair GameMath::GetUnitVector(float angle)
 {
-   XYPair retVal(2);
+   XYPair retVal;
    retVal[0] = cos(angle);
    retVal[1] = sin(angle);
    return retVal;

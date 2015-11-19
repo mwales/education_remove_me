@@ -37,6 +37,9 @@ void Graphics::CreateWindow(char const * title, int width, int height, uint32_t 
    {
       LOG_WARNING() << "Setting renderer draw color failed:" << SDL_GetError();
    }
+
+   _windowSize[0] = width;
+   _windowSize[1] = height;
 }
 
 Graphics::~Graphics()
@@ -64,6 +67,11 @@ void Graphics::Clear()
       LOG_WARNING() << "Renderer clear failed:" << SDL_GetError();
    }
 
+}
+
+XYPair Graphics::GetWindowSize()
+{
+   return _windowSize;
 }
 
 

@@ -6,7 +6,19 @@
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/io.hpp>
 
-typedef boost::numeric::ublas::vector<float> XYPair;
+//typedef boost::numeric::ublas::vector<float> XYPair;
+
+class XYPair : public boost::numeric::ublas::vector<float>
+{
+public:
+   XYPair();
+
+   XYPair(XYPair const & rhs);
+
+   XYPair(float x, float y);
+};
+
+
 
 class GameMath
 {

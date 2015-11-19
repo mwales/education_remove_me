@@ -12,11 +12,12 @@
  *   Game
  *   GameOver
  *   Credits
- * GameNode
- *   GraphicNode
- *     Ship
- *     Missle
- *     Rock
+ * GameEntity
+ *   GraphicEntity
+ *     MovingEntity
+ *       Ship
+ *       Missle
+ *       Rock
  *   Music Node
  *     TitleMusic
  *     GameMusic
@@ -40,18 +41,14 @@
 #include "Graphics.h"
 #include "ImageInfo.h"
 #include "Mixer.h"
+#include "TitleScene.h"
 
 
 
 int main (int argc, char* argv[])
 {
-
-   LOG_WARNING() << "Here is some stuff";
-
-
-
    Graphics g;
-   g.CreateWindow("Test", 1200, 1000);
+   g.CreateWindow("Test", 800, 600);
 
    ImageInfo i("assets/splash.png", g.GetRenderer());
 
@@ -59,18 +56,52 @@ int main (int argc, char* argv[])
    m.LoadMusic("assets/cobra.ogg");
    m.PlayMusic(-1);
 
-   Mix_Chunk* missleSound = m.LoadSound("assets/missile.ogg");
 
-   for(int counter = 0; counter < 10; counter++)
+   int updateRateHz = 10;
+   int updatePeriodMs = 1000 / updateRateHz;
+
+   TitleScene ts(&g,&m);
+   ts.SetUpdateRate(updateRateHz);
+
+   bool stopEvent = false;
+   while(!stopEvent)
    {
+      int tickCountStart = SDL_GetTicks();
+
       g.Clear();
-      i.DrawFullScreen();
+
+      ts.Update();
+      ts.Draw();
+
       g.Render();
 
-      m.PlaySound(missleSound);
-      SDL_Delay(1000);
+
+
+      int tickCountEnd = SDL_GetTicks();
+      int renderTime = tickCountEnd - tickCountStart;
+
+      if ( renderTime < updatePeriodMs)
+      {
+         LOG_DEBUG() << "Render time=" << renderTime << ", and render period remaining=" << (updatePeriodMs - renderTime) << "ms";
+         SDL_Delay(updatePeriodMs - renderTime);
+      }
+      else
+      {
+         LOG_WARNING() << "Render time took too long" << renderTime;
+      }
+
+      SDL_Event ev;
+      SDL_PollEvent(&ev);
+
+      if (ev.type == SDL_QUIT)
+      {
+         LOG_DEBUG() << "Quit event received";
+         stopEvent = true;
+      }
+
    }
 
+   LOG_DEBUG() << "Out of SDL loop";
 
 
 

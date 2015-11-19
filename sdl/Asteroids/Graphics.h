@@ -5,6 +5,7 @@
 
 #include <SDL2/SDL.h>
 
+#include "GameMath.h"
 
 class Graphics
 {
@@ -23,10 +24,14 @@ public:
 
    inline SDL_Window* GetWindow() { return _window; }
 
+   XYPair GetWindowSize();
+
 protected:
    SDL_Window* _window;
 
    SDL_Renderer* _renderer;
+
+   XYPair _windowSize;
 
 
 };

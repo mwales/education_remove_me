@@ -6,7 +6,6 @@ bool ImageInfo::_runOnce = true;
 ImageInfo::ImageInfo(char const * filename, SDL_Renderer* renderer):
    _renderer(renderer)
  , _angle(0.0)
- , _size(2)
  {
    if (_runOnce)
    {
