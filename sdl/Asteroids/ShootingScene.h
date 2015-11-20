@@ -3,12 +3,10 @@
 #include "Scene.h"
 #include "GraphicEntity.h"
 
-class TitleScene : public Scene
+class ShootingScene : public Scene
 {
 public:
-   TitleScene(Graphics* g, Mixer* m);
-
-   ~TitleScene();
+   ShootingScene(Graphics* g, Mixer* m);
 
    Scene* GetNextState(bool* deleteMe);
 
@@ -16,10 +14,9 @@ protected:
 
    bool ProcessEvent(SDL_Event const & ev);
 
+protected:
+
    GraphicEntity _background;
 
-   GraphicEntity _splashImage;
-
-   Scene* _nextScene;
 };
 

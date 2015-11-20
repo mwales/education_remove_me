@@ -17,7 +17,7 @@ Scene::Scene(Graphics* g, Mixer* m):
 
 Scene::~Scene()
 {
-
+   LOG_DEBUG() << "End of scene" << _name;
 }
 
 void Scene::Update()

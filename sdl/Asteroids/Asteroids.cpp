@@ -50,12 +50,7 @@ int main (int argc, char* argv[])
    Graphics g;
    g.CreateWindow("Test", 800, 600);
 
-   ImageInfo i("assets/splash.png", g.GetRenderer());
-
    Mixer m;
-   m.LoadMusic("assets/cobra.ogg");
-   m.PlayMusic(-1);
-
 
    int updateRateHz = 10;
    int updatePeriodMs = 1000 / updateRateHz;

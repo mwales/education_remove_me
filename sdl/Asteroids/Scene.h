@@ -31,20 +31,20 @@ public:
     * @param ticksToWait How long to wait for new events
     * @return True if the application should exit
     */
-   bool PollInputs(int ticksToWait);
+   virtual bool PollInputs(int ticksToWait);
 
    /**
     * Returns an instance of the next game scene.
     * @param[out] true if the scene object should be deleted
     * @return 0 if stay on the current scene, or the new scene.
     */
-   Scene* GetNextState(bool* deleteMe);
+   virtual Scene* GetNextState(bool* deleteMe);
 
    std::string GetSceneName();
 
 protected:
 
-   bool ProcessEvent(SDL_Event const & ev);
+   virtual bool ProcessEvent(SDL_Event const & ev);
 
    SDL_Renderer* _renderer;
 
