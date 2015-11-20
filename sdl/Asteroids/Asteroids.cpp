@@ -60,52 +60,55 @@ int main (int argc, char* argv[])
    int updateRateHz = 10;
    int updatePeriodMs = 1000 / updateRateHz;
 
-   TitleScene ts(&g,&m);
-   ts.SetUpdateRate(updateRateHz);
+   Scene* currentScene = new TitleScene(&g,&m);
+   currentScene->SetUpdateRate(updateRateHz);
 
-   bool stopEvent = false;
-   while(!stopEvent)
+   bool stopFlag = false;
+   while(!stopFlag)
    {
       int tickCountStart = SDL_GetTicks();
 
       g.Clear();
 
-      ts.Update();
-      ts.Draw();
+      currentScene->Update();
+      currentScene->Draw();
 
       g.Render();
-
-
 
       int tickCountEnd = SDL_GetTicks();
       int renderTime = tickCountEnd - tickCountStart;
 
       if ( renderTime < updatePeriodMs)
       {
-         LOG_DEBUG() << "Render time=" << renderTime << ", and render period remaining=" << (updatePeriodMs - renderTime) << "ms";
-         SDL_Delay(updatePeriodMs - renderTime);
+         stopFlag = currentScene->PollInputs(updatePeriodMs - renderTime);
       }
       else
       {
          LOG_WARNING() << "Render time took too long" << renderTime;
+         stopFlag = currentScene->PollInputs(0);
       }
 
-      SDL_Event ev;
-      SDL_PollEvent(&ev);
+      // Should we scene transition?
+      bool deleteScene;
+      Scene* nextScene = currentScene->GetNextState(&deleteScene);
 
-      if (ev.type == SDL_QUIT)
+      if (nextScene)
       {
-         LOG_DEBUG() << "Quit event received";
-         stopEvent = true;
+         LOG_DEBUG() << "Scene transition from" << currentScene->GetSceneName() << "to" << nextScene->GetSceneName();
+
+         if (deleteScene)
+         {
+            delete currentScene;
+         }
+
+         currentScene = nextScene;
+         currentScene->SetUpdateRate(updateRateHz);
       }
 
    }
 
    LOG_DEBUG() << "Out of SDL loop";
 
-
-
-
-
+   delete currentScene;
    /// @todo Need a cleanup, need to call IMG_Uninit() or whatever the heck it is called
 }

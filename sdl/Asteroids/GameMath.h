@@ -6,8 +6,6 @@
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/io.hpp>
 
-//typedef boost::numeric::ublas::vector<float> XYPair;
-
 class XYPair : public boost::numeric::ublas::vector<float>
 {
 public:
@@ -23,7 +21,7 @@ public:
 class GameMath
 {
 public:
-
+   float Distance(XYPair a, XYPair b);
 
    static XYPair GetUnitVector(float angle);
 

@@ -6,6 +6,7 @@
 TitleScene::TitleScene(Graphics* g, Mixer* m):
    Scene(g, m)
 {
+   _name = "Title";
    _background.SetImageInfo("assets/nebula_blue.png", _renderer);
    _splashImage.SetImageInfo("assets/splash.png", _renderer);
 

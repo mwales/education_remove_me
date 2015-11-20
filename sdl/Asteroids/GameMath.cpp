@@ -51,3 +51,14 @@ std::string GameMath::VectorToString(XYPair v)
    oss << v;
    return oss.str();
 }
+
+float Distance(XYPair a, XYPair b)
+{
+   float deltaX = (a[0] - b[0]);
+   deltaX *= deltaX;
+
+   float deltaY = (a[1] - b[1]);
+   deltaY *= deltaY;
+
+   return sqrt(deltaX + deltaY);
+}
