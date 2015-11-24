@@ -30,6 +30,7 @@ public:
    Logger& operator<< (std::string rhs);
    Logger& operator<< (int rhs);
    Logger& operator<< (float rhs);
+   Logger& operator<< (double rhs);
    Logger& operator<< (size_t rhs);
    Logger& operator<< (XYPair rhs);
 
@@ -43,6 +44,8 @@ protected:
 
    // output stream
    std::ostringstream _oss;
+
+   unsigned int _timestamp;
 
 };
 

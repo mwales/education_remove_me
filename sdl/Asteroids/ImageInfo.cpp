@@ -50,22 +50,11 @@ ImageInfo::~ImageInfo()
 
 void ImageInfo::SetAngle(float angleDeg)
 {
-   _angle = angleDeg;
-}
-
-void ImageInfo::AddAngle(float angleDeg)
-{
-   _angle += angleDeg;
+   _angle = -angleDeg;
 }
 
 void ImageInfo::Draw(XYPair dst)
 {
-   if (dst.size() != 2)
-   {
-      LOG_FATAL() << "Invalid XY pair, size =" << dst.size();
-      return;
-   }
-
    SDL_Rect pos;
    pos.x = dst[0];
    pos.y = dst[1];
@@ -80,18 +69,6 @@ void ImageInfo::Draw(XYPair dst)
 
 void ImageInfo::Draw(XYPair dst, XYPair drawSize)
 {
-   if (dst.size() != 2)
-   {
-      LOG_FATAL() << "Invalid XY pair, dest size =" << dst.size();
-      return;
-   }
-
-   if (drawSize.size() != 2)
-   {
-      LOG_FATAL() << "Invalid XY pair, drawSize size =" << drawSize.size();
-      return;
-   }
-
    SDL_Rect pos;
    pos.x = dst[0];
    pos.y = dst[1];

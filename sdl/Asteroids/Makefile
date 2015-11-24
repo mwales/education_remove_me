@@ -1,9 +1,9 @@
 # OBJS specifies files to compile
-OBJS = Asteroids.cpp GameMath.cpp Logger.cpp ImageInfo.cpp Graphics.cpp Mixer.cpp GameEntity.cpp GraphicEntity.cpp MovingEntity.cpp Scene.cpp TitleScene.cpp ShootingScene.cpp
-
+OBJS = Asteroids.cpp GameMath.cpp Logger.cpp ImageInfo.cpp Graphics.cpp Mixer.cpp GameEntity.cpp GraphicEntity.cpp MovingEntity.cpp Scene.cpp Command.cpp TitleScene.cpp ShootingScene.cpp Spaceship.cpp SpaceshipCommands.cpp XYPair.cpp
 OBJ_NAME = asteroids
 
-CC = g++
+#CC = g++
+CC = clang++
 
 COMPILER_FLAGS = -Wall -g
 

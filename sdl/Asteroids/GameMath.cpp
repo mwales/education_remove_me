@@ -37,3 +37,26 @@ float Distance(XYPair a, XYPair b)
 
    return sqrt(deltaX + deltaY);
 }
+
+XYPair GameMath::PositionModulus(XYPair pos, XYPair bounds)
+{
+   if (pos[0] < 0)
+   {
+      pos[0] += bounds[0];
+   }
+   if (pos[1] < 0)
+   {
+      pos[1] += bounds[1];
+   }
+
+   if (pos[0] > bounds[0])
+   {
+      pos[0] = fmod(pos[0], bounds[0]);
+   }
+   if (pos[1] > bounds[1])
+   {
+      pos[1] = fmod(pos[1], bounds[1]);
+   }
+
+   return pos;
+}

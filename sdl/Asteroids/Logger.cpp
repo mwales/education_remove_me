@@ -6,6 +6,7 @@
 
 #include <SDL2/SDL.h>
 
+
 #include <execinfo.h>
 
 // Directly from backtrace manpage
@@ -36,13 +37,16 @@ void printBacktrace(void)
 }
 
 // Changing this constant also requires changing the length of text fields in both constructors
-const int Logger::FILE_NAME_PRINTED_LENGTH = 14;
+const int Logger::FILE_NAME_PRINTED_LENGTH = 19;
 
 Logger::Logger(enum LogLevel logLevel):
    _level(logLevel)
 {
    // Empty block to make it align with other log messages
    _oss << "[                    ]";
+
+   _timestamp = SDL_GetTicks();
+   _oss << " " << _timestamp << ":";
 }
 
 Logger::Logger(char const * filename, int lineNumber, enum LogLevel logLevel):
@@ -50,15 +54,18 @@ Logger::Logger(char const * filename, int lineNumber, enum LogLevel logLevel):
 {
    char buf[30];
 
-   // If filename over 15 characters, only print the last characters
+   // If filename over 20 characters, only print the last characters
    size_t nameLen = strlen(filename);
    if (nameLen > FILE_NAME_PRINTED_LENGTH)
    {
       filename += nameLen - FILE_NAME_PRINTED_LENGTH;
    }
 
-   snprintf(buf, sizeof(buf), "[%15s:%4d]", filename, lineNumber);
+   snprintf(buf, sizeof(buf), "[%20s:%4d]", filename, lineNumber);
    _oss << buf;
+
+   _timestamp = SDL_GetTicks();
+   _oss << " " << _timestamp << ":";
 }
 
 Logger::~Logger()
@@ -98,6 +105,12 @@ Logger& Logger::operator<< (int rhs)
 }
 
 Logger& Logger::operator<< (float rhs)
+{
+   _oss << " " << rhs;
+   return *this;
+}
+
+Logger& Logger::operator<< (double rhs)
 {
    _oss << " " << rhs;
    return *this;

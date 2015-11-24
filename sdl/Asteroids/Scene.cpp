@@ -57,31 +57,34 @@ void Scene::StartBgMusic()
 bool Scene::PollInputs(int ticksToWait)
 {
    int curTicks = SDL_GetTicks();
-   int goalTicks = curTicks + ticksToWait;
+   int endOfFrameTicks = curTicks + ticksToWait;
 
    do
    {
       SDL_Event ev;
-      SDL_WaitEventTimeout(&ev, goalTicks - curTicks);
+      bzero(&ev, sizeof(SDL_Event));
 
-      if (ev.type == SDL_QUIT)
+      if (SDL_WaitEventTimeout(&ev, endOfFrameTicks - curTicks))
       {
-         return true;
-      }
-      else
-      {
-         bool abortPoll = ProcessEvent(ev);
-         if (abortPoll)
+         if (ev.type == SDL_QUIT)
          {
-            // Probably leaving the state early to transition states
-            return false;
+            return true;
+         }
+         else
+         {
+            bool abortPoll = ProcessEvent(ev);
+            if (abortPoll)
+            {
+               // Probably leaving the state early to transition states
+               return false;
+            }
          }
       }
 
       // See how much more time is left / process more events
       curTicks = SDL_GetTicks();
 
-   } while (curTicks < goalTicks);
+   } while (curTicks < endOfFrameTicks);
 
    return false;
 }

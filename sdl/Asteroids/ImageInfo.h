@@ -18,8 +18,6 @@ public:
 
    void SetAngle(float angleDeg);
 
-   void AddAngle(float angleDeg);
-
    void Draw(XYPair dst);
 
    void Draw(XYPair dst, XYPair drawSize);

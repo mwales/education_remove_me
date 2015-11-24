@@ -13,4 +13,6 @@ public:
    static float VectorMagnitude(XYPair v);
 
    static std::string VectorToString(XYPair v);
+
+   static XYPair PositionModulus(XYPair pos, XYPair bounds);
 };
