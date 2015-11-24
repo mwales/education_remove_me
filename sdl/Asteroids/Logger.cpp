@@ -108,3 +108,9 @@ Logger& Logger::operator<< (size_t rhs)
    _oss << " " << rhs;
    return *this;
 }
+
+Logger& Logger::operator<< (XYPair rhs)
+{
+   _oss << " " << rhs;
+   return *this;
+}

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <ostream>
+#include "GameMath.h"
 
 #define LOG_DEBUG()   Logger(__FILE__, __LINE__)
 #define LOG_WARNING() Logger(__FILE__, __LINE__, Logger::LOG_LEVEL_WARNING)
@@ -30,6 +31,8 @@ public:
    Logger& operator<< (int rhs);
    Logger& operator<< (float rhs);
    Logger& operator<< (size_t rhs);
+   Logger& operator<< (XYPair rhs);
+
 
 protected:
 
