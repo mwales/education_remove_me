@@ -16,7 +16,8 @@ ShootingScene::ShootingScene(Graphics* g, Mixer* m):
    XYPair shipPosition = g->GetWindowSize();
    shipPosition *= 0.5;
 
-   _ship.SetImageInfo("assets/double_ship.png", _renderer);
+   _ship.SetTiledImageInfo("assets/double_ship.png", _renderer, 90, 90, 0,
+                           TiledImage::PROVIDING_SINGLE_TILE_DIMENSIONS);
    _ship.SetPosition(shipPosition);
    _ship.SetFullscreen(false);
 

@@ -25,7 +25,7 @@ void Spaceship::SetThrustState(bool state)
    LOG_DEBUG() << "Setting thrust state to" << state;
    _thrustOn = state;
 
-
+   SetFrameNumber(_thrustOn ? 1 : 0);
 }
 
 void Spaceship::SetTurningDirection(int direction)
@@ -98,3 +98,4 @@ void Spaceship::Update()
    // Call parent update
    MovingEntity::Update();
 }
+

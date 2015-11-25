@@ -1,5 +1,6 @@
 #include "GraphicEntity.h"
 #include "ImageInfo.h"
+#include "TiledImage.h"
 #include "Logger.h"
 
 GraphicEntity::GraphicEntity():
@@ -51,6 +52,16 @@ void GraphicEntity::SetImageInfo(char const * filename, SDL_Renderer* r)
    _image = new ImageInfo(filename, r);
 }
 
+void GraphicEntity::SetTiledImageInfo(char const * filename,
+                                      SDL_Renderer* renderer,
+                                      int width,
+                                      int height,
+                                      int spacing,
+                                      TiledImage::TilingMode mode)
+{
+   _image = new TiledImage(filename, renderer, width, height, spacing, mode);
+}
+
 
 void GraphicEntity::SetAngle(float degrees)
 {
@@ -100,4 +111,9 @@ void GraphicEntity::SetFullscreen(bool fullscreenEnable)
       _position[0] = 0;
       _position[1] = 0;
    }
+}
+
+void GraphicEntity::SetFrameNumber(int fn)
+{
+   _image->SetFrameNumber(fn);
 }

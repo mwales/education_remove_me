@@ -75,6 +75,7 @@ int main (int argc, char* argv[])
 
       if ( renderTime < updatePeriodMs)
       {
+         LOG_WARNING() << "Render time" << renderTime << ", period usage=" << (int) renderTime * 100 / updatePeriodMs << "%";
          stopFlag = currentScene->PollInputs(updatePeriodMs - renderTime);
       }
       else

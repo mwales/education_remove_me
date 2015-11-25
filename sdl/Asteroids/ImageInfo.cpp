@@ -28,6 +28,11 @@ ImageInfo::ImageInfo(char const * filename, SDL_Renderer* renderer):
    _size[0] = s->w;
    _size[1] = s->h;
 
+   _src.w = s->w;
+   _src.h = s->h;
+   _src.x = 0;
+   _src.y = 0;
+
    _texture = SDL_CreateTextureFromSurface(_renderer, s);
 
    if (_texture == NULL)
@@ -71,7 +76,7 @@ void ImageInfo::Draw(XYPair dst)
    pos.w = _size[0];
    pos.h = _size[1];
 
-   if (0 != SDL_RenderCopyEx(_renderer, _texture, NULL, &pos, _angle, NULL, SDL_FLIP_NONE))
+   if (0 != SDL_RenderCopyEx(_renderer, _texture, &_src, &pos, _angle, NULL, SDL_FLIP_NONE))
    {
       LOG_WARNING() << "Render call failed:" << SDL_GetError();
    }
@@ -93,7 +98,7 @@ void ImageInfo::Draw(XYPair dst, XYPair drawSize)
    pos.w = drawSize[0];
    pos.h = drawSize[1];
 
-   if (0 != SDL_RenderCopyEx(_renderer, _texture, NULL, &pos, _angle, NULL, SDL_FLIP_NONE))
+   if (0 != SDL_RenderCopyEx(_renderer, _texture, &_src, &pos, _angle, NULL, SDL_FLIP_NONE))
    {
       LOG_WARNING() << "Render call failed:" << SDL_GetError();
    }
@@ -101,18 +106,21 @@ void ImageInfo::Draw(XYPair dst, XYPair drawSize)
 
 void ImageInfo::DrawFullScreen()
 {
-   if (0 != SDL_RenderCopy(_renderer, _texture, NULL, NULL))
+   if (0 != SDL_RenderCopy(_renderer, _texture, &_src, NULL))
    {
       LOG_WARNING() << "Render call failed:" << SDL_GetError();
    }
 }
 
-XYPair ImageInfo::GetSize()
-{
-   return _size;
-}
-
 void ImageInfo::SetOriginAtCenter(bool enable)
 {
    _originAtCenter = enable;
+}
+
+void ImageInfo::SetFrameNumber(int frame)
+{
+   if (frame != 0)
+   {
+      LOG_WARNING() << "Setting non-zero frame number for a non-tiled image";
+   }
 }

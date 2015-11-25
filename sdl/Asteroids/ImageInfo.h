@@ -14,22 +14,23 @@ public:
 
    ImageInfo(char const * filename, SDL_Renderer* renderer);
 
-   ~ImageInfo();
+   virtual ~ImageInfo();
 
-   void SetAngle(float angleDeg);
+   virtual void SetAngle(float angleDeg);
 
-   void Draw(XYPair dst);
+   virtual void Draw(XYPair dst);
 
-   void Draw(XYPair dst, XYPair drawSize);
+   virtual void Draw(XYPair dst, XYPair drawSize);
 
-   void DrawFullScreen();
+   virtual void DrawFullScreen();
 
-   XYPair GetSize();
-
-   /// Possibly useful if using a single image from a tiled image set
-   void SetSize(XYPair size);
+   XYPair GetSize() { return _size; }
 
    void SetOriginAtCenter(bool enable);
+
+   virtual int GetNumberOfFrames() { return 0; }
+
+   virtual void SetFrameNumber(int frame);
 
 protected:
 
@@ -46,4 +47,7 @@ protected:
 
    /// True if image is tracked at center, or false at top-left corner
    bool _originAtCenter;
+
+   /// Box of the source image
+   SDL_Rect _src;
 };

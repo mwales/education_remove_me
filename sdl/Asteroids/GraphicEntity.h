@@ -4,6 +4,7 @@
 
 #include <SDL2/SDL.h>
 #include "GameMath.h"
+#include "TiledImage.h"
 
 class ImageInfo;
 
@@ -16,6 +17,13 @@ public:
 
    virtual void SetImageInfo(char const * filename, SDL_Renderer* r);
 
+   virtual void SetTiledImageInfo(char const * filename,
+                                  SDL_Renderer* renderer,
+                                  int width,
+                                  int height,
+                                  int spacing,
+                                  TiledImage::TilingMode mode);
+
    virtual void Update();
 
    virtual void Draw();
@@ -27,6 +35,8 @@ public:
    void SetPosition(XYPair pos);
 
    void SetFullscreen(bool fullscreenEnable);
+
+   void SetFrameNumber(int fn);
 
    inline ImageInfo* GetImageInfo() { return _image; }
 
