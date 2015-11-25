@@ -22,6 +22,8 @@ public:
 
    std::map<int, Command*> GetKeyboardUpCallbacks();
 
+   virtual void Update();
+
 protected:
 
    int _turningDirection;\

@@ -29,6 +29,8 @@ public:
    /// Possibly useful if using a single image from a tiled image set
    void SetSize(XYPair size);
 
+   void SetOriginAtCenter(bool enable);
+
 protected:
 
    // Flag for run library initialization
@@ -41,4 +43,7 @@ protected:
    float _angle;
 
    XYPair _size;
+
+   /// True if image is tracked at center, or false at top-left corner
+   bool _originAtCenter;
 };

@@ -16,7 +16,6 @@ TitleScene::TitleScene(Graphics* g, Mixer* m):
    _background.SetFullscreen(true);
 
    XYPair splashCenter = g->GetWindowSize();
-   splashCenter -= _splashImage.GetImageInfo()->GetSize();
    splashCenter *= 0.5;
 
    _splashImage.SetPosition(splashCenter);

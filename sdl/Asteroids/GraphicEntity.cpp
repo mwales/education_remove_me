@@ -34,8 +34,16 @@ void GraphicEntity::Draw()
       return;
    }
 
-   LOG_DEBUG() << "Drawing image at" << _position;
-   _image->Draw(_position);
+   if (_fullscreen)
+   {
+      LOG_DEBUG() << "Drawing image fullscreen";
+      _image->DrawFullScreen();
+   }
+   else
+   {
+      LOG_DEBUG() << "Drawing image at" << _position;
+      _image->Draw(_position);
+   }
 }
 
 void GraphicEntity::SetImageInfo(char const * filename, SDL_Renderer* r)

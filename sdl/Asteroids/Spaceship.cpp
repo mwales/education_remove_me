@@ -25,20 +25,7 @@ void Spaceship::SetThrustState(bool state)
    LOG_DEBUG() << "Setting thrust state to" << state;
    _thrustOn = state;
 
-   if (_thrustOn)
-   {
-      XYPair accelDir = GameMath::GetUnitVector(_angle);
 
-      LOG_DEBUG() << "SetThrust: accDir=" << accelDir;
-
-      _acceleration = (accelDir * THRUST_ACCELERATION);
-
-      LOG_DEBUG() << "SetThrust: accDir=" << accelDir << ", and acc" << _acceleration;
-   }
-   else
-   {
-      _acceleration = XYPair(0.0, 0.0);
-   }
 }
 
 void Spaceship::SetTurningDirection(int direction)
@@ -48,11 +35,11 @@ void Spaceship::SetTurningDirection(int direction)
 
    if (_turningDirection < 0)
    {
-      _rotAcceleration = +30.0;
+      _rotAcceleration = -90.0;
    }
    else if (_turningDirection > 0)
    {
-      _rotAcceleration = -30.0;
+      _rotAcceleration = +90.0;
    }
    else
    {
@@ -93,13 +80,21 @@ std::map<int, Command*> Spaceship::GetKeyboardUpCallbacks()
    return callbacks;
 }
 
+void Spaceship::Update()
+{
+   LOG_DEBUG() << "Spaceship update";
 
-//*****************************************************************************
-// Commands
-//*****************************************************************************
+   // Reset thrust vector
+   if (_thrustOn)
+   {
+      XYPair accelDir = GameMath::GetUnitVector(_angle);
+      _acceleration = (accelDir * THRUST_ACCELERATION);
+   }
+   else
+   {
+      _acceleration = XYPair(0.0, 0.0);
+   }
 
-
-
-
-
-// bool _rotateCcw;
+   // Call parent update
+   MovingEntity::Update();
+}

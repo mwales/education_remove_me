@@ -6,6 +6,7 @@ bool ImageInfo::_runOnce = true;
 ImageInfo::ImageInfo(char const * filename, SDL_Renderer* renderer):
    _renderer(renderer)
  , _angle(0.0)
+ , _originAtCenter(true)
  {
    if (_runOnce)
    {
@@ -37,7 +38,7 @@ ImageInfo::ImageInfo(char const * filename, SDL_Renderer* renderer):
 
    SDL_FreeSurface(s);
 
-   LOG_DEBUG() << "Loaded image:" << filename;
+   LOG_DEBUG() << "Loaded image:" << filename << "(" << _size << ")";
 }
 
 ImageInfo::~ImageInfo()
@@ -50,14 +51,23 @@ ImageInfo::~ImageInfo()
 
 void ImageInfo::SetAngle(float angleDeg)
 {
-   _angle = -angleDeg;
+   _angle = angleDeg;
 }
 
 void ImageInfo::Draw(XYPair dst)
 {
    SDL_Rect pos;
-   pos.x = dst[0];
-   pos.y = dst[1];
+
+   if (_originAtCenter)
+   {
+      pos.x = dst[0] - _size[0]/2;
+      pos.y = dst[1] - _size[1]/2;
+   }
+   else
+   {
+      pos.x = dst[0];
+      pos.y = dst[1];
+   }
    pos.w = _size[0];
    pos.h = _size[1];
 
@@ -70,8 +80,16 @@ void ImageInfo::Draw(XYPair dst)
 void ImageInfo::Draw(XYPair dst, XYPair drawSize)
 {
    SDL_Rect pos;
-   pos.x = dst[0];
-   pos.y = dst[1];
+   if (_originAtCenter)
+   {
+      pos.x = dst[0] - _size[0]/2;
+      pos.y = dst[1] - _size[1]/2;
+   }
+   else
+   {
+      pos.x = dst[0];
+      pos.y = dst[1];
+   }
    pos.w = drawSize[0];
    pos.h = drawSize[1];
 
@@ -92,4 +110,9 @@ void ImageInfo::DrawFullScreen()
 XYPair ImageInfo::GetSize()
 {
    return _size;
+}
+
+void ImageInfo::SetOriginAtCenter(bool enable)
+{
+   _originAtCenter = enable;
 }

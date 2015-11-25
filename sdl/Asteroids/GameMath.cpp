@@ -9,6 +9,7 @@
 
 XYPair GameMath::GetUnitVector(float angle)
 {
+   angle = angle * M_PI / 180.0;
    XYPair retVal;
    retVal[0] = cos(angle);
    retVal[1] = sin(angle);

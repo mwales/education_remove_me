@@ -17,7 +17,7 @@ ShootingScene::ShootingScene(Graphics* g, Mixer* m):
    shipPosition *= 0.5;
 
    _ship.SetImageInfo("assets/double_ship.png", _renderer);
-   _ship.SetPosition(XYPair(300, 300));
+   _ship.SetPosition(shipPosition);
    _ship.SetFullscreen(false);
 
    _entities.push_back(&_background);
@@ -86,9 +86,6 @@ bool ShootingScene::ProcessEvent(SDL_Event const & ev)
          }
          break;
       }
-
-
-
 
    }
 
