@@ -66,17 +66,22 @@ bool Scene::PollInputs(int ticksToWait)
 
       if (SDL_WaitEventTimeout(&ev, endOfFrameTicks - curTicks))
       {
-         if (ev.type == SDL_QUIT)
+         switch (ev.type)
          {
-            return true;
-         }
-         else
-         {
-            bool abortPoll = ProcessEvent(ev);
-            if (abortPoll)
+            case SDL_QUIT:
+               return true;
+            case SDL_JOYDEVICEADDED:
+            case SDL_JOYDEVICEREMOVED:
+               _graphics->GetJoystick()->UpdateJoysticks();
+               break;
+            default:
             {
-               // Probably leaving the state early to transition states
-               return false;
+               bool abortPoll = ProcessEvent(ev);
+               if (abortPoll)
+               {
+                  // Probably leaving the state early to transition states
+                  return false;
+               }
             }
          }
       }

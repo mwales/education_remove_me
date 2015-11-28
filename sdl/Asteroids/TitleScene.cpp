@@ -24,7 +24,7 @@ TitleScene::TitleScene(Graphics* g, Mixer* m):
    _entities.push_back(&_splashImage);
 
    _mixer->LoadMusic("assets/cobra.ogg");
-   _mixer->PlayMusic();
+   //_mixer->PlayMusic();
 }
 
 TitleScene::~TitleScene()
@@ -51,6 +51,16 @@ bool TitleScene::ProcessEvent(SDL_Event const & ev)
 
       case SDL_MOUSEBUTTONDOWN:
          LOG_DEBUG() << "Mouse button down";
+         break;
+
+      case SDL_JOYBUTTONDOWN:
+         LOG_DEBUG() << "Joystick button" << ev.jbutton.button << "pressed";
+         if ( (ev.jbutton.button == 0) || (ev.jbutton.button == 7) )
+         {
+            // User pressed A or Start on x360 controller
+            _nextScene = new ShootingScene(_graphics, _mixer);
+            return true;
+         }
          break;
    }
 

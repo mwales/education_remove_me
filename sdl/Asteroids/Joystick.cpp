@@ -1,0 +1,195 @@
+#include "Joystick.h"
+
+#include <ostream>
+
+#include "Command.h"
+#include "Logger.h"
+
+Joystick::Joystick():
+   _joystick(NULL),
+   _deadzone(20)
+{
+   // SDL not initialized yet
+}
+
+std::string Joystick::JoystickInfoString(int index)
+{
+   std::ostringstream oss;
+   oss << "Joystick[" << SDL_JoystickNameForIndex(index) << "]";
+   return oss.str();
+}
+
+std::string Joystick::JoystickInfoString(SDL_Joystick* js)
+{
+   if (js == NULL)
+   {
+      return "Joystick[NULL]";
+   }
+
+   std::ostringstream oss;
+   oss << "Joystick[" << SDL_JoystickName(js) << ", Axes=" << SDL_JoystickNumAxes(js)
+       << ", Balls=" << SDL_JoystickNumBalls(js) << ", Buttons=" << SDL_JoystickNumButtons(js)
+       << ", Hats=" << SDL_JoystickNumHats(js) << "]";
+   return oss.str();
+}
+
+Joystick::~Joystick()
+{
+   CloseAllJoysticks();
+}
+
+void Joystick::CloseAllJoysticks()
+{
+   if (_joystick)
+   {
+      LOG_DEBUG() << "Closing joystick";
+      SDL_JoystickClose(_joystick);
+      _joystick = NULL;
+   }
+}
+
+void Joystick::AddJoystick()
+{
+   int numJoysticks = SDL_NumJoysticks();
+   if (numJoysticks < 0)
+   {
+      LOG_WARNING() << "Error determing the number of joysticks:" << SDL_GetError();
+   }
+   else if (numJoysticks == 0)
+   {
+      LOG_DEBUG() << "No joysticks were found";
+   }
+   else
+   {
+      LOG_DEBUG() << "Found" << numJoysticks << "joysticks!";
+      for (int i = 0; i < numJoysticks; i++)
+      {
+         LOG_DEBUG() << "Joystick" << i << JoystickInfoString(i);
+      }
+
+      _joystick = SDL_JoystickOpen(0);
+      if (_joystick != NULL)
+      {
+         LOG_DEBUG() << "Opened joystick" << JoystickInfoString(_joystick);
+      }
+      else
+      {
+         LOG_WARNING() << "Error opening joystick" << SDL_JoystickNameForIndex(0) << ":" << SDL_GetError();
+      }
+   }
+}
+
+void Joystick::UpdateJoysticks()
+{
+   if ( (_joystick != NULL) && SDL_JoystickGetAttached(_joystick))
+   {
+      // They joystick we are using hasn't disappeared, so do nothing
+      LOG_DEBUG() << "UpdateJoysticks, nothing needs updating";
+      return;
+   }
+
+   if (_joystick != NULL)
+   {
+      // We are no longer attached to the joystick
+      LOG_WARNING() << "Joystick detached, attempt to add new one";
+      //SDL_JoystickClose(_joystick);
+   }
+
+   AddJoystick();
+
+   // Is joystick already open / still attached?
+}
+
+void Joystick::RegisterCommand(JoystickRegistrationCallbacks* subscriber,
+                               bool clearExisting)
+{
+   if (subscriber == NULL)
+   {
+      LOG_FATAL() << "Registering joystick commands with invalid callback";
+      return;
+   }
+
+   if (clearExisting)
+   {
+      _buttonDownHandlers.clear();
+      _buttonUpHandlers.clear();
+      _movementHandlers.clear();
+   }
+
+   std::map<int, Command*> cmdHandlers;
+
+   cmdHandlers = subscriber->GetButtonUpHandlers();
+   _buttonUpHandlers.insert(cmdHandlers.begin(), cmdHandlers.end());
+
+   cmdHandlers = subscriber->GetButtonDownHandlers();
+   _buttonDownHandlers.insert(cmdHandlers.begin(), cmdHandlers.end());
+
+   cmdHandlers = subscriber->GetAxesHandlers();
+   _movementHandlers.insert(cmdHandlers.begin(), cmdHandlers.end());
+
+
+}
+
+void Joystick::ClearRegisteredCommand()
+{
+   _buttonDownHandlers.clear();
+   _buttonUpHandlers.clear();
+   _movementHandlers.clear();
+}
+
+void Joystick::ProcessEvent(SDL_Event const & ev)
+{
+   switch (ev.type)
+   {
+      case SDL_JOYBUTTONDOWN:
+      {
+         std::map<int, Command*>::iterator it = _buttonDownHandlers.find(ev.jbutton.button);
+         if (it != _buttonDownHandlers.end())
+         {
+            // Found a handler for this button, execute command
+            it->second->Execute();
+            break;
+         }
+         break;
+      }
+
+      case SDL_JOYBUTTONUP:
+      {
+         std::map<int, Command*>::iterator it = _buttonUpHandlers.find(ev.jbutton.button);
+         if (it != _buttonUpHandlers.end())
+         {
+            // Found a handler for this button, execute command
+            it->second->Execute();
+            break;
+         }
+         break;
+      }
+
+      case SDL_JOYAXISMOTION:
+      {
+         std::map<int, Command*>::iterator it = _movementHandlers.find(ev.jaxis.axis);
+         if (it != _movementHandlers.end())
+         {
+            // Found a handler for this button, execute command
+
+            // Scale the input down to -100 - 100.  We will then add 100 to put in the bundle
+            // parameter (which is unsigned)
+            int scaledValue = ev.jaxis.value / 327;
+
+            if ( (ev.jaxis.value < -1.0 * _deadzone) || (ev.jaxis.value > _deadzone) )
+            {
+               LOG_DEBUG() << "Axis NOT in the deadzone" << scaledValue;
+               it->second->PushInBundle( scaledValue + 100 );
+            }
+            else
+            {
+               LOG_DEBUG() << "Axis in the deadzone" << scaledValue;
+               it->second->PushInBundle(100);
+            }
+            it->second->Execute();
+            break;
+         }
+         break;
+      }
+   }
+}

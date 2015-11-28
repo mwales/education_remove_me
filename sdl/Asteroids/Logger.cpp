@@ -104,6 +104,12 @@ Logger& Logger::operator<< (int rhs)
    return *this;
 }
 
+Logger& Logger::operator<< (unsigned int rhs)
+{
+   _oss << " " << rhs;
+   return *this;
+}
+
 Logger& Logger::operator<< (float rhs)
 {
    _oss << " " << rhs;

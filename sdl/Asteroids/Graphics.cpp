@@ -13,6 +13,8 @@ Graphics::Graphics(uint32_t initFlags):
    {
       LOG_FATAL() << "SDL Initialization failed:" << SDL_GetError();
    }
+
+   _joystick.AddJoystick();
 }
 
 
@@ -46,6 +48,8 @@ Graphics::~Graphics()
 {
    LOG_DEBUG() << "Closing graphics and SDL";
 
+   _joystick.CloseAllJoysticks();
+
    if (_renderer)
    {
       SDL_DestroyRenderer(_renderer);
@@ -73,5 +77,4 @@ XYPair Graphics::GetWindowSize()
 {
    return _windowSize;
 }
-
 

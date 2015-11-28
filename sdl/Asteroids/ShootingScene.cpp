@@ -1,4 +1,4 @@
-  #include "ShootingScene.h"
+#include "ShootingScene.h"
 #include "Graphics.h"
 #include "Mixer.h"
 #include "ImageInfo.h"
@@ -26,6 +26,8 @@ ShootingScene::ShootingScene(Graphics* g, Mixer* m):
 
    _keyboardDownMappedCommands = _ship.GetKeyboardDownCallbacks();
    _keyboardUpMappedCommands = _ship.GetKeyboardUpCallbacks();
+
+   g->GetJoystick()->RegisterCommand(&_ship, true);
 }
 
 ShootingScene::~ShootingScene()
@@ -87,7 +89,11 @@ bool ShootingScene::ProcessEvent(SDL_Event const & ev)
          }
          break;
       }
-
+      case SDL_JOYAXISMOTION:
+      case SDL_JOYBUTTONDOWN:
+      case SDL_JOYBUTTONUP:
+         _graphics->GetJoystick()->ProcessEvent(ev);
+         break;
    }
 
    return false;

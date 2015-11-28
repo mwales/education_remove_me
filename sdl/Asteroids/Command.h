@@ -18,6 +18,8 @@ public:
 
    void PushInBundle(unsigned int data) {_bundleData.push_back(data); }
 
+   void ClearBundle() { _bundleData.clear(); }
+
 protected:
 
    std::vector<unsigned int> _bundleData;

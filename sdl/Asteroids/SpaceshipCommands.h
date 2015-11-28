@@ -3,6 +3,7 @@
 #include "Command.h"
 #include "Spaceship.h"
 
+
 class FireCommand: public Command
 {
 public:
@@ -50,4 +51,17 @@ protected:
 
 };
 
+
+class TurnJSCommand: public Command
+{
+public:
+
+   TurnJSCommand(Spaceship* s);
+   void Execute();
+
+protected:
+
+   Spaceship* _ship;
+
+};
 

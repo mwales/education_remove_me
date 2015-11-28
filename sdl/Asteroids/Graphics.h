@@ -6,6 +6,7 @@
 #include <SDL2/SDL.h>
 
 #include "GameMath.h"
+#include "Joystick.h"
 
 class Graphics
 {
@@ -26,6 +27,8 @@ public:
 
    XYPair GetWindowSize();
 
+   Joystick* GetJoystick() { return &_joystick; }
+
 protected:
    SDL_Window* _window;
 
@@ -33,6 +36,6 @@ protected:
 
    XYPair _windowSize;
 
-
+   Joystick _joystick;
 };
 

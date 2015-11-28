@@ -80,6 +80,28 @@ std::map<int, Command*> Spaceship::GetKeyboardUpCallbacks()
    return callbacks;
 }
 
+std::map<int, Command*> Spaceship::GetButtonDownHandlers()
+{
+   std::map<int, Command*> callbacks;
+   callbacks[0] = new FireCommand(this);
+   callbacks[5] = new ThrustCommand(this, true);
+   return callbacks;
+}
+
+std::map<int, Command*> Spaceship::GetButtonUpHandlers()
+{
+   std::map<int, Command*> callbacks;
+   callbacks[5] = new ThrustCommand(this, false);
+   return callbacks;
+}
+
+std::map<int, Command*> Spaceship::GetAxesHandlers()
+{
+   std::map<int, Command*> callbacks;
+   callbacks[0] = new TurnJSCommand(this);
+   return callbacks;
+}
+
 void Spaceship::Update()
 {
    LOG_DEBUG() << "Spaceship update";
@@ -99,3 +121,8 @@ void Spaceship::Update()
    MovingEntity::Update();
 }
 
+void Spaceship::SetRotationalAcceleration(int rotAcc)
+{
+   LOG_DEBUG() << "Rotational acc=" << rotAcc;
+   _rotAcceleration = rotAcc;
+}
