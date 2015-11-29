@@ -3,6 +3,9 @@
 #include "Command.h"
 #include "Spaceship.h"
 
+//*****************************************************************************
+// FireCommand
+//*****************************************************************************
 
 class FireCommand: public Command
 {
@@ -10,7 +13,7 @@ public:
 
    FireCommand(Spaceship* ship);
 
-   void Execute();
+   bool Execute();
 
 protected:
 
@@ -18,12 +21,16 @@ protected:
 
 };
 
+//*****************************************************************************
+// ThrustCommand
+//*****************************************************************************
+
 class ThrustCommand: public Command
 {
 public:
 
    ThrustCommand(Spaceship* s, bool thrustState);
-   void Execute();
+   bool Execute();
 
 protected:
 
@@ -32,12 +39,16 @@ protected:
 
 };
 
+//*****************************************************************************
+// TurnCommand
+//*****************************************************************************
+
 class TurnCommand: public Command
 {
 public:
 
    TurnCommand(Spaceship* s, int rotationDir);
-   void Execute();
+   bool Execute();
 
 protected:
 
@@ -51,13 +62,16 @@ protected:
 
 };
 
+//*****************************************************************************
+// TurnJSCommand
+//*****************************************************************************
 
 class TurnJSCommand: public Command
 {
 public:
 
    TurnJSCommand(Spaceship* s);
-   void Execute();
+   bool Execute();
 
 protected:
 

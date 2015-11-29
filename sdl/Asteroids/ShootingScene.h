@@ -7,6 +7,8 @@
 #include "Command.h"
 #include "Spaceship.h"
 
+
+
 class ShootingScene : public Scene
 {
 public:
@@ -15,6 +17,8 @@ public:
    ~ShootingScene();
 
    Scene* GetNextState(bool* deleteMe);
+
+   void PauseGame();
 
 protected:
 
@@ -32,3 +36,14 @@ protected:
 
 };
 
+class PauseCommand: public Command
+{
+public:
+   PauseCommand(ShootingScene* scene);
+
+   virtual bool Execute();
+
+protected:
+
+   ShootingScene* _scene;
+};

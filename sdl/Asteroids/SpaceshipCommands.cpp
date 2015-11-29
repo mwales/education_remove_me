@@ -11,9 +11,10 @@ FireCommand::FireCommand(Spaceship* ship):
    // Empty
 }
 
-void FireCommand::Execute()
+bool FireCommand::Execute()
 {
    _ship->Fire();
+   return false;
 }
 
 
@@ -29,9 +30,10 @@ ThrustCommand::ThrustCommand(Spaceship* ship, bool thrustState):
    // Empty
 }
 
-void ThrustCommand::Execute()
+bool ThrustCommand::Execute()
 {
    _ship->SetThrustState(_thrustState);
+   return false;
 }
 
 
@@ -47,9 +49,10 @@ TurnCommand::TurnCommand(Spaceship* ship, int rotationDir):
    // Empty
 }
 
-void TurnCommand::Execute()
+bool TurnCommand::Execute()
 {
    _ship->SetTurningDirection(_rotateDirection);
+   return false;
 }
 
 //*****************************************************************************
@@ -63,7 +66,7 @@ TurnJSCommand::TurnJSCommand(Spaceship* ship):
    // Empty
 }
 
-void TurnJSCommand::Execute()
+bool TurnJSCommand::Execute()
 {
    if (Command::GetBundleSize() > 0)
    {
@@ -75,5 +78,7 @@ void TurnJSCommand::Execute()
    {
       LOG_FATAL() << "Bundle empty for turn js command";
    }
+
+   return false;
 }
 

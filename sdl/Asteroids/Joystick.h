@@ -39,7 +39,13 @@ public:
 
    void ClearRegisteredCommand();
 
-   void ProcessEvent(SDL_Event const & ev);
+   bool ProcessEvent(SDL_Event const & ev);
+
+   void AddButtonDownHandler(int button, Command* cmd);
+
+   void AddButtonUpHandler(int button, Command* cmd);
+
+   void AddAxesHandler(int axis, Command* cmd);
 
 protected:
 

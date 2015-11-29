@@ -7,7 +7,7 @@
 
 Joystick::Joystick():
    _joystick(NULL),
-   _deadzone(20)
+   _deadzone(25)
 {
    // SDL not initialized yet
 }
@@ -137,7 +137,7 @@ void Joystick::ClearRegisteredCommand()
    _movementHandlers.clear();
 }
 
-void Joystick::ProcessEvent(SDL_Event const & ev)
+bool Joystick::ProcessEvent(SDL_Event const & ev)
 {
    switch (ev.type)
    {
@@ -147,7 +147,7 @@ void Joystick::ProcessEvent(SDL_Event const & ev)
          if (it != _buttonDownHandlers.end())
          {
             // Found a handler for this button, execute command
-            it->second->Execute();
+            return it->second->Execute();
             break;
          }
          break;
@@ -159,7 +159,7 @@ void Joystick::ProcessEvent(SDL_Event const & ev)
          if (it != _buttonUpHandlers.end())
          {
             // Found a handler for this button, execute command
-            it->second->Execute();
+            return it->second->Execute();
             break;
          }
          break;
@@ -176,7 +176,7 @@ void Joystick::ProcessEvent(SDL_Event const & ev)
             // parameter (which is unsigned)
             int scaledValue = ev.jaxis.value / 327;
 
-            if ( (ev.jaxis.value < -1.0 * _deadzone) || (ev.jaxis.value > _deadzone) )
+            if ( (scaledValue < -1.0 * _deadzone) || (scaledValue > _deadzone) )
             {
                LOG_DEBUG() << "Axis NOT in the deadzone" << scaledValue;
                it->second->PushInBundle( scaledValue + 100 );
@@ -186,10 +186,49 @@ void Joystick::ProcessEvent(SDL_Event const & ev)
                LOG_DEBUG() << "Axis in the deadzone" << scaledValue;
                it->second->PushInBundle(100);
             }
-            it->second->Execute();
+            return it->second->Execute();
             break;
          }
          break;
       }
    }
+
+   return false;
+}
+
+void Joystick::AddButtonDownHandler(int button, Command* cmd)
+{
+
+   std::map<int, Command*>::iterator it = _buttonDownHandlers.find(button);
+   if (it != _buttonDownHandlers.end())
+   {
+      LOG_WARNING() << "Adding a joystick handler for (down) button" << button << "and one already existed";
+      delete it->second;
+   }
+
+   _buttonDownHandlers[button] = cmd;
+}
+
+void Joystick::AddButtonUpHandler(int button, Command* cmd)
+{
+   std::map<int, Command*>::iterator it = _buttonUpHandlers.find(button);
+   if (it != _buttonUpHandlers.end())
+   {
+      LOG_WARNING() << "Adding a joystick handler for (up) button" << button << "and one already existed";
+      delete it->second;
+   }
+
+   _buttonUpHandlers[button] = cmd;
+}
+
+void Joystick::AddAxesHandler(int axis, Command* cmd)
+{
+   std::map<int, Command*>::iterator it = _movementHandlers.find(axis);
+   if (it != _movementHandlers.end())
+   {
+      LOG_WARNING() << "Adding a joystick handler for axis" << axis << "and one already existed";
+      delete it->second;
+   }
+
+   _movementHandlers[axis] = cmd;
 }

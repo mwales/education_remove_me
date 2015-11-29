@@ -3,6 +3,12 @@
 #include <stdlib.h> // size_t
 #include <vector>
 
+/**
+ * @brief The Command pattern (see Game Design Patterns)
+ *
+ * All commands have an execute() method, and all commands have a data bundle
+ * that can be optionally used
+ */
 class Command
 {
 public:
@@ -10,7 +16,8 @@ public:
 
    virtual ~Command();
 
-   virtual void Execute() = 0;
+   /// Executes the command, returns true if the command will create a state/scene change
+   virtual bool Execute() = 0;
 
    size_t GetBundleSize() { return _bundleData.size(); }
 

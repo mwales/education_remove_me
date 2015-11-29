@@ -4,6 +4,7 @@
 #include "ImageInfo.h"
 #include "Logger.h"
 
+
 ShootingScene::ShootingScene(Graphics* g, Mixer* m):
    Scene(g, m),
    _ship(g->GetWindowSize())
@@ -25,9 +26,12 @@ ShootingScene::ShootingScene(Graphics* g, Mixer* m):
    _entities.push_back(&_ship);
 
    _keyboardDownMappedCommands = _ship.GetKeyboardDownCallbacks();
+   _keyboardDownMappedCommands[SDL_SCANCODE_SPACE] = new PauseCommand(this);
+
    _keyboardUpMappedCommands = _ship.GetKeyboardUpCallbacks();
 
    g->GetJoystick()->RegisterCommand(&_ship, true);
+   g->GetJoystick()->AddButtonDownHandler(7, new PauseCommand(this));
 }
 
 ShootingScene::~ShootingScene()
@@ -65,7 +69,11 @@ bool ShootingScene::ProcessEvent(SDL_Event const & ev)
          }
          else
          {
-            scanCmd->second->Execute();
+            if (scanCmd->second->Execute())
+            {
+               // Scene will change now
+               return true;
+            }
          }
          break;
       }
@@ -85,15 +93,25 @@ bool ShootingScene::ProcessEvent(SDL_Event const & ev)
          }
          else
          {
-            scanCmd->second->Execute();
+            if (scanCmd->second->Execute())
+            {
+               // Scene will change now
+               return true;
+            }
          }
          break;
       }
       case SDL_JOYAXISMOTION:
       case SDL_JOYBUTTONDOWN:
       case SDL_JOYBUTTONUP:
-         _graphics->GetJoystick()->ProcessEvent(ev);
+      {
+         if (_graphics->GetJoystick()->ProcessEvent(ev))
+         {
+            // Scene will change now
+            return true;
+         }
          break;
+      }
    }
 
    return false;
@@ -103,4 +121,26 @@ Scene* ShootingScene::GetNextState(bool* deleteMe)
 {
    *deleteMe = false;
    return NULL;
+}
+
+void ShootingScene::PauseGame()
+{
+   LOG_DEBUG() << "Pausing game";
+}
+
+//*****************************************************************************
+// PauseCommand
+//*****************************************************************************
+
+
+PauseCommand::PauseCommand(ShootingScene* scene):
+   _scene(scene)
+{
+   // Empty
+}
+
+bool PauseCommand::Execute()
+{
+   _scene->PauseGame();
+   return false;
 }
