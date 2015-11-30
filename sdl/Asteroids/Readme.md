@@ -11,6 +11,8 @@ of the game will far exceed what I was seeing with browser based version.
 
 ## Credits ##
 
+### Assets below were provided for the Interactive Python Programming Coursera course I took ###
+
 art assets created by Kim Lathrop, may be freely re-used in non-commercial projects, please credit Kim
     
 debris images - debris1_brown.png, debris2_brown.png, debris3_brown.png, debris4_brown.png
@@ -44,7 +46,14 @@ sound assets purchased from sounddogs.com, please do not redistribute
 * http://commondatastorage.googleapis.com/codeskulptor-assets/sounddogs/thrust.mp3
 * http://commondatastorage.googleapis.com/codeskulptor-assets/sounddogs/explosion.mp3
 
-# extra life sound effect
-## CC 3.0 sound file by Jesus Lastra, http://opengameart.org/content/8-bit-pickup-1
+### Assets not included in the Coursera course ###
+
+extra life sound effect
+* CC 3.0 sound file by Jesus Lastra, http://opengameart.org/content/8-bit-pickup-1
 * http://mwales.net/junk/SFX_Pickup_44.mp3
+
+Mario 256 Font
+* 100% FREE
+* http://www.dafont.com/super-mario-256.font
+* Created by fsuarez913
 
