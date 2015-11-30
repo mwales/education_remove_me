@@ -1,7 +1,7 @@
 # OBJS specifies files to compile
 OBJS = Asteroids.cpp GameMath.cpp Logger.cpp ImageInfo.cpp Graphics.cpp Mixer.cpp GameEntity.cpp GraphicEntity.cpp \
 MovingEntity.cpp Scene.cpp Command.cpp TitleScene.cpp ShootingScene.cpp Spaceship.cpp SpaceshipCommands.cpp XYPair.cpp TiledImage.cpp \
-Joystick.cpp
+Joystick.cpp TextImage.cpp
 
 OBJ_NAME = asteroids
 
@@ -10,7 +10,7 @@ CC = clang++
 
 COMPILER_FLAGS = -Wall -g
 
-LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_mixer
+LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 
 all: $(OBJS)
 	$(CC) $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME)

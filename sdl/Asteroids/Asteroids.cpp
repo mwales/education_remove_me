@@ -28,12 +28,12 @@
 
 
 #include <iostream>
-#include <stdio.h>
-
 #include <sstream>
 #include <string>
 
-
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 
 #include "GameMath.h"
@@ -42,15 +42,16 @@
 #include "ImageInfo.h"
 #include "Mixer.h"
 #include "TitleScene.h"
+#include "TextImage.h"
 
-
-
-int main (int argc, char* argv[])
+void sdlScopeMain()
 {
    Graphics g;
-   g.CreateWindow("Test", 800, 600);
+   g.CreateWindow("Asteroids", 800, 600);
 
    Mixer m;
+
+   TextImage::LoadFont("assets/font/SuperMario256.ttf", 32);
 
    int updateRateHz = 10;
    int updatePeriodMs = 1000 / updateRateHz;
@@ -106,5 +107,31 @@ int main (int argc, char* argv[])
    LOG_DEBUG() << "Out of SDL loop";
 
    delete currentScene;
-   /// @todo Need a cleanup, need to call IMG_Uninit() or whatever the heck it is called
+}
+
+int main (int argc, char* argv[])
+{
+   // Do everything SDL in another scope so that when we want to quit, we
+   // know everything SDL related is really finished
+   sdlScopeMain();
+
+   TextImage::UnloadAllFonts();
+
+   if (TTF_WasInit())
+   {
+      LOG_DEBUG() << "Stopping TTF SDL";
+      TTF_Quit();
+   }
+   else
+   {
+      LOG_WARNING() << "TTF SDL was never started / loaded";
+   }
+
+   LOG_DEBUG() << "Stopping Image SDL";
+   IMG_Quit();
+
+   LOG_DEBUG() << "Stopping Mixer / Audio SDL";
+   Mix_Quit();
+
+   return 0;
 }

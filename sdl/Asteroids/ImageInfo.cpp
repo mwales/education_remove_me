@@ -25,6 +25,35 @@ ImageInfo::ImageInfo(char const * filename, SDL_Renderer* renderer):
       return;
    }
 
+   ProcessSurface(s);
+
+   LOG_DEBUG() << "Loaded image:" << filename << "(" << _size << ")";
+}
+
+ImageInfo::ImageInfo(SDL_Renderer* renderer):
+   _renderer(renderer)
+ , _angle(0.0)
+ , _originAtCenter(true)
+ {
+   if (_runOnce)
+   {
+      // Initialize the library
+      IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
+      _runOnce = false;
+   }
+
+   _texture = NULL;
+
+}
+
+void ImageInfo::ProcessSurface(SDL_Surface* s)
+{
+   if (s == NULL)
+   {
+      LOG_FATAL() << "Process surface passed null surface";
+      return;
+   }
+
    _size[0] = s->w;
    _size[1] = s->h;
 
@@ -37,13 +66,11 @@ ImageInfo::ImageInfo(char const * filename, SDL_Renderer* renderer):
 
    if (_texture == NULL)
    {
-      LOG_FATAL() << "Error converting surface to texture for image named" << filename << ", error=" << SDL_GetError();
+      LOG_FATAL() << "Error converting surface to texture in ProcessSurface:" << SDL_GetError();
       return;
    }
 
    SDL_FreeSurface(s);
-
-   LOG_DEBUG() << "Loaded image:" << filename << "(" << _size << ")";
 }
 
 ImageInfo::~ImageInfo()

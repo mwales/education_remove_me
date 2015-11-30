@@ -1,6 +1,7 @@
 #include "GraphicEntity.h"
 #include "ImageInfo.h"
 #include "TiledImage.h"
+#include "TextImage.h"
 #include "Logger.h"
 
 GraphicEntity::GraphicEntity():
@@ -50,6 +51,16 @@ void GraphicEntity::Draw()
 void GraphicEntity::SetImageInfo(char const * filename, SDL_Renderer* r)
 {
    _image = new ImageInfo(filename, r);
+}
+
+void GraphicEntity::SetTextImageInfo(std::string text, SDL_Color color, SDL_Renderer* r)
+{
+   _image = new TextImage(text, color, r);
+}
+
+void GraphicEntity::SetImageInfo(ImageInfo* ii)
+{
+   _image = ii;
 }
 
 void GraphicEntity::SetTiledImageInfo(char const * filename,

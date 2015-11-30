@@ -13,15 +13,23 @@ TitleScene::TitleScene(Graphics* g, Mixer* m):
    _background.SetImageInfo("assets/nebula_blue.png", _renderer);
    _splashImage.SetImageInfo("assets/splash.png", _renderer);
 
+   SDL_Color nameColor = { 0xff, 0xff, 0xff, 0xff };
+   _authorName.SetTextImageInfo("Created by Michael Wales", nameColor, _renderer);
+
    _background.SetFullscreen(true);
+
+   XYPair namePosition = g->GetWindowSize();
+   namePosition[1] *= 0.75;
+   namePosition[0] *= 0.5;
+   _authorName.SetPosition(namePosition);
 
    XYPair splashCenter = g->GetWindowSize();
    splashCenter *= 0.5;
-
    _splashImage.SetPosition(splashCenter);
 
    _entities.push_back(&_background);
    _entities.push_back(&_splashImage);
+   _entities.push_back(&_authorName);
 
    _mixer->LoadMusic("assets/cobra.ogg");
    //_mixer->PlayMusic();

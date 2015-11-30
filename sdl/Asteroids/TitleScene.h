@@ -20,6 +20,8 @@ protected:
 
    GraphicEntity _splashImage;
 
+   GraphicEntity _authorName;
+
    Scene* _nextScene;
 };
 

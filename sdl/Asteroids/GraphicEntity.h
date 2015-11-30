@@ -17,6 +17,10 @@ public:
 
    virtual void SetImageInfo(char const * filename, SDL_Renderer* r);
 
+   virtual void SetTextImageInfo(std::string text, SDL_Color color, SDL_Renderer* r);
+
+   virtual void SetImageInfo(ImageInfo* ii);
+
    virtual void SetTiledImageInfo(char const * filename,
                                   SDL_Renderer* renderer,
                                   int width,

@@ -34,6 +34,10 @@ public:
 
 protected:
 
+   ImageInfo(SDL_Renderer* renderer);
+
+   void ProcessSurface(SDL_Surface* surface);
+
    // Flag for run library initialization
    static bool _runOnce;
 
