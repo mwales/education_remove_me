@@ -3,11 +3,14 @@
 #include "Mixer.h"
 #include "ImageInfo.h"
 #include "Logger.h"
+#include "PauseScene.h"
 
 
 ShootingScene::ShootingScene(Graphics* g, Mixer* m):
    Scene(g, m),
-   _ship(g->GetWindowSize())
+   _ship(g->GetWindowSize()),
+   _pauseState(false),
+   _nextState(NULL)
 {
    _name = "Shooting";
 
@@ -119,13 +122,36 @@ bool ShootingScene::ProcessEvent(SDL_Event const & ev)
 
 Scene* ShootingScene::GetNextState(bool* deleteMe)
 {
-   *deleteMe = false;
-   return NULL;
+   if (_nextState)
+   {
+      // Is game just paused?
+      if (_pauseState)
+      {
+         *deleteMe = false;
+         Scene* retVal = _nextState;
+         _nextState = NULL;
+         return retVal;
+      }
+      else
+      {
+         *deleteMe = true;
+         return _nextState;
+      }
+   }
+   else
+   {
+      *deleteMe = false;
+      return NULL;
+   }
+
 }
 
 void ShootingScene::PauseGame()
 {
    LOG_DEBUG() << "Pausing game";
+
+   _pauseState = true;
+   _nextState = new PauseScene(_graphics, _mixer, this);
 }
 
 //*****************************************************************************

@@ -34,6 +34,10 @@ protected:
 
    Spaceship _ship;
 
+   bool _pauseState;
+
+   Scene* _nextState;
+
 };
 
 class PauseCommand: public Command
