@@ -114,6 +114,11 @@ void GraphicEntity::SetPosition(XYPair pos)
    _fullscreen = false;
 }
 
+XYPair GraphicEntity::GetPosition()
+{
+   return _position;
+}
+
 void GraphicEntity::SetFullscreen(bool fullscreenEnable)
 {
    _fullscreen = fullscreenEnable;

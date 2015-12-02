@@ -88,6 +88,13 @@ void ImageInfo::SetAngle(float angleDeg)
 
 void ImageInfo::Draw(XYPair dst)
 {
+   Draw(dst, _angle);
+}
+
+void ImageInfo::Draw(XYPair dst, float angleDeg)
+{
+   _angle = angleDeg;
+
    SDL_Rect pos;
 
    if (_originAtCenter)
@@ -111,6 +118,13 @@ void ImageInfo::Draw(XYPair dst)
 
 void ImageInfo::Draw(XYPair dst, XYPair drawSize)
 {
+   Draw(dst, drawSize, _angle);
+}
+
+void ImageInfo::Draw(XYPair dst, XYPair drawSize, float angleDeg)
+{
+   _angle = angleDeg;
+
    SDL_Rect pos;
    if (_originAtCenter)
    {

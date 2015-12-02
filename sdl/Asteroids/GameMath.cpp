@@ -28,7 +28,7 @@ std::string GameMath::VectorToString(XYPair v)
    return oss.str();
 }
 
-float Distance(XYPair a, XYPair b)
+float GameMath::Distance(XYPair a, XYPair b)
 {
    float deltaX = (a[0] - b[0]);
    deltaX *= deltaX;

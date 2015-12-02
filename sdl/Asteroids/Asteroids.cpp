@@ -30,6 +30,8 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <time.h>
+#include <stdlib.h>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -53,7 +55,7 @@ void sdlScopeMain()
 
    TextImage::LoadFont("assets/font/SuperMario256.ttf", 32);
 
-   int updateRateHz = 10;
+   int updateRateHz = 25;
    int updatePeriodMs = 1000 / updateRateHz;
 
    Scene* currentScene = new TitleScene(&g,&m);
@@ -111,6 +113,9 @@ void sdlScopeMain()
 
 int main (int argc, char* argv[])
 {
+   // Initialize the random number generator
+   srand(time(NULL));
+
    // Do everything SDL in another scope so that when we want to quit, we
    // know everything SDL related is really finished
    sdlScopeMain();

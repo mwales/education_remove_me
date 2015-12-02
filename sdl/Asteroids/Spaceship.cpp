@@ -5,7 +5,7 @@
 #include "Logger.h"
 #include "GameMath.h"
 
-static const float THRUST_ACCELERATION = 50.0;
+static const float THRUST_ACCELERATION = 800.0;
 
 Spaceship::Spaceship(XYPair mapBounds):
    MovingEntity(mapBounds),
@@ -35,11 +35,11 @@ void Spaceship::SetTurningDirection(int direction)
 
    if (_turningDirection < 0)
    {
-      _rotAcceleration = -90.0;
+      _rotAcceleration = -700.0;
    }
    else if (_turningDirection > 0)
    {
-      _rotAcceleration = +90.0;
+      _rotAcceleration = +700.0;
    }
    else
    {
@@ -123,6 +123,6 @@ void Spaceship::Update()
 
 void Spaceship::SetRotationalAcceleration(int rotAcc)
 {
-   LOG_DEBUG() << "Rotational acc=" << rotAcc;
-   _rotAcceleration = rotAcc;
+   LOG_DEBUG() << "Rotational acc=" << rotAcc * 9.0;
+   _rotAcceleration = rotAcc * 9.0;
 }

@@ -5,11 +5,13 @@
 #include "Logger.h"
 #include "GameMath.h"
 
-const float FRICTION_SCALAR = 0.3;
-const float ROT_FRICTION_SCALAR = 0.95;
+const float FRICTION_SCALAR = 0.1;
+const float ROT_FRICTION_SCALAR = 0.3;
 
 MovingEntity::MovingEntity(XYPair mapBounds):
-   _mapBounds(mapBounds)
+   _mapBounds(mapBounds),
+   _translationalFrictionScalar(FRICTION_SCALAR),
+   _rotationalFrictionScalar(ROT_FRICTION_SCALAR)
 {
    //_graphicBounds = XYPair(0.0, 0.0);;
 
@@ -38,15 +40,15 @@ void MovingEntity::Update()
 
    _velocity += _acceleration * _updateRateScalar;
 
-   _velocity *= (1.0 - FRICTION_SCALAR * _updateRateScalar);
+   _velocity *= (1.0 - _translationalFrictionScalar * _updateRateScalar);
 
-   _position += _velocity;
+   _position += _velocity * _updateRateScalar;
 
    _rotVelocity += _rotAcceleration * _updateRateScalar;
 
-   _rotVelocity *= (1.0 - ROT_FRICTION_SCALAR * _updateRateScalar);
+   _rotVelocity *= (1.0 - _rotationalFrictionScalar * _updateRateScalar);
 
-   AddAngle(_rotVelocity);
+   AddAngle(_rotVelocity * _updateRateScalar);
 
 //   LOG_DEBUG() << "After:    "
 //               << "\tPosition=" << _position
@@ -86,4 +88,14 @@ void MovingEntity::SetAngularVelocity(float degPerSec)
 void MovingEntity::SetAngularAcceleration(float degPerSecSquared)
 {
    _rotAcceleration = degPerSecSquared;
+}
+
+void MovingEntity::SetTranslationalFriction(float scalar)
+{
+   _translationalFrictionScalar = scalar;
+}
+
+void MovingEntity::SetRotationalFriction(float scalar)
+{
+   _rotationalFrictionScalar = scalar;
 }

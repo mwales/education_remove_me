@@ -4,10 +4,13 @@
 #include "ImageInfo.h"
 #include "Logger.h"
 #include "PauseScene.h"
+#include "SpaceRock.h"
 
+const int MAX_ROCKS = 3;
 
 ShootingScene::ShootingScene(Graphics* g, Mixer* m):
    Scene(g, m),
+   _rockSpawnCounter(10),
    _ship(g->GetWindowSize()),
    _pauseState(false),
    _nextState(NULL)
@@ -152,6 +155,41 @@ void ShootingScene::PauseGame()
 
    _pauseState = true;
    _nextState = new PauseScene(_graphics, _mixer, this);
+}
+
+void ShootingScene::SpawnRock()
+{
+   _rockSpawnCounter--;
+
+   if (_rockSpawnCounter > 0)
+   {
+      return;
+   }
+
+   // Rock spawn counter hit zero, time to spawn a rock!
+
+   // Set timer for the next attempted rock spawning
+   _rockSpawnCounter = _updateRateHz * 5;
+
+   if (_bigRocks.size() >= MAX_ROCKS)
+   {
+      LOG_WARNING() << "Can't spawn a rock, too many already";
+      return;
+   }
+
+   SpaceRock* rock = new SpaceRock(_graphics->GetWindowSize(), _renderer);
+   rock->SetRandomLocation(_ship.GetPosition());
+   rock->SetUpdateRate(_updateRateHz);
+   _bigRocks.push_back(rock);
+   _entities.push_back(rock);
+}
+
+void ShootingScene::Update()
+{
+   SpawnRock();
+
+   // Call parent implementation
+   Scene::Update();
 }
 
 //*****************************************************************************

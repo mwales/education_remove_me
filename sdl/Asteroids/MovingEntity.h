@@ -20,6 +20,10 @@ public:
 
    void SetAngularAcceleration(float degPerSecSquared);
 
+   void SetTranslationalFriction(float scalar);
+
+   void SetRotationalFriction(float scalar);
+
 protected:
 
    XYPair _mapBounds;
@@ -35,6 +39,10 @@ protected:
    float _rotVelocity;
 
    float _rotAcceleration;
+
+   float _translationalFrictionScalar;
+
+   float _rotationalFrictionScalar;
 };
 
 

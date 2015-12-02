@@ -38,6 +38,8 @@ public:
 
    void SetPosition(XYPair pos);
 
+   XYPair GetPosition();
+
    void SetFullscreen(bool fullscreenEnable);
 
    void SetFrameNumber(int fn);

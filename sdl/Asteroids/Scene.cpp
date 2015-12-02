@@ -10,7 +10,8 @@
 Scene::Scene(Graphics* g, Mixer* m):
    _graphics(g),
    _mixer(m),
-   _name("Base")
+   _name("Base"),
+   _updateRateHz(60)
 {
    _renderer = g->GetRenderer();
 }
@@ -42,6 +43,8 @@ void Scene::SetUpdateRate(int updateHz)
    {
       (*it)->SetUpdateRate(updateHz);
    }
+
+   _updateRateHz = updateHz;
 }
 
 void Scene::LoadBgMusic(char* filename)

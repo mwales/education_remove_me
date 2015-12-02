@@ -6,7 +6,7 @@
 class GameMath
 {
 public:
-   float Distance(XYPair a, XYPair b);
+   static float Distance(XYPair a, XYPair b);
 
    static XYPair GetUnitVector(float angle);
 

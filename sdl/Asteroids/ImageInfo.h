@@ -20,7 +20,11 @@ public:
 
    virtual void Draw(XYPair dst);
 
+   virtual void Draw(XYPair dst, float _angleDeg);
+
    virtual void Draw(XYPair dst, XYPair drawSize);
+
+   virtual void Draw(XYPair dst, XYPair drawSize, float _angleDeg);
 
    virtual void DrawFullScreen();
 

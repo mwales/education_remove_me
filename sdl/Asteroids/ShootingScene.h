@@ -7,7 +7,7 @@
 #include "Command.h"
 #include "Spaceship.h"
 
-
+class SpaceRock;
 
 class ShootingScene : public Scene
 {
@@ -20,25 +20,33 @@ public:
 
    void PauseGame();
 
+   virtual void Update();
+
 protected:
 
    bool ProcessEvent(SDL_Event const & ev);
 
-protected:
+   void SpawnRock();
 
    GraphicEntity _background;
 
-   std::map<int, Command*> _keyboardDownMappedCommands;
+   std::vector<SpaceRock*> _bigRocks;
 
-   std::map<int, Command*> _keyboardUpMappedCommands;
+   // When counter hits zero, consider spawning a rock
+   int _rockSpawnCounter;
 
    Spaceship _ship;
 
-   bool _pauseState;
+   std::map<int, Command*> _keyboardDownMappedCommands;
+   std::map<int, Command*> _keyboardUpMappedCommands;
 
+
+   bool _pauseState;
    Scene* _nextState;
 
 };
+
+
 
 class PauseCommand: public Command
 {

@@ -55,5 +55,7 @@ protected:
    Mixer* _mixer;
 
    std::string _name;
+
+   int _updateRateHz;
 };
 
