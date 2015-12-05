@@ -7,7 +7,6 @@
 class Graphics;
 class Mixer;
 class GameEntity;
-
 class Scene
 {
 public:
@@ -18,6 +17,8 @@ public:
    virtual void Update();
 
    virtual void Draw();
+
+   virtual void ManageEntityLifetimes();
 
    virtual void SetUpdateRate(int updateHz);
 
@@ -57,5 +58,9 @@ protected:
    std::string _name;
 
    int _updateRateHz;
+
+   // After an update, these are the objects that should be deleted/added
+   std::vector<GameEntity*> _deletionList;
+   std::vector<GameEntity*> _additionList;
 };
 

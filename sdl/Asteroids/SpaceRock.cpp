@@ -2,16 +2,18 @@
 #include "TiledImage.h"
 #include "ImageInfo.h"
 #include "Logger.h"
+#include "AnimationDriver.h"
 
 int ROCK_MAX_SPEED = 30;
 int ROCK_MAX_ROT_SPEED = 90;
 
 bool SpaceRock::_loadImagesOnce = true;
 std::vector<ImageInfo*> SpaceRock::_rockImages;
-std::vector<ImageInfo*> SpaceRock::_explosionImages;
+std::vector<TiledImage*> SpaceRock::_explosionImages;
 
 SpaceRock::SpaceRock(XYPair mapBounds, SDL_Renderer* r):
-   MovingEntity(mapBounds)
+   MovingEntity(mapBounds),
+   _animator(NULL)
 {
    if (_loadImagesOnce)
    {
@@ -33,6 +35,23 @@ SpaceRock::SpaceRock(XYPair mapBounds, SDL_Renderer* r):
 
    _translationalFrictionScalar = 0;
    _rotationalFrictionScalar = 0;
+}
+
+SpaceRock::~SpaceRock()
+{
+   if (_animator)
+   {
+      delete _animator;
+   }
+}
+
+void SpaceRock::Explode()
+{
+   LOG_DEBUG() << "Rock exploding";
+   TiledImage* explosionImg = _explosionImages[rand() % _explosionImages.size()];
+   SetImageInfo(explosionImg);
+   _animator = new AnimationDriver(explosionImg, true);
+   _animator->SetAnimationDuration(10, _updateRate);
 }
 
 void SpaceRock::SetRandomLocation(XYPair shipPos)
@@ -57,4 +76,14 @@ void SpaceRock::SetRandomLocation(XYPair shipPos)
    _rotVelocity = (rand() % (ROCK_MAX_ROT_SPEED * 2)) - ROCK_MAX_ROT_SPEED;
 
 
+}
+
+void SpaceRock::Update()
+{
+   MovingEntity::Update();
+
+   if (_animator)
+   {
+      _animator->StepAnimation();
+   }
 }

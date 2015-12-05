@@ -1,5 +1,7 @@
 #include "Scene.h"
 
+#include <algorithm>    // std::find
+
 #include "Graphics.h"
 #include "Mixer.h"
 #include "GameEntity.h"
@@ -34,6 +36,36 @@ void Scene::Draw()
    for(std::vector<GameEntity*>::iterator it = _entities.begin(); it != _entities.end(); it++)
    {
       (*it)->Draw();
+   }
+}
+
+void Scene::ManageEntityLifetimes()
+{
+   std::vector<GameEntity*>::iterator it;
+
+   while(!_deletionList.empty())
+   {
+      //it = _entities.find(_deletionList.back());
+      it = std::find(_entities.begin(), _entities.end(), _deletionList.back());
+      if (it != _entities.end())
+      {
+         LOG_DEBUG() << "Deleting entity";
+         _entities.erase(it);
+         delete (*it);
+      }
+      else
+      {
+         LOG_WARNING() << "Couldn't find entity to delete, already deleted?";
+      }
+
+      _deletionList.pop_back();
+   }
+
+   while(!_additionList.empty())
+   {
+      LOG_DEBUG() << "Adding a new entity to scene";
+      _entities.push_back(_additionList.back());
+      _additionList.pop_back();
    }
 }
 

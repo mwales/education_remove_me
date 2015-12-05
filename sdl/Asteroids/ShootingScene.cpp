@@ -174,6 +174,13 @@ void ShootingScene::SpawnRock()
    if (_bigRocks.size() >= MAX_ROCKS)
    {
       LOG_WARNING() << "Can't spawn a rock, too many already";
+
+      static bool explodeOne = true;
+      if (explodeOne)
+      {
+         _bigRocks[0]->Explode();
+         explodeOne = false;
+      }
       return;
    }
 

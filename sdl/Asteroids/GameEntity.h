@@ -7,6 +7,8 @@ class GameEntity
 public:
    GameEntity();
 
+   virtual ~GameEntity() { };
+
    virtual void SetUpdateRate(int updateHz);
 
    virtual void Update();
