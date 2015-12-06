@@ -12,7 +12,7 @@ std::vector<ImageInfo*> SpaceRock::_rockImages;
 std::vector<TiledImage*> SpaceRock::_explosionImages;
 
 SpaceRock::SpaceRock(XYPair mapBounds, SDL_Renderer* r):
-   MovingEntity(mapBounds),
+   GraphicEntity(mapBounds),
    _animator(NULL)
 {
    if (_loadImagesOnce)
@@ -80,7 +80,7 @@ void SpaceRock::SetRandomLocation(XYPair shipPos)
 
 void SpaceRock::Update()
 {
-   MovingEntity::Update();
+   GraphicEntity::Update();
 
    if (_animator)
    {

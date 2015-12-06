@@ -7,6 +7,7 @@
 PauseScene::PauseScene(Graphics* g, Mixer* m, Scene* underneath):
    Scene(g, m),
    _underneath(underneath),
+   _pauseText(g->GetWindowSize()),
    _nextScene(NULL)
 {
    _name = "Pause";

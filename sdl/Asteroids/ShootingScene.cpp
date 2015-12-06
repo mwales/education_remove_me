@@ -10,6 +10,7 @@ const int MAX_ROCKS = 3;
 
 ShootingScene::ShootingScene(Graphics* g, Mixer* m):
    Scene(g, m),
+   _background(g->GetWindowSize()),
    _rockSpawnCounter(10),
    _ship(g->GetWindowSize()),
    _pauseState(false),

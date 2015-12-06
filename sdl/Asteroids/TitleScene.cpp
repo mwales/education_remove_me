@@ -7,6 +7,9 @@
 
 TitleScene::TitleScene(Graphics* g, Mixer* m):
    Scene(g, m),
+   _background(g->GetWindowSize()),
+   _splashImage(g->GetWindowSize()),
+   _authorName(g->GetWindowSize()),
    _nextScene(NULL)
 {
    _name = "Title";

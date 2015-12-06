@@ -11,7 +11,7 @@ class ImageInfo;
 class GraphicEntity: public GameEntity
 {
 public:
-   GraphicEntity();
+   GraphicEntity(XYPair mapBounds);
 
    ~GraphicEntity();
 
@@ -46,6 +46,21 @@ public:
 
    inline ImageInfo* GetImageInfo() { return _image; }
 
+   virtual void SetUpdateRate(int updateHz);
+
+   void SetVelocity(XYPair vel);
+
+   void SetAcceleration(XYPair acc);
+
+   void SetAngularVelocity(float degPerSec);
+
+   void SetAngularAcceleration(float degPerSecSquared);
+
+   void SetTranslationalFriction(float scalar);
+
+   void SetRotationalFriction(float scalar);
+
+
 protected:
 
    XYPair _position;
@@ -55,4 +70,25 @@ protected:
    bool _fullscreen;
 
    float _angle;
+
+
+
+
+   XYPair _mapBounds;
+
+   XYPair _graphicBounds;
+
+   float _updateRateScalar;
+
+   XYPair _velocity;
+
+   XYPair _acceleration;
+
+   float _rotVelocity;
+
+   float _rotAcceleration;
+
+   float _translationalFrictionScalar;
+
+   float _rotationalFrictionScalar;
 };

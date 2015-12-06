@@ -1,13 +1,13 @@
 #pragma once
 
 #include <map>
-#include "MovingEntity.h"
+#include "GraphicEntity.h"
 #include "Command.h"
 #include "GameMath.h"
 #include "Joystick.h"
 
 
-class Spaceship : public MovingEntity, public JoystickRegistrationCallbacks
+class Spaceship : public GraphicEntity, public JoystickRegistrationCallbacks
 {
 public:
    Spaceship(XYPair mapBounds);

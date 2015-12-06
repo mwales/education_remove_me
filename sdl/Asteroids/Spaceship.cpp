@@ -8,7 +8,7 @@
 static const float THRUST_ACCELERATION = 800.0;
 
 Spaceship::Spaceship(XYPair mapBounds):
-   MovingEntity(mapBounds),
+   GraphicEntity(mapBounds),
    _turningDirection(0),
    _thrustOn(false)
 {
@@ -118,7 +118,7 @@ void Spaceship::Update()
    }
 
    // Call parent update
-   MovingEntity::Update();
+   GraphicEntity::Update();
 }
 
 void Spaceship::SetRotationalAcceleration(int rotAcc)

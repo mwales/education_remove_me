@@ -1,6 +1,6 @@
 # OBJS specifies files to compile
 OBJS = Asteroids.cpp GameMath.cpp Logger.cpp ImageInfo.cpp Graphics.cpp Mixer.cpp GameEntity.cpp GraphicEntity.cpp \
-MovingEntity.cpp Scene.cpp Command.cpp TitleScene.cpp ShootingScene.cpp Spaceship.cpp SpaceshipCommands.cpp XYPair.cpp TiledImage.cpp \
+Scene.cpp Command.cpp TitleScene.cpp ShootingScene.cpp Spaceship.cpp SpaceshipCommands.cpp XYPair.cpp TiledImage.cpp \
 Joystick.cpp TextImage.cpp PauseScene.cpp SpaceRock.cpp AnimationDriver.cpp
 
 OBJ_NAME = asteroids

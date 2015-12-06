@@ -3,13 +3,13 @@
 #include <SDL2/SDL.h>
 #include <vector>
 
-#include "MovingEntity.h"
+#include "GraphicEntity.h"
 #include "GameMath.h"
 
 class AnimationDriver;
 class TiledImage;
 
-class SpaceRock : public MovingEntity
+class SpaceRock : public GraphicEntity
 {
 public:
    SpaceRock(XYPair mapBounds, SDL_Renderer* r);
