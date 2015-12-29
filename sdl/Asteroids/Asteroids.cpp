@@ -50,6 +50,7 @@ void sdlScopeMain()
 {
    Graphics g;
    g.CreateWindow("Asteroids", 800, 600);
+   g.DisplayRendererInfo();
 
    Mixer m;
 

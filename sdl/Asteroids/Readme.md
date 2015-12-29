@@ -57,3 +57,17 @@ Mario 256 Font
 * http://www.dafont.com/super-mario-256.font
 * Created by fsuarez913
 
+## Build Instructions ##
+
+Instructions are for Ubuntu:
+
+    sudo apt-get install build-essential git cmake
+    sudo apt-get install libsdl2-dev libsdl2-mixer-dev libsdl2-ttf-dev libsdl2-image-dev
+
+    git clone
+    cd education/sdl/Asteroids
+    mkdir build
+    cd build
+    cmake ../
+    make -j8
+

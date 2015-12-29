@@ -122,7 +122,7 @@ Logger& Logger::operator<< (double rhs)
    return *this;
 }
 
-Logger& Logger::operator<< (size_t rhs)
+Logger& Logger::operator<< (unsigned long int rhs)
 {
    _oss << " " << rhs;
    return *this;

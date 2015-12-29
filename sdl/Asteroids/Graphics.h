@@ -29,6 +29,8 @@ public:
 
    Joystick* GetJoystick() { return &_joystick; }
 
+   void DisplayRendererInfo();
+
 protected:
    SDL_Window* _window;
 

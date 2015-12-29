@@ -32,8 +32,9 @@ public:
    Logger& operator<< (unsigned int rhs);
    Logger& operator<< (float rhs);
    Logger& operator<< (double rhs);
-   Logger& operator<< (size_t rhs);
+   Logger& operator<< (unsigned long int rhs);
    Logger& operator<< (XYPair rhs);
+
 
 
 protected:

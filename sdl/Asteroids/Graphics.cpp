@@ -78,3 +78,43 @@ XYPair Graphics::GetWindowSize()
    return _windowSize;
 }
 
+void Graphics::DisplayRendererInfo()
+{
+    SDL_RendererInfo info;
+    if (0 != SDL_GetRendererInfo(_renderer, &info))
+    {
+        LOG_WARNING() << "Error getting renderer info";
+        return;
+    }
+
+
+    LOG_DEBUG() << "****************************************";
+    LOG_DEBUG() << "* Renderer = " << info.name;
+    LOG_DEBUG() << "* Flags:";
+
+    if (info.flags & SDL_RENDERER_SOFTWARE)
+    {
+        LOG_DEBUG() << "*   Software Renderer";
+    }
+
+    if (info.flags & SDL_RENDERER_ACCELERATED)
+    {
+        LOG_DEBUG() << "*   Accelerated Renderer";
+    }
+
+    if (info.flags & SDL_RENDERER_PRESENTVSYNC)
+    {
+        LOG_DEBUG() << "*   Synced with refresh rate";
+    }
+
+    if (info.flags & SDL_RENDERER_TARGETTEXTURE)
+    {
+        LOG_DEBUG() << "*   Supports rendering to texture";
+    }
+
+    LOG_DEBUG() << "* Texture Formats: " << info.num_texture_formats;
+    LOG_DEBUG() << "* Max Texture Size:" << info.max_texture_width << "x" << info.max_texture_height;
+
+    LOG_DEBUG() << "****************************************";
+
+}
