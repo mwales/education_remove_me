@@ -40,3 +40,13 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2IMAGE_LIBRARIES} $
 #add_library(libSDL2_ttf.so SDL2/SDL_ttf.h)
 #add_library(libSDL2.so SD2/SDL.h)
 
+IF(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7l")
+    MESSAGE("Compiling with optimizations for my Tegra K1 Chromebook")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mtune=cortex-a15 -mfpu=neon -funsafe-math-optimizations -mthumb -O3 -Ofast")
+ELSE()
+    MESSAGE("Processor=${CMAKE_SYSTEM_PROCESSOR}!")
+    MESSAGE("Not optimizing for ARM processor")
+ENDIF()
+
+MESSAGE("Compiler flags=${CMAKE_CXX_FLAGS}")
+
