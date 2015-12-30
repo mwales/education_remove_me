@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
 project (asteroids)
 
-set(SOURCE_FILES Asteroids.cpp 
+set(SOURCE_FILES Asteroids.cpp
                  GameMath.cpp
                  Logger.cpp
                  ImageInfo.cpp
@@ -23,7 +23,7 @@ set(SOURCE_FILES Asteroids.cpp
                  SpaceRock.cpp
                  AnimationDriver.cpp)
 
-add_executable(asteroids ${SOURCE_FILES})
+add_executable(asteroids ${SOURCE_FILES} Asteroids.cpp)
 
 INCLUDE(FindPkgConfig)
 
