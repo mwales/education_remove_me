@@ -35,6 +35,14 @@ public:
    virtual bool PollInputs(int ticksToWait);
 
    /**
+    * This will empty the event queue completely.  This is called when the rendering taking a long time
+    * and if we didn't, we would only process a single event per render, which causes a bunch of events
+    * to queue up.
+    * @return True if the application should exit
+    */
+   virtual bool PollInputsUntilEmpty();
+
+   /**
     * Returns an instance of the next game scene.
     * @param[out] true if the scene object should be deleted
     * @return 0 if stay on the current scene, or the new scene.

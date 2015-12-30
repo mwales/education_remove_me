@@ -45,6 +45,7 @@
 #include "Mixer.h"
 #include "TitleScene.h"
 #include "TextImage.h"
+#include "Scene.h"
 
 void sdlScopeMain()
 {

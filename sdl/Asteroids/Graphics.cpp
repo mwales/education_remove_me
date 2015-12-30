@@ -87,7 +87,6 @@ void Graphics::DisplayRendererInfo()
         return;
     }
 
-
     LOG_DEBUG() << "****************************************";
     LOG_DEBUG() << "* Renderer = " << info.name;
     LOG_DEBUG() << "* Flags:";
