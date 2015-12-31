@@ -71,3 +71,16 @@ Instructions are for Ubuntu:
     cmake ../
     make -j8
 
+## Documentation Generation ##
+
+Additional documentation like class descriptions and documentation can be generated using
+doxygen.
+
+    # Packages required for documentation generation
+    sudo apt-get install doxygen graphviz
+
+    cd doc
+    doxygen doxygen.config
+
+    # Open a web browser to doc/html/index.html
+    
