@@ -1,7 +1,10 @@
 cmake_minimum_required (VERSION 2.6)
 project (astest)
 
-set(SOURCE_FILES astest.cpp) 
+set(SOURCE_FILES astest.cpp
+                 BuildTest.cpp
+                 ../Logger.cpp
+                 ../XYPair.cpp) 
 
 add_executable(astest ${SOURCE_FILES} ${TEST_FILES})
 
@@ -21,6 +24,10 @@ PKG_SEARCH_MODULE(SDL2TTF REQUIRED SDL2_ttf>=2.0.0)
 PKG_SEARCH_MODULE(SDL2MIXER REQUIRED SDL2_mixer>=2.0.0)
 
 INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS} ${SDL2IMAGE_INCLUDE_DIRS} ${SDL2TTF_INCLUDE_DIRS} ${SDL2MIXER_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS})
+
+# Include the main game files
+INCLUDE_DIRECTORIES(../)
+
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2IMAGE_LIBRARIES} ${SDL2TTF_LIBRARIES} ${SDL2MIXER_LIBRARIES} ${GTEST_LIBRARIES})
 
 
