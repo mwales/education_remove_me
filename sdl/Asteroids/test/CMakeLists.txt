@@ -3,6 +3,7 @@ project (astest)
 
 set(SOURCE_FILES astest.cpp
                  BuildTest.cpp
+                 CollisionManagerTest.cpp
                  ../Logger.cpp
                  ../XYPair.cpp) 
 
