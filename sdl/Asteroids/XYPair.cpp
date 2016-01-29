@@ -35,7 +35,7 @@ XYPair & XYPair::operator=(XYPair const & rhs)
    return *this;
 }
 
-XYPair XYPair::operator+(XYPair const & rhs)
+XYPair XYPair::operator+(XYPair const & rhs) const
 {
    XYPair result(*this);
    result += rhs;
@@ -49,7 +49,7 @@ XYPair & XYPair::operator+=(XYPair const & rhs)
    return *this;
 }
 
-XYPair XYPair::operator-(XYPair const & rhs)
+XYPair XYPair::operator-(XYPair const & rhs) const
 {
    XYPair result(*this);
    result -= rhs;
@@ -63,7 +63,7 @@ XYPair & XYPair::operator-=(XYPair const & rhs)
    return *this;
 }
 
-XYPair XYPair::operator*(float const & rhs)
+XYPair XYPair::operator*(float const & rhs) const
 {
    XYPair result(*this);
    result *= rhs;

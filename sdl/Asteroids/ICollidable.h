@@ -7,7 +7,7 @@
 
 struct CollisionRect
 {
-    XYPair _topRight;
+    XYPair _topLeft;
 
     XYPair _size;
 };
@@ -16,11 +16,11 @@ class ICollidable
 {
 public:
 
-    virtual std::vector<CollisionRect> GetCollisionBoxes() = 0;
+    virtual std::vector<CollisionRect> GetCollisionBoxes() const = 0;
 
-    virtual XYPair GetLocation() = 0;
+    virtual XYPair GetPosition() const = 0;
 
-    virtual CollisionDetected(std::string collidingObject) = 0;
+    //virtual bool CollisionDetected(std::string collidingObject) const = 0;
 
-    virtual std::string GetName() = 0;
+    //virtual std::string GetName() const = 0;
 };

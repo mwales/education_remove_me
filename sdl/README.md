@@ -9,3 +9,6 @@ Collision Detection:
 - https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection
 - http://higherorderfun.com/blog/2012/05/20/the-guide-to-implementing-2d-platformers/
 
+Sprite Tool:
+- http://www.aseprite.org
+

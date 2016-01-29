@@ -11,15 +11,15 @@ public:
 
    XYPair & operator=(XYPair const & rhs);
 
-   XYPair operator+(XYPair const & rhs);
+   XYPair operator+(XYPair const & rhs) const;
 
    XYPair & operator+=(XYPair const & rhs);
 
-   XYPair operator-(XYPair const & rhs);
+   XYPair operator-(XYPair const & rhs) const;
 
    XYPair & operator-=(XYPair const & rhs);
 
-   XYPair operator*(float const & rhs);
+   XYPair operator*(float const & rhs) const;
 
    XYPair & operator*=(float const & rhs);
 

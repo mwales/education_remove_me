@@ -200,9 +200,23 @@ void GraphicEntity::SetPosition(XYPair pos)
    _fullscreen = false;
 }
 
-XYPair GraphicEntity::GetPosition()
+XYPair GraphicEntity::GetPosition() const
 {
    return _position;
+}
+
+std::vector<CollisionRect> GraphicEntity::GetCollisionBoxes() const
+{
+   // Basic collision box is the size of the image
+   CollisionRect retVal;
+   retVal._size = _image->GetSize();
+
+
+   retVal._topLeft = _position - retVal._size * 0.5; //._x = _position._x - retVal._size._x / 2;
+   //retVal._topLeft._y = _position._y - retVal._size._y / 2;
+
+   std::vector<CollisionRect> retVec;
+   retVec.push_back(retVal);
 }
 
 void GraphicEntity::SetFullscreen(bool fullscreenEnable)

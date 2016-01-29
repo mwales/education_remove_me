@@ -47,7 +47,7 @@ TEST_F(CollisionManagerTest, SecondSimpleTest)
     ASSERT_LT(1,2);
 }
 
-TEST(NonFixtureTestCase, DumbTest)
+TEST(NonFixtureTestCaseColMgr, DumbTest)
 {
     LOG_DEBUG() << "Dumb Test Body";
     ASSERT_GT(3,2);

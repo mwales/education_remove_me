@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameEntity.h"
+#include "ICollidable.h"
 
 #include <SDL2/SDL.h>
 #include "GameMath.h"
@@ -8,7 +9,7 @@
 
 class ImageInfo;
 
-class GraphicEntity: public GameEntity
+class GraphicEntity: public GameEntity, public ICollidable
 {
 public:
    GraphicEntity(XYPair mapBounds);
@@ -38,8 +39,6 @@ public:
 
    void SetPosition(XYPair pos);
 
-   XYPair GetPosition();
-
    void SetFullscreen(bool fullscreenEnable);
 
    void SetFrameNumber(int fn);
@@ -60,6 +59,16 @@ public:
 
    void SetRotationalFriction(float scalar);
 
+   // ICollidable interface
+
+   virtual XYPair GetPosition() const;
+
+   virtual std::vector<CollisionRect> GetCollisionBoxes() const;
+
+   //virtual bool CollisionDetected(std::string collidingObject) const;
+
+   //virtual std::string GetName() const;
+
 
 protected:
 
@@ -70,9 +79,6 @@ protected:
    bool _fullscreen;
 
    float _angle;
-
-
-
 
    XYPair _mapBounds;
 
