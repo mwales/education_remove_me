@@ -25,8 +25,11 @@ Scene::~Scene()
 
 void Scene::Update()
 {
+   // LOG_DEBUG() << "Updating Scene (" << (unsigned long) this << ")";
+
    for(std::vector<GameEntity*>::iterator it = _entities.begin(); it != _entities.end(); it++)
    {
+      // LOG_DEBUG() << "Updating entity (" << (unsigned long) *it << ")";
       (*it)->Update();
    }
 }
@@ -49,9 +52,9 @@ void Scene::ManageEntityLifetimes()
       it = std::find(_entities.begin(), _entities.end(), _deletionList.back());
       if (it != _entities.end())
       {
-         LOG_DEBUG() << "Deleting entity";
-         _entities.erase(it);
+         LOG_DEBUG() << "Deleting entity" << (unsigned long) *it;
          delete (*it);
+         _entities.erase(it);
       }
       else
       {

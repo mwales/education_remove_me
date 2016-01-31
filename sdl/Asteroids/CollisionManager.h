@@ -20,18 +20,27 @@ public:
                      std::vector<ICollidable const *> const & bodiesA,
                      std::vector<ICollidable const *> const & bodiesB);
 
+    // These methods are for adding and removing objects from lists
     bool RemoveFromA(ICollidable const * obj);
-
     bool RemoveFromB(ICollidable const * obj);
-
     void AddToA(ICollidable const * obj);
-
     void AddToB(ICollidable const * obj);
 
+    // These methods are typically called each time collisions are processed
+
+    /**
+     * Erases any collisions that would have been returned by GetCollisions()
+     */
     void ClearCollisions();
 
+    /**
+     * Checks all objects in list A for collisions with objects in list B
+     */
     void CheckForCollisions();
 
+    /**
+     * Returns pairs of objects that have collided
+     */
     std::vector<Collision> GetCollisions();
 
 protected:

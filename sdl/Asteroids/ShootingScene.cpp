@@ -14,7 +14,8 @@ ShootingScene::ShootingScene(Graphics* g, Mixer* m):
    _rockSpawnCounter(10),
    _ship(g->GetWindowSize()),
    _pauseState(false),
-   _nextState(NULL)
+   _nextState(NULL),
+   _collisionMgr(g->GetWindowSize()[0], g->GetWindowSize()[1], g->GetWindowSize()[0] / 15)
 {
    _name = "Shooting";
 
@@ -32,6 +33,8 @@ ShootingScene::ShootingScene(Graphics* g, Mixer* m):
    _entities.push_back(&_background);
    _entities.push_back(&_ship);
 
+   _collisionMgr.AddToB(&_ship);
+
    _keyboardDownMappedCommands = _ship.GetKeyboardDownCallbacks();
    _keyboardDownMappedCommands[SDL_SCANCODE_SPACE] = new PauseCommand(this);
 
@@ -43,6 +46,8 @@ ShootingScene::ShootingScene(Graphics* g, Mixer* m):
 
 ShootingScene::~ShootingScene()
 {
+   _graphics->GetJoystick()->ClearRegisteredCommands();
+
    std::map<int, Command*>::const_iterator it;
    for (it = _keyboardDownMappedCommands.begin(); it != _keyboardDownMappedCommands.end(); it++)
    {
@@ -179,7 +184,7 @@ void ShootingScene::SpawnRock()
       static bool explodeOne = true;
       if (explodeOne)
       {
-         _bigRocks[0]->Explode();
+         _bigRocks[0]->Explode(&_deletionList, &_additionList);
          explodeOne = false;
       }
       return;
@@ -190,11 +195,49 @@ void ShootingScene::SpawnRock()
    rock->SetUpdateRate(_updateRateHz);
    _bigRocks.push_back(rock);
    _entities.push_back(rock);
+   _collisionMgr.AddToA(rock);
 }
 
 void ShootingScene::Update()
 {
    SpawnRock();
+
+   _collisionMgr.CheckForCollisions();
+
+   std::vector<Collision> collisions = _collisionMgr.GetCollisions();
+
+   /// @todo More collision management code needed!!!
+   ///       What if ship hits 2 rocks at once?
+   ///       Bullet vs Rock
+   ///       Add exploding ship
+
+   std::vector<Collision>::iterator it;
+   for(it = collisions.begin(); it != collisions.end(); it++)
+   {
+      // Find the rock in the list of rocks, and explode it, and delete it from collision manager
+      std::vector<SpaceRock*>::iterator rockIt;
+      for(rockIt = _bigRocks.begin(); rockIt != _bigRocks.end(); rockIt++)
+      {
+         if ( (*it).first == *rockIt )
+         {
+            LOG_DEBUG() << "We found the rock that sploded: (" << (unsigned long) (*it).first << ")";
+
+            // We found the rock in our list
+            SpaceRock* splodingRock = *rockIt;
+            splodingRock->Explode(&_deletionList, &_additionList);
+            _collisionMgr.RemoveFromA(splodingRock);
+         }
+      }
+
+
+      if (&_ship == (*it).second)
+      {
+         LOG_DEBUG() << "Our ship explodes too!!";
+      }
+
+   }
+
+   _collisionMgr.ClearCollisions();
 
    // Call parent implementation
    Scene::Update();

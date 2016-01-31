@@ -18,7 +18,8 @@ public:
 
    void SetRandomLocation(XYPair shipPos);
 
-   void Explode();
+   void Explode(std::vector<GameEntity*>* deletionList,
+                std::vector<GameEntity*>* additionList);
 
    virtual void Update();
 
@@ -31,4 +32,6 @@ protected:
    static std::vector<TiledImage*> _explosionImages;
 
    AnimationDriver* _animator;
+
+   std::vector<GameEntity*>* _deletionList;
 };

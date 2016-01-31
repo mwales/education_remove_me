@@ -38,7 +38,7 @@ bool CollisionManager::RemoveFromA(ICollidable const * obj)
 
    if (it != _bodiesA.end())
    {
-      LOG_DEBUG() << "Erasing object from bodies A list";
+      LOG_DEBUG() << "Erasing object from bodies A list (" << (unsigned long) *it << ")";
       _bodiesA.erase(it);
 
       return true;
@@ -98,6 +98,9 @@ void CollisionManager::CheckForCollisions()
          if (GameMath::Distance(aPosition, bPosition) <= 50)
          {
             LOG_DEBUG() << "We have a collision";
+
+            Collision col(curA, curB);
+            _currentCollisions.push_back(col);
          }
       }
    }

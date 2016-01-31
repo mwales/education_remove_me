@@ -9,8 +9,7 @@ AnimationDriver::AnimationDriver(TiledImage* image, bool repeating, int startFra
    _loopForever(repeating),
    _deleteAfterwards(false),
    _startFrame(startFrame),
-   _currentUpdateCall(0),
-   _lifetimeListDeletion(NULL)
+   _currentUpdateCall(0)
 {
    if ( (startFrame < 0) || (startFrame >= image->GetNumberOfFrames()) )
    {
@@ -45,7 +44,7 @@ void AnimationDriver::SetInfiniteLoop(bool loopForever)
    _loopForever = loopForever;
 }
 
-void AnimationDriver::StepAnimation()
+bool AnimationDriver::StepAnimation()
 {
    _currentUpdateCall++;
    if (_currentUpdateCall >= _updatesPerFrame)
@@ -58,18 +57,14 @@ void AnimationDriver::StepAnimation()
          if (_loopForever)
          {
             _currentFrame = _startFrame;
-            return;
+            return false;
          }
 
-         if (_deleteAfterwards && _lifetimeListDeletion && _image)
-         {
-            _lifetimeListDeletion->push_back(_entity);
-            _image = NULL;
-            _entity = NULL;
+         LOG_DEBUG() << "Animation over!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+         _image = NULL;
 
-            // Need to add a list of AnimationDrivers to delete as well
-         }
-
+         // Need to add a list of AnimationDrivers to delete as well
+         return true;
       }
       else
       {
@@ -78,6 +73,8 @@ void AnimationDriver::StepAnimation()
          _image->SetFrameNumber(_currentFrame);
       }
    }
+
+   return false;
 }
 
 void AnimationDriver::SetAnimationDuration(float seconds, int updateRateHz)
@@ -100,13 +97,6 @@ void AnimationDriver::SetAnimationDuration(float seconds, int updateRateHz)
    }
 
    LOG_DEBUG() << "Setting updates per frame to" << _updatesPerFrame;
-}
-
-void AnimationDriver::RegisterEntityLifetimes(std::vector<GraphicEntity*>* deletionList,
-                                              GraphicEntity* parentObj)
-{
-   _lifetimeListDeletion = deletionList;
-   _entity = parentObj;
 }
 
 void AnimationDriver::SetUpdatesPerFrame(int upf)

@@ -111,9 +111,7 @@ void Joystick::RegisterCommand(JoystickRegistrationCallbacks* subscriber,
 
    if (clearExisting)
    {
-      _buttonDownHandlers.clear();
-      _buttonUpHandlers.clear();
-      _movementHandlers.clear();
+      ClearRegisteredCommands();
    }
 
    std::map<int, Command*> cmdHandlers;
@@ -126,12 +124,29 @@ void Joystick::RegisterCommand(JoystickRegistrationCallbacks* subscriber,
 
    cmdHandlers = subscriber->GetAxesHandlers();
    _movementHandlers.insert(cmdHandlers.begin(), cmdHandlers.end());
-
-
 }
 
-void Joystick::ClearRegisteredCommand()
+void Joystick::ClearRegisteredCommands()
 {
+   std::map<int, Command*>::iterator it;
+   for(it = _buttonDownHandlers.begin(); it != _buttonDownHandlers.end(); it++)
+   {
+      LOG_DEBUG() << "Deleting a Joystick down handler";
+      delete (*it).second;
+   }
+
+   for(it = _buttonUpHandlers.begin(); it != _buttonUpHandlers.end(); it++)
+   {
+      LOG_DEBUG() << "Deleting a Joystick up handler";
+      delete (*it).second;
+   }
+
+   for(it = _movementHandlers.begin(); it != _movementHandlers.end(); it++)
+   {
+      LOG_DEBUG() << "Deleting a Joystick movement handler";
+      delete (*it).second;
+   }
+
    _buttonDownHandlers.clear();
    _buttonUpHandlers.clear();
    _movementHandlers.clear();

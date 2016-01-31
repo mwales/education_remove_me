@@ -37,7 +37,7 @@ public:
 
    void RegisterCommand(JoystickRegistrationCallbacks* subscriber, bool clearExisting = true);
 
-   void ClearRegisteredCommand();
+   void ClearRegisteredCommands();
 
    bool ProcessEvent(SDL_Event const & ev);
 

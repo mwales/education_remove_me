@@ -13,7 +13,8 @@ std::vector<TiledImage*> SpaceRock::_explosionImages;
 
 SpaceRock::SpaceRock(XYPair mapBounds, SDL_Renderer* r):
    GraphicEntity(mapBounds),
-   _animator(NULL)
+   _animator(NULL),
+   _deletionList(NULL)
 {
    if (_loadImagesOnce)
    {
@@ -39,20 +40,28 @@ SpaceRock::SpaceRock(XYPair mapBounds, SDL_Renderer* r):
 
 SpaceRock::~SpaceRock()
 {
+   LOG_DEBUG() << "SpaceRock destruction (" << (unsigned long) this << ")";
+
    if (_animator)
    {
       delete _animator;
+      _animator = NULL;
    }
 }
 
-void SpaceRock::Explode()
+void SpaceRock::Explode(std::vector<GameEntity*>* deletionList,
+                        std::vector<GameEntity*>* additionList)
 {
    LOG_DEBUG() << "Rock exploding";
    TiledImage* explosionImg = _explosionImages[rand() % _explosionImages.size()];
    SetImageInfo(explosionImg);
-   _animator = new AnimationDriver(explosionImg, true);
+   _animator = new AnimationDriver(explosionImg, false);
    _animator->SetAnimationDuration(10, _updateRate);
+
+   // Remember the reference to the deletion list
+   _deletionList = deletionList;
 }
+
 
 void SpaceRock::SetRandomLocation(XYPair shipPos)
 {
@@ -80,10 +89,21 @@ void SpaceRock::SetRandomLocation(XYPair shipPos)
 
 void SpaceRock::Update()
 {
+   LOG_DEBUG() << "Updating spacerock (" << (unsigned long) this << ")";
+
    GraphicEntity::Update();
 
    if (_animator)
    {
-      _animator->StepAnimation();
+      // Step the iteration
+      if (_animator->StepAnimation())
+      {
+         // Returns true when animation finishes
+         delete _animator;
+         _animator = NULL;
+
+         LOG_DEBUG() << "Animation finished for (" << (unsigned long) this << ")";
+         _deletionList->push_back(this);
+      }
    }
 }

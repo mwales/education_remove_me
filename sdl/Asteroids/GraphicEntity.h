@@ -14,7 +14,7 @@ class GraphicEntity: public GameEntity, public ICollidable
 public:
    GraphicEntity(XYPair mapBounds);
 
-   ~GraphicEntity();
+   virtual ~GraphicEntity();
 
    virtual void SetImageInfo(char const * filename, SDL_Renderer* r);
 

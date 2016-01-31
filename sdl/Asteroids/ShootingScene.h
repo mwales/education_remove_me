@@ -7,6 +7,8 @@
 #include "Command.h"
 #include "Spaceship.h"
 
+#include "CollisionManager.h"
+
 class SpaceRock;
 
 class ShootingScene : public Scene
@@ -44,6 +46,10 @@ protected:
    bool _pauseState;
    Scene* _nextState;
 
+   // Everything collides with rocks, so put them in their own list
+   //  list A = Rocks
+   //  list B = Bullets and Ship
+   CollisionManager _collisionMgr;
 };
 
 

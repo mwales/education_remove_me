@@ -75,6 +75,8 @@ void sdlScopeMain()
 
       g.Render();
 
+      currentScene->ManageEntityLifetimes();
+
       int tickCountEnd = SDL_GetTicks();
       int renderTime = tickCountEnd - tickCountStart;
 

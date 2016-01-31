@@ -14,13 +14,12 @@ public:
 
    void SetInfiniteLoop(bool loopForever);
 
-   void StepAnimation();
+   // Returns true if animation completes
+   bool StepAnimation();
 
    void SetAnimationDuration(float seconds, int updateRateHz);
 
    void SetUpdatesPerFrame(int upf);
-
-   void RegisterEntityLifetimes(std::vector<GraphicEntity*>* deletionList, GraphicEntity* parentObj);
 
 protected:
 
@@ -39,8 +38,4 @@ protected:
    int _currentFrame;
 
    int _currentUpdateCall;
-
-   std::vector<GraphicEntity*>* _lifetimeListDeletion;
-
-   GraphicEntity* _entity;
 };

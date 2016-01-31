@@ -33,6 +33,8 @@ GraphicEntity::GraphicEntity(XYPair mapBounds):
 
 GraphicEntity::~GraphicEntity()
 {
+   LOG_DEBUG() << "Graphic Entity destructor (" << (unsigned long) this << ")";
+
    if (_image)
    {
       delete _image;

@@ -104,7 +104,7 @@ std::map<int, Command*> Spaceship::GetAxesHandlers()
 
 void Spaceship::Update()
 {
-   LOG_DEBUG() << "Spaceship update";
+   LOG_DEBUG() << "Updating spaceship (" << (unsigned long) this << ")";
 
    // Reset thrust vector
    if (_thrustOn)
