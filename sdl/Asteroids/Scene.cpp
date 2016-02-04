@@ -53,7 +53,7 @@ void Scene::ManageEntityLifetimes()
       if (it != _entities.end())
       {
          LOG_DEBUG() << "Deleting entity" << (unsigned long) *it;
-         // delete (*it);
+         delete (*it);
          _entities.erase(it);
       }
       else

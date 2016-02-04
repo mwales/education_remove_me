@@ -19,6 +19,7 @@ ImageInfo::ImageInfo(char const * filename, SDL_Renderer* renderer):
    }
 
    _texture = _cacheEntry->GetTexture();
+   _usingCachedTexture = true;
 
    if (_texture == NULL)
    {
@@ -50,6 +51,7 @@ ImageInfo::ImageInfo(SDL_Renderer* renderer):
    }
 
    _texture = NULL;
+   _usingCachedTexture = false;
 
 }
 
@@ -82,15 +84,17 @@ ImageInfo::ImageInfo(SDL_Renderer* renderer):
 
 ImageInfo::~ImageInfo()
 {
-   if (_texture)
-   {
-      SDL_DestroyTexture(_texture);
-   }
-
    if (_cacheEntry)
    {
       delete _cacheEntry;
       _cacheEntry = NULL;
+   }
+
+   if (!_usingCachedTexture && ( _texture != NULL) )
+   {
+      LOG_DEBUG() << "Deleting non-cached texture";
+      SDL_DestroyTexture(_texture);
+      _texture = NULL;
    }
 }
 

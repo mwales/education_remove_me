@@ -48,6 +48,9 @@ SpaceRock::~SpaceRock()
    delete _rockImage;
    delete _explosionImage;
 
+   // Image will be set to one of the 2 objects above, don't delete it in parent
+   _image = NULL;
+
    if (_animator)
    {
       delete _animator;

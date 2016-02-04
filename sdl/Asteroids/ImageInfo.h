@@ -47,6 +47,9 @@ protected:
 
    ImageCache* _cacheEntry;
 
+   // Set to true if texture was loaded using ImageCache
+   bool _usingCachedTexture;
+
    SDL_Texture* _texture;
 
    SDL_Renderer* _renderer;

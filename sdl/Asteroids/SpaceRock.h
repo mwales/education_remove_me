@@ -16,7 +16,7 @@ class SpaceRock : public GraphicEntity
 public:
    SpaceRock(XYPair mapBounds, SDL_Renderer* r);
 
-   ~SpaceRock();
+   virtual ~SpaceRock();
 
    void SetRandomLocation(XYPair shipPos);
 

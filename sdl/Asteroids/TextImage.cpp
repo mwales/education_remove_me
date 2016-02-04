@@ -1,7 +1,7 @@
 #include "TextImage.h"
 
+#include <SDL2/SDL_image.h>
 #include <ostream>
-#include <SDL2/SDL_ttf.h>
 
 #include "Logger.h"
 

@@ -18,12 +18,6 @@ public:
               int spacing,
               TilingMode mode = CALCULATE_SINGLE_TILE_DIMENSIONS);
 
-   TiledImage(char const * filename,
-              SDL_Renderer* renderer,
-              int tileWidth,
-              int tileHeight,
-              int spacing);
-
    virtual ~TiledImage();
 
    virtual int GetNumberOfFrames();
