@@ -5,6 +5,8 @@
 
 #include "GameMath.h"
 
+class ImageCache;
+
 /**
  * Draws simple non-animated images on the screen
  */
@@ -40,10 +42,10 @@ protected:
 
    ImageInfo(SDL_Renderer* renderer);
 
-   void ProcessSurface(SDL_Surface* surface);
-
    // Flag for run library initialization
    static bool _runOnce;
+
+   ImageCache* _cacheEntry;
 
    SDL_Texture* _texture;
 

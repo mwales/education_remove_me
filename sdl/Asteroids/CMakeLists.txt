@@ -5,6 +5,7 @@ set(SOURCE_FILES Asteroids.cpp
                  GameMath.cpp
                  Logger.cpp
                  ImageInfo.cpp
+                 ImageCache.cpp
                  Graphics.cpp
                  Mixer.cpp
                  GameEntity.cpp

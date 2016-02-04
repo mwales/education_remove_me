@@ -25,6 +25,8 @@ public:
 
 protected:
 
+   void ProcessSurface(SDL_Surface* surface);
+
    TTF_Font* GetFont(std::string font, int pt);
 
    static bool _runTtfInitOnce;

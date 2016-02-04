@@ -126,12 +126,10 @@ void GraphicEntity::Draw()
 
    if (_fullscreen)
    {
-      LOG_DEBUG() << "Drawing image fullscreen";
       _image->DrawFullScreen();
    }
    else
    {
-      LOG_DEBUG() << "Drawing image at" << _position;
       _image->Draw(_position);
    }
 }

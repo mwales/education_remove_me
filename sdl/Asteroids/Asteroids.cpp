@@ -57,7 +57,7 @@ void sdlScopeMain()
 
    TextImage::LoadFont("assets/font/SuperMario256.ttf", 32);
 
-   int updateRateHz = 25;
+   int updateRateHz = 60;
    int updatePeriodMs = 1000 / updateRateHz;
 
    Scene* currentScene = new TitleScene(&g,&m);

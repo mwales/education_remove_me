@@ -8,6 +8,8 @@
 
 class AnimationDriver;
 class TiledImage;
+class GameEntity;
+class ImageInfo;
 
 class SpaceRock : public GraphicEntity
 {
@@ -25,11 +27,15 @@ public:
 
 protected:
 
-   static bool _loadImagesOnce;
+   static bool _runOnce;
 
-   static std::vector<ImageInfo*> _rockImages;
+   ImageInfo* _rockImage;
 
-   static std::vector<TiledImage*> _explosionImages;
+   TiledImage* _explosionImage;
+
+   static std::vector<std::string> _rockImageFilenames;
+
+   static std::vector<std::string> _explosionImageFilenames;
 
    AnimationDriver* _animator;
 

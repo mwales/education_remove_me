@@ -65,6 +65,33 @@ TextImage::TextImage(std::string text, SDL_Color color, std::string font, int pt
    LOG_DEBUG() << "Loaded texture with text (" << text << ") and size is (" << _size << ")";
 }
 
+void TextImage::ProcessSurface(SDL_Surface* s)
+{
+   if (s == NULL)
+   {
+      LOG_FATAL() << "Process surface passed null surface";
+      return;
+   }
+
+   _size[0] = s->w;
+   _size[1] = s->h;
+
+   _src.w = s->w;
+   _src.h = s->h;
+   _src.x = 0;
+   _src.y = 0;
+
+   _texture = SDL_CreateTextureFromSurface(_renderer, s);
+
+   if (_texture == NULL)
+   {
+      LOG_FATAL() << "Error converting surface to texture in ProcessSurface:" << SDL_GetError();
+      return;
+   }
+
+   SDL_FreeSurface(s);
+}
+
 
 bool TextImage::LoadFont(std::string font, int pt)
 {

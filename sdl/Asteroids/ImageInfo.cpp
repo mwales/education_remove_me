@@ -1,10 +1,13 @@
 #include "ImageInfo.h"
+#include "ImageCache.h"
+
 #include "Logger.h"
 
 bool ImageInfo::_runOnce = true;
 
 ImageInfo::ImageInfo(char const * filename, SDL_Renderer* renderer):
-   _renderer(renderer)
+   _cacheEntry(new ImageCache(filename, renderer))
+ , _renderer(renderer)
  , _angle(0.0)
  , _originAtCenter(true)
  {
@@ -15,23 +18,27 @@ ImageInfo::ImageInfo(char const * filename, SDL_Renderer* renderer):
       _runOnce = false;
    }
 
-   SDL_Surface* s = NULL;
-   _texture = NULL;
+   _texture = _cacheEntry->GetTexture();
 
-   s = IMG_Load(filename);
-   if (s == NULL)
+   if (_texture == NULL)
    {
-      LOG_FATAL() << "Error loading image named" << filename << ", error=" << IMG_GetError();
+      LOG_FATAL() << "Error loading image named" << filename;
       return;
    }
 
-   ProcessSurface(s);
+   _size = _cacheEntry->GetSize();
+
+   _src.w = _size[0];
+   _src.h = _size[1];
+   _src.x = 0;
+   _src.y = 0;
 
    LOG_DEBUG() << "Loaded image:" << filename << "(" << _size << ")";
 }
 
 ImageInfo::ImageInfo(SDL_Renderer* renderer):
-   _renderer(renderer)
+   _cacheEntry(NULL)
+ , _renderer(renderer)
  , _angle(0.0)
  , _originAtCenter(true)
  {
@@ -46,38 +53,44 @@ ImageInfo::ImageInfo(SDL_Renderer* renderer):
 
 }
 
-void ImageInfo::ProcessSurface(SDL_Surface* s)
-{
-   if (s == NULL)
-   {
-      LOG_FATAL() << "Process surface passed null surface";
-      return;
-   }
+//void ImageInfo::ProcessSurface(SDL_Surface* s)
+//{
+//   if (s == NULL)
+//   {
+//      LOG_FATAL() << "Process surface passed null surface";
+//      return;
+//   }
 
-   _size[0] = s->w;
-   _size[1] = s->h;
+//   _size[0] = s->w;
+//   _size[1] = s->h;
 
-   _src.w = s->w;
-   _src.h = s->h;
-   _src.x = 0;
-   _src.y = 0;
+//   _src.w = s->w;
+//   _src.h = s->h;
+//   _src.x = 0;
+//   _src.y = 0;
 
-   _texture = SDL_CreateTextureFromSurface(_renderer, s);
+//   _texture = SDL_CreateTextureFromSurface(_renderer, s);
 
-   if (_texture == NULL)
-   {
-      LOG_FATAL() << "Error converting surface to texture in ProcessSurface:" << SDL_GetError();
-      return;
-   }
+//   if (_texture == NULL)
+//   {
+//      LOG_FATAL() << "Error converting surface to texture in ProcessSurface:" << SDL_GetError();
+//      return;
+//   }
 
-   SDL_FreeSurface(s);
-}
+//   SDL_FreeSurface(s);
+//}
 
 ImageInfo::~ImageInfo()
 {
    if (_texture)
    {
       SDL_DestroyTexture(_texture);
+   }
+
+   if (_cacheEntry)
+   {
+      delete _cacheEntry;
+      _cacheEntry = NULL;
    }
 }
 

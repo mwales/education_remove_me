@@ -7,32 +7,35 @@
 int ROCK_MAX_SPEED = 30;
 int ROCK_MAX_ROT_SPEED = 90;
 
-bool SpaceRock::_loadImagesOnce = true;
-std::vector<ImageInfo*> SpaceRock::_rockImages;
-std::vector<TiledImage*> SpaceRock::_explosionImages;
+// Static variable initializers
+bool SpaceRock::_runOnce = true;
+std::vector<std::string> SpaceRock::_rockImageFilenames;
+std::vector<std::string> SpaceRock::_explosionImageFilenames;
 
 SpaceRock::SpaceRock(XYPair mapBounds, SDL_Renderer* r):
    GraphicEntity(mapBounds),
    _animator(NULL),
    _deletionList(NULL)
 {
-   if (_loadImagesOnce)
+   if (_runOnce)
    {
-      _rockImages.push_back(new ImageInfo("assets/asteroid_blend.png",r));
-      _rockImages.push_back(new ImageInfo("assets/asteroid_blue.png",r));
-      _rockImages.push_back(new ImageInfo("assets/asteroid_brown.png",r));
+      _rockImageFilenames.push_back("assets/asteroid_blend.png");
+      _rockImageFilenames.push_back("assets/asteroid_blue.png");
+      _rockImageFilenames.push_back("assets/asteroid_brown.png");
 
-      _explosionImages.push_back(new TiledImage("assets/explosion_blue.png", r,24,1, 0,
-                                                TiledImage::CALCULATE_SINGLE_TILE_DIMENSIONS));
-      _explosionImages.push_back(new TiledImage("assets/explosion_blue2.png", r,24,1, 0,
-                                                TiledImage::CALCULATE_SINGLE_TILE_DIMENSIONS));
-      _explosionImages.push_back(new TiledImage("assets/explosion_orange.png", r,24,1, 0,
-                                                TiledImage::CALCULATE_SINGLE_TILE_DIMENSIONS));
+      _explosionImageFilenames.push_back("assets/explosion_blue.png");
+      _explosionImageFilenames.push_back("assets/explosion_blue2.png");
+      _explosionImageFilenames.push_back("assets/explosion_orange.png");
 
-      _loadImagesOnce = false;
+      _runOnce = false;
    }
 
-   SetImageInfo(_rockImages[rand() % _rockImages.size()]);
+   std::string filenameRock = _rockImageFilenames[rand() % _rockImageFilenames.size()];
+   std::string filenameExplosion = _explosionImageFilenames[rand() % _explosionImageFilenames.size()];
+
+   _rockImage = new ImageInfo(filenameRock.c_str(), r);
+   _explosionImage = new TiledImage(filenameExplosion.c_str(), r, 24, 1, 0, TiledImage::CALCULATE_SINGLE_TILE_DIMENSIONS);
+   SetImageInfo(_rockImage);
 
    _translationalFrictionScalar = 0;
    _rotationalFrictionScalar = 0;
@@ -41,6 +44,9 @@ SpaceRock::SpaceRock(XYPair mapBounds, SDL_Renderer* r):
 SpaceRock::~SpaceRock()
 {
    LOG_DEBUG() << "SpaceRock destruction (" << (unsigned long) this << ")";
+
+   delete _rockImage;
+   delete _explosionImage;
 
    if (_animator)
    {
@@ -53,9 +59,8 @@ void SpaceRock::Explode(std::vector<GameEntity*>* deletionList,
                         std::vector<GameEntity*>* additionList)
 {
    LOG_DEBUG() << "Rock exploding";
-   TiledImage* explosionImg = _explosionImages[rand() % _explosionImages.size()];
-   SetImageInfo(explosionImg);
-   _animator = new AnimationDriver(explosionImg, false);
+   SetImageInfo(_explosionImage);
+   _animator = new AnimationDriver(_explosionImage, false);
    _animator->SetAnimationDuration(10, _updateRate);
 
    // Remember the reference to the deletion list
@@ -89,8 +94,6 @@ void SpaceRock::SetRandomLocation(XYPair shipPos)
 
 void SpaceRock::Update()
 {
-   LOG_DEBUG() << "Updating spacerock (" << (unsigned long) this << ")";
-
    GraphicEntity::Update();
 
    if (_animator)

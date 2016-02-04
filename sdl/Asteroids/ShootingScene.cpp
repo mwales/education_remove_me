@@ -5,6 +5,7 @@
 #include "Logger.h"
 #include "PauseScene.h"
 #include "SpaceRock.h"
+#include "ImageCache.h"
 
 const int MAX_ROCKS = 3;
 
@@ -42,6 +43,8 @@ ShootingScene::ShootingScene(Graphics* g, Mixer* m):
 
    g->GetJoystick()->RegisterCommand(&_ship, true);
    g->GetJoystick()->AddButtonDownHandler(7, new PauseCommand(this));
+
+   ImageCache::ImageCacheDebugDump();
 }
 
 ShootingScene::~ShootingScene()
@@ -180,13 +183,6 @@ void ShootingScene::SpawnRock()
    if (_bigRocks.size() >= MAX_ROCKS)
    {
       LOG_WARNING() << "Can't spawn a rock, too many already";
-
-      static bool explodeOne = true;
-      if (explodeOne)
-      {
-         _bigRocks[0]->Explode(&_deletionList, &_additionList);
-         explodeOne = false;
-      }
       return;
    }
 
@@ -210,6 +206,8 @@ void ShootingScene::Update()
    ///       What if ship hits 2 rocks at once?
    ///       Bullet vs Rock
    ///       Add exploding ship
+   ///
+   std::set<SpaceRock*> rocksToDelete;
 
    std::vector<Collision>::iterator it;
    for(it = collisions.begin(); it != collisions.end(); it++)
@@ -222,10 +220,15 @@ void ShootingScene::Update()
          {
             LOG_DEBUG() << "We found the rock that sploded: (" << (unsigned long) (*it).first << ")";
 
+            ImageCache::ImageCacheDebugDump();
+
             // We found the rock in our list
             SpaceRock* splodingRock = *rockIt;
             splodingRock->Explode(&_deletionList, &_additionList);
             _collisionMgr.RemoveFromA(splodingRock);
+            rocksToDelete.insert(splodingRock);
+
+            ImageCache::ImageCacheDebugDump();
          }
       }
 
@@ -235,6 +238,15 @@ void ShootingScene::Update()
          LOG_DEBUG() << "Our ship explodes too!!";
       }
 
+   }
+
+   // Need to remove from rock list, then delete!
+   for (int i = _bigRocks.size() - 1; i >= 0; i--)
+   {
+      if (rocksToDelete.find(_bigRocks[i]) != rocksToDelete.end())
+      {
+         _bigRocks.erase(_bigRocks.begin() + i);
+      }
    }
 
    _collisionMgr.ClearCollisions();
