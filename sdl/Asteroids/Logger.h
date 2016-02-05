@@ -4,7 +4,6 @@
 #include <iostream>
 #include <sstream>
 #include <ostream>
-#include "GameMath.h"
 
 #define LOG_DEBUG()   Logger(__FILE__, __LINE__)
 #define LOG_WARNING() Logger(__FILE__, __LINE__, Logger::LOG_LEVEL_WARNING)
@@ -27,15 +26,12 @@ public:
 
    ~Logger();
 
-   Logger& operator<< (std::string rhs);
-   Logger& operator<< (int rhs);
-   Logger& operator<< (unsigned int rhs);
-   Logger& operator<< (float rhs);
-   Logger& operator<< (double rhs);
-   Logger& operator<< (unsigned long int rhs);
-   Logger& operator<< (XYPair rhs);
-
-
+   template<typename T>
+   Logger& operator<< (T const & rhs)
+   {
+      _oss << " " << rhs;
+      return *this;
+   }
 
 protected:
 
