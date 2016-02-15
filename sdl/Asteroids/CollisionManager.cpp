@@ -154,7 +154,35 @@ void CollisionManager::CheckForCollisionsWithGrid()
    int numCompartmentsTotal = _compartmentCols * _compartmentRows;
    std::vector< std::vector<ICollidable*> > aGrid(numCompartmentsTotal);
    std::vector< std::vector<ICollidable*> > bGrid(numCompartmentsTotal);
+
+   GridHelper_PutIntoCompartments(&aGrid, &bGrid);
 }
+
+void CollisionManager::GridHelper_PutIntoCompartments(std::vector<std::vector<ICollidable const *> >* gridA,
+                                                      std::vector<std::vector<ICollidable const *> >* gridB)
+{
+   for (ICollidable const * curObj : _bodiesA)
+   {
+      XYPair pos = curObj->GetPosition();
+      int gridPos = pos[1] / _compartmentSize * _compartmentCols + pos[0] / _compartmentSize;
+      gridA[gridPos].push_back(curObj);
+   }
+
+   for (ICollidable const * curObj : _bodiesB)
+   {
+      XYPair pos = curObj->GetPosition();
+      int gridPos = pos[1] / _compartmentSize * _compartmentCols + pos[0] / _compartmentSize;
+      gridB[gridPos].push_back(curObj);
+   }
+}
+
+void CollisionManager::GridHelper_CollideCompartments(std::vector<std::vector<ICollidable const *> >* gridA,
+                                                      std::vector<std::vector<ICollidable const *> >* gridB)
+{
+
+}
+
+
 
 std::vector<Collision> CollisionManager::GetCollisions()
 {
