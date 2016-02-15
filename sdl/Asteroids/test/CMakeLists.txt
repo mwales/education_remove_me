@@ -8,7 +8,9 @@ set(SOURCE_FILES astest.cpp
                  BuildTest.cpp
                  CollisionManagerTest.cpp
                  ../Logger.cpp
-                 ../XYPair.cpp) 
+                 ../XYPair.cpp
+                 ../CollisionManager.cpp
+                 ../GameMath.cpp) 
 
 add_executable(astest ${SOURCE_FILES} ${TEST_FILES})
 
@@ -44,6 +46,11 @@ ELSE()
     MESSAGE("Processor=${CMAKE_SYSTEM_PROCESSOR}!")
     MESSAGE("Not optimizing for ARM processor")
 ENDIF()
+
+# Modern C++ support
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11 -Wall")
+#set_property(TARGET asteroids PROPERTY CXX_STANDARD 11)
+
 
 MESSAGE("Compiler flags=${CMAKE_CXX_FLAGS}")
 
