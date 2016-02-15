@@ -7,6 +7,8 @@
 
 typedef std::pair<ICollidable const *, ICollidable const *> Collision;
 
+
+
 /**
  * The collision manager will manage checking for collisions between objects A and B.  A objects can pass by each
  * other, and B objects can pass by each other, but an A and B object will collide
@@ -14,7 +16,14 @@ typedef std::pair<ICollidable const *, ICollidable const *> Collision;
 class CollisionManager
 {
 public:
-    CollisionManager(int areaWidth, int areaHeight, int containerSize);
+
+   enum class CollisionMode
+   {
+      EXPONENTIAL,
+      GRID
+   };
+
+   CollisionManager(int areaWidth, int areaHeight, int containerSize);
 
     CollisionManager(int areaWidth, int areaHeight, int containerSize,
                      std::vector<ICollidable const *> const & bodiesA,
@@ -38,10 +47,25 @@ public:
      */
     void CheckForCollisions();
 
+    // Real collision managers
+    void CheckForCollisionsExponential();
+    void CheckForCollisionsExponentialModern(std::vector<ICollidable const *>* listA,
+                                             std::vector<ICollidable const *>* listB);
+    void CheckForCollisionsWithGrid();
+
+    void SetCollisionManagerMode(CollisionMode mode);
     /**
      * Returns pairs of objects that have collided
      */
     std::vector<Collision> GetCollisions();
+
+    // Grid collision helper methods
+    void GridHelper_PutIntoCompartments(std::vector<std::vector<ICollidable const *> >* gridA,
+                                        std::vector<std::vector<ICollidable const *> >* gridB);
+    void GridHelper_CollideCompartments(std::vector<std::vector<ICollidable const *> >* gridA,
+                                        std::vector<std::vector<ICollidable const *> >* gridB);
+
+
 
 protected:
 
@@ -52,11 +76,15 @@ protected:
     // Size of compartment to divide area into
     int _compartmentSize;
 
+    CollisionMode _currentCollisionMode;
+
     /**
      * Precalculate the number of compartments in a row (helpful in case the _width isn't
      * divisible by _compartmentSize
      */
-    int _compartmentsPerRow;
+    int _compartmentCols;
+
+    int _compartmentRows;
 
     std::vector<ICollidable const *> _bodiesA;
 

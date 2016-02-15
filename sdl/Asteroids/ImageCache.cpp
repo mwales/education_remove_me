@@ -89,6 +89,7 @@ XYPair ImageCache::GetSize() const
    else
    {
       LOG_FATAL() << "Failed trying to get the size of a ImageCache that never loaded an image";
+      return XYPair();
    }
 }
 

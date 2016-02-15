@@ -64,7 +64,7 @@ void SpaceRock::Explode(std::vector<GameEntity*>* deletionList,
    LOG_DEBUG() << "Rock exploding";
    SetImageInfo(_explosionImage);
    _animator = new AnimationDriver(_explosionImage, false);
-   _animator->SetAnimationDuration(10, _updateRate);
+   _animator->SetAnimationDuration(1, _updateRate);
 
    // Remember the reference to the deletion list
    _deletionList = deletionList;

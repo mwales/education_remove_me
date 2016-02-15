@@ -211,12 +211,13 @@ std::vector<CollisionRect> GraphicEntity::GetCollisionBoxes() const
    CollisionRect retVal;
    retVal._size = _image->GetSize();
 
-
    retVal._topLeft = _position - retVal._size * 0.5; //._x = _position._x - retVal._size._x / 2;
    //retVal._topLeft._y = _position._y - retVal._size._y / 2;
 
    std::vector<CollisionRect> retVec;
    retVec.push_back(retVal);
+
+   return retVec;
 }
 
 void GraphicEntity::SetFullscreen(bool fullscreenEnable)
