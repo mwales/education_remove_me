@@ -73,9 +73,9 @@ void CollisionManagerTest::SetUp()
 {
    LOG_DEBUG() << "Test Fixture Set Up Called";
    std::default_random_engine generator;
-   std::uniform_int_distribution<int> distribution(0, COLLISION_AREA_MAX);
+   std::uniform_int_distribution<int> distribution(0, COLLISION_AREA_MAX -1);
 
-   for (int i = 0; i < 2000; i++)
+   for (int i = 0; i < 1000; i++)
    {
       objectAList.push_back( new DumbTestObj(distribution(generator), distribution(generator)));
       objectBList.push_back( new DumbTestObj(distribution(generator), distribution(generator)));
@@ -128,6 +128,13 @@ TEST_F(CollisionManagerTest, ExponentialTest)
    {
       auto result = std::find(mgr2Collisions.begin(), mgr2Collisions.end(), curCollision);
 
+      if (result == mgr2Collisions.end())
+      {
+         LOG_DEBUG() << "Details of failure";
+         LOG_DEBUG() << "A: " << curCollision.first->GetPosition();
+         LOG_DEBUG() << "B: " << curCollision.second->GetPosition();
+      }
+
       ASSERT_TRUE(result != mgr2Collisions.end());
    }
 
@@ -161,6 +168,13 @@ TEST_F(CollisionManagerTest, GridTest)
    for(auto curCollision : mgr1Collisions)
    {
       auto result = std::find(mgr2Collisions.begin(), mgr2Collisions.end(), curCollision);
+
+      if (result == mgr2Collisions.end())
+      {
+         LOG_DEBUG() << "Details of failure";
+         LOG_DEBUG() << "A: " << curCollision.first->GetPosition();
+         LOG_DEBUG() << "B: " << curCollision.second->GetPosition();
+      }
 
       ASSERT_TRUE(result != mgr2Collisions.end());
    }
