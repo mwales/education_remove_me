@@ -20,6 +20,8 @@ public:
 
     virtual XYPair GetPosition() const = 0;
 
+    virtual ~ICollidable() {};
+
     //virtual bool CollisionDetected(std::string collidingObject) const = 0;
 
     //virtual std::string GetName() const = 0;
