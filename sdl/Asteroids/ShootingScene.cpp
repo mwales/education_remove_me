@@ -7,7 +7,7 @@
 #include "SpaceRock.h"
 #include "ImageCache.h"
 
-const int MAX_ROCKS = 3;
+const int MAX_ROCKS = 100;
 
 ShootingScene::ShootingScene(Graphics* g, Mixer* m):
    Scene(g, m),
@@ -178,7 +178,7 @@ void ShootingScene::SpawnRock()
    // Rock spawn counter hit zero, time to spawn a rock!
 
    // Set timer for the next attempted rock spawning
-   _rockSpawnCounter = _updateRateHz * 5;
+   _rockSpawnCounter = _updateRateHz / 2; //* 5;
 
    if (_bigRocks.size() >= MAX_ROCKS)
    {
@@ -186,12 +186,15 @@ void ShootingScene::SpawnRock()
       return;
    }
 
-   SpaceRock* rock = new SpaceRock(_graphics->GetWindowSize(), _renderer);
-   rock->SetRandomLocation(_ship.GetPosition());
-   rock->SetUpdateRate(_updateRateHz);
-   _bigRocks.push_back(rock);
-   _entities.push_back(rock);
-   _collisionMgr.AddToA(rock);
+   for(auto i = 0; i < 20; i++)
+   {
+      SpaceRock* rock = new SpaceRock(_graphics->GetWindowSize(), _renderer);
+      rock->SetRandomLocation(_ship.GetPosition());
+      rock->SetUpdateRate(_updateRateHz);
+      _bigRocks.push_back(rock);
+      _entities.push_back(rock);
+      _collisionMgr.AddToA(rock);
+   }
 }
 
 void ShootingScene::Update()
@@ -220,7 +223,7 @@ void ShootingScene::Update()
          {
             LOG_DEBUG() << "We found the rock that sploded: (" << (unsigned long) (*it).first << ")";
 
-            ImageCache::ImageCacheDebugDump();
+            //ImageCache::ImageCacheDebugDump();
 
             // We found the rock in our list
             SpaceRock* splodingRock = *rockIt;
@@ -228,7 +231,7 @@ void ShootingScene::Update()
             _collisionMgr.RemoveFromA(splodingRock);
             rocksToDelete.insert(splodingRock);
 
-            ImageCache::ImageCacheDebugDump();
+            //ImageCache::ImageCacheDebugDump();
          }
       }
 

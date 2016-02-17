@@ -75,7 +75,7 @@ void CollisionManagerTest::SetUp()
    std::default_random_engine generator;
    std::uniform_int_distribution<int> distribution(0, COLLISION_AREA_MAX);
 
-   for (int i = 0; i < 1000; i++)
+   for (int i = 0; i < 2000; i++)
    {
       objectAList.push_back( new DumbTestObj(distribution(generator), distribution(generator)));
       objectBList.push_back( new DumbTestObj(distribution(generator), distribution(generator)));
@@ -84,13 +84,13 @@ void CollisionManagerTest::SetUp()
    // Compare 2 collision managers collision results
    mgr1 = new CollisionManager(COLLISION_AREA_MAX,
                                                 COLLISION_AREA_MAX,
-                                                20,
+                                                50,
                                                 objectAList,
                                                 objectBList);
 
    mgr2 = new CollisionManager(COLLISION_AREA_MAX,
                                                 COLLISION_AREA_MAX,
-                                                20,
+                                                50,
                                                 objectAList,
                                                 objectBList);
 
