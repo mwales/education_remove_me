@@ -44,16 +44,6 @@ GraphicEntity::~GraphicEntity()
 
 void GraphicEntity::Update()
 {
-//   LOG_DEBUG() << "Before:    "
-//               << "\tPosition=" << _position
-//               << "\tVelocity=" << _velocity
-//               << "\tAcceleration" << _acceleration;
-
-//   LOG_DEBUG() << "Before:    "
-//               << "\tAngle=" << _angle
-//               << "\tRot Velocity=" << _rotVelocity
-//               << "\tAcceleration" << _rotAcceleration;
-
    _velocity += _acceleration * _updateRateScalar;
 
    _velocity *= (1.0 - _translationalFrictionScalar * _updateRateScalar);
@@ -65,16 +55,6 @@ void GraphicEntity::Update()
    _rotVelocity *= (1.0 - _rotationalFrictionScalar * _updateRateScalar);
 
    AddAngle(_rotVelocity * _updateRateScalar);
-
-//   LOG_DEBUG() << "After:    "
-//               << "\tPosition=" << _position
-//               << "\tVelocity=" << _velocity
-//               << "\tAcceleration" << _acceleration;
-
-//   LOG_DEBUG() << "After:    "
-//               << "\tAngle=" << _angle
-//               << "\tRot Velocity=" << _rotVelocity
-//               << "\tAcceleration" << _rotAcceleration;
 
    // Wrap position around
    _position = GameMath::PositionModulus(_position, _mapBounds);
@@ -205,19 +185,16 @@ XYPair GraphicEntity::GetPosition() const
    return _position;
 }
 
-std::vector<CollisionRect> GraphicEntity::GetCollisionBoxes() const
+std::vector<SDL_Rect> GraphicEntity::GetCollisionBoxes() const
 {
    // Basic collision box is the size of the image
-   CollisionRect retVal;
-   retVal._size = _image->GetSize();
+   XYPair rectSize = _image->GetSize();
+   XYPair topLeftPoint = _position - rectSize * 0.5;
 
-   retVal._topLeft = _position - retVal._size * 0.5; //._x = _position._x - retVal._size._x / 2;
-   //retVal._topLeft._y = _position._y - retVal._size._y / 2;
-
-   std::vector<CollisionRect> retVec;
-   retVec.push_back(retVal);
-
-   return retVec;
+   SDL_Rect basicRectangle { (int) topLeftPoint[0], (int) topLeftPoint[1], (int) rectSize[0], (int) rectSize[1] };
+   std::vector<SDL_Rect> retVal;
+   retVal.push_back(basicRectangle);
+   return retVal;
 }
 
 void GraphicEntity::SetFullscreen(bool fullscreenEnable)

@@ -126,3 +126,15 @@ void Spaceship::SetRotationalAcceleration(int rotAcc)
    LOG_DEBUG() << "Rotational acc=" << rotAcc * 9.0;
    _rotAcceleration = rotAcc * 9.0;
 }
+
+std::vector<SDL_Rect> Spaceship::GetCollisionBoxes() const
+{
+   // Basic collision box is the size of the image
+   XYPair rectSize = _image->GetSize() * 0.5;
+   XYPair topLeftPoint = _position - rectSize * 0.5;
+
+   SDL_Rect basicRectangle { (int) topLeftPoint[0], (int) topLeftPoint[1], (int) rectSize[0], (int) rectSize[1] };
+   std::vector<SDL_Rect> retVal;
+   retVal.push_back(basicRectangle);
+   return retVal;
+}

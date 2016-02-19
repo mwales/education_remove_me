@@ -4,6 +4,7 @@
 #include <string>
 
 #include "XYPair.h"
+#include <SDL2/SDL.h>
 
 struct CollisionRect
 {
@@ -16,7 +17,7 @@ class ICollidable
 {
 public:
 
-    virtual std::vector<CollisionRect> GetCollisionBoxes() const = 0;
+    virtual std::vector<SDL_Rect> GetCollisionBoxes() const = 0;
 
     virtual XYPair GetPosition() const = 0;
 

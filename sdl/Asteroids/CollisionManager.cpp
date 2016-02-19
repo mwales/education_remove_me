@@ -138,25 +138,12 @@ void CollisionManager::CheckForCollisionsExponential()
 void CollisionManager::CheckForCollisionsExponentialModern(std::vector<ICollidable const *>* listA,
                                                            std::vector<ICollidable const *>* listB)
 {
-   //LOG_DEBUG() << "Size of vectors for collsision detection: " << listA->size() << " and " << listB->size();
 
-    for(auto curA : *listA)
+   for(auto curA : *listA)
    {
       for(auto curB : *listB)
       {
-         XYPair aPosition = curA->GetPosition();
-         XYPair bPosition = curB->GetPosition();
-
-         if (GameMath::Distance(aPosition, bPosition) <= 50)
-         {
-//            LOG_DEBUG() << "We have a collision.  A @ ("
-//                        << curA->GetPosition()[0] << "," << curA->GetPosition()[1] << ") and B @ ("
-//                        << curB->GetPosition()[0] << "," << curB->GetPosition()[1] << ")";
-
-
-            Collision col(curA, curB);
-            _currentCollisions.push_back(col);
-         }
+         DoObjectsOverlap(curA, curB);
       }
    }
 }
@@ -256,7 +243,23 @@ void CollisionManager::GridHelper_CollideCompartments(std::vector<std::vector<IC
    }
 }
 
+bool CollisionManager::DoObjectsOverlap(ICollidable const * objA, ICollidable const * objB)
+{
+   for (auto boxA : objA->GetCollisionBoxes())
+   {
+      for (auto boxB : objB->GetCollisionBoxes())
+      {
+         if (SDL_HasIntersection(&boxA, &boxB) == SDL_TRUE)
+         {
+            Collision kaboom { objA, objB };
+            _currentCollisions.push_back(kaboom);
+            return true;
+         }
+      }
+   }
 
+   return false;
+}
 
 std::vector<Collision> CollisionManager::GetCollisions()
 {

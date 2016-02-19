@@ -63,7 +63,7 @@ public:
 
    virtual XYPair GetPosition() const;
 
-   virtual std::vector<CollisionRect> GetCollisionBoxes() const;
+   virtual std::vector<SDL_Rect> GetCollisionBoxes() const;
 
    //virtual bool CollisionDetected(std::string collidingObject) const;
 

@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <Logger.h>
 #include <random>
-
+#include <SDL2/SDL.h>
 #include "ICollidable.h"
 #include "CollisionManager.h"
 
@@ -16,12 +16,11 @@ public:
 
    XYPair _position;
 
-   std::vector<CollisionRect> GetCollisionBoxes() const
+   std::vector<SDL_Rect> GetCollisionBoxes() const
    {
-      CollisionRect cr = { {_position[0] - 5, _position[1] - 5},
-                           {10, 10} };
+      SDL_Rect cr = { (int) _position[0] - 5, (int) _position[1] - 5, 10, 10 };
 
-      std::vector<CollisionRect> retVal;
+      std::vector<SDL_Rect> retVal;
       retVal.push_back(cr);
       return retVal;
    }

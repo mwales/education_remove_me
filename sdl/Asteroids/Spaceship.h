@@ -32,6 +32,8 @@ public:
    virtual std::map<int, Command*> GetButtonUpHandlers();
    virtual std::map<int, Command*> GetAxesHandlers();
 
+   std::vector<SDL_Rect> GetCollisionBoxes() const override;
+
 protected:
 
    int _turningDirection;\

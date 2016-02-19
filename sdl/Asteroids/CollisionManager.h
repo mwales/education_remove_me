@@ -53,7 +53,9 @@ public:
                                              std::vector<ICollidable const *>* listB);
     void CheckForCollisionsWithGrid();
 
+    /// Set collision model to grid or exponential model (mostly for testing)
     void SetCollisionManagerMode(CollisionMode mode);
+
     /**
      * Returns pairs of objects that have collided
      */
@@ -65,7 +67,7 @@ public:
     void GridHelper_CollideCompartments(std::vector<std::vector<ICollidable const *> >* gridA,
                                         std::vector<std::vector<ICollidable const *> >* gridB);
 
-
+    bool DoObjectsOverlap(ICollidable const * objA, ICollidable const * objB);
 
 protected:
 
