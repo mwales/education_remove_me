@@ -139,7 +139,7 @@ void CollisionManagerTest::CollisionComparisonTestHelper(int numObjects,
    mgr2->ClearCollisions();
 
    mgr1->SetCollisionManagerMode(mode1);
-   mgr1->SetCollisionManagerMode(mode2);
+   mgr2->SetCollisionManagerMode(mode2);
 
    mgr1->CheckForCollisions();
    mgr2->CheckForCollisions();
@@ -162,6 +162,20 @@ void CollisionManagerTest::CollisionComparisonTestHelper(int numObjects,
       }
 
       ASSERT_TRUE(result != mgr2Collisions.end());
+   }
+
+   for(auto curCollision : mgr2Collisions)
+   {
+      auto result = std::find(mgr1Collisions.begin(), mgr1Collisions.end(), curCollision);
+
+      if (result == mgr1Collisions.end())
+      {
+         LOG_DEBUG() << "Details of failure";
+         LOG_DEBUG() << "A: " << curCollision.first->GetPosition();
+         LOG_DEBUG() << "B: " << curCollision.second->GetPosition();
+      }
+
+      ASSERT_TRUE(result != mgr1Collisions.end());
    }
 }
 

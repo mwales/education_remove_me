@@ -6,6 +6,8 @@
 #include <math.h>
 #include <algorithm>  // std::find
 
+#define MORE_FLOATY_MATH_FOR_COMPARTMENTIZATION
+
 CollisionManager::CollisionManager(int areaWidth, int areaHeight, int containerSize):
  _width(areaWidth),
  _height(areaHeight),
@@ -167,6 +169,9 @@ void CollisionManager::CheckForCollisionsWithGrid()
    GridHelper_CollideCompartments(&aGrid, &bGrid);
 }
 
+
+
+#ifdef MORE_FLOATY_MATH_FOR_COMPARTMENTIZATION
 void CollisionManager::GridHelper_PutIntoCompartments(std::vector<std::vector<ICollidable const *> >* gridA,
                                                       std::vector<std::vector<ICollidable const *> >* gridB)
 {
@@ -194,6 +199,64 @@ void CollisionManager::GridHelper_PutIntoCompartments(std::vector<std::vector<IC
       (*gridB)[gridPos].push_back(curObj);
    }
 }
+#endif
+
+#ifdef LESS_FLOATY_MATH_FOR_COMPARTMENTIZATION
+void CollisionManager::GridHelper_PutIntoCompartments(std::vector<std::vector<ICollidable const *> >* gridA,
+                                                      std::vector<std::vector<ICollidable const *> >* gridB)
+{
+   //LOG_DEBUG() << "GRID SIZE: " << _compartmentCols << " x " << _compartmentRows;
+
+   std::vector<ICollidable const *> bodiesACopy = _bodiesA;
+   std::vector<ICollidable const *> bodiesBCopy = _bodiesB;
+   int xCoord = 0;
+   for (int xComp = 0; xComp < _compartmentCols; xComp++)
+   {
+      xCoord += _compartmentSize;
+      int yCoord = 0;
+      for (int yComp = 0; yComp < _compartmentRows; yComp++)
+      {
+         yCoord += _compartmentSize;
+         int curCompartmentNum = yComp * _compartmentCols + xComp;
+
+         // Loop through all the objects in the bodiesA list and determine which ones belong in this compartment.
+         auto aIter = bodiesACopy.begin();
+         while (aIter != bodiesACopy.end())
+         {
+            XYPair objPos = (*aIter)->GetPosition();
+            if ( (objPos[0] < xCoord) && (objPos[1] < yCoord) )
+            {
+               // Belongs in this compartment
+               //LOG_DEBUG() << "Found an object A compartment filler.  x=" << xCoord << ", y=" << yCoord << ", comp=" << curCompartmentNum << ", Obj pos = " << objPos;
+               (*gridA)[curCompartmentNum].push_back(*aIter);
+               aIter = bodiesACopy.erase(aIter);
+            }
+            else
+            {
+               aIter++;
+            }
+         }
+
+         // Loop through all the objects in the bodiesB list and determine which ones belong in this compartment.
+         auto bIter = bodiesBCopy.begin();
+         while (bIter != bodiesBCopy.end())
+         {
+            XYPair objPos = (*bIter)->GetPosition();
+            if ( (objPos[0] < xCoord) && (objPos[1] < yCoord) )
+            {
+               // Belongs in this compartment
+               (*gridB)[curCompartmentNum].push_back(*bIter);
+               bIter = bodiesBCopy.erase(bIter);
+            }
+            else
+            {
+               bIter++;
+            }
+         }
+      }
+   }
+}
+#endif
 
 void CollisionManager::GridHelper_CollideCompartments(std::vector<std::vector<ICollidable const *> >* gridA,
                                                       std::vector<std::vector<ICollidable const *> >* gridB)
