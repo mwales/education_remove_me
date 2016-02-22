@@ -6,17 +6,20 @@
 
 class ImageInfo;
 
-class Bullet : public GraphicEntity
+class FrictionlessGraphic : public GraphicEntity
 {
 public:
-   Bullet(XYPair mapBounds, SDL_Renderer* r);
+   FrictionlessGraphic(std::string filename, XYPair mapBounds, SDL_Renderer* r);
 
-   virtual ~Bullet();
+   virtual ~FrictionlessGraphic();
 
    virtual void Update() override;
 
    /**
-    * Sets how long the bullet will travel before disappearing
+    * Sets how long the object will travel before disappearing
+    *
+    * @note Set the updateRate before setting lifetime
+    *
     * @param secs
     * @param deletionList
     */

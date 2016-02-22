@@ -16,7 +16,7 @@ set(SOURCE_FILES Asteroids.cpp
                  ShootingScene.cpp
                  Spaceship.cpp
                  SpaceshipCommands.cpp
-                 Bullet.cpp
+                 FrictionlessGraphic.cpp
                  XYPair.cpp
                  TiledImage.cpp
                  Joystick.cpp

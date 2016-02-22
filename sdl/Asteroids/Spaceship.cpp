@@ -4,7 +4,7 @@
 #include "SpaceshipCommands.h"
 #include "Logger.h"
 #include "GameMath.h"
-#include "Bullet.h"
+#include "FrictionlessGraphic.h"
 
 static const float THRUST_ACCELERATION = 800.0;
 
@@ -42,7 +42,7 @@ void Spaceship::FireBullet()
       return;
    }
 
-   Bullet* b = new Bullet(_mapBounds, GetImageInfo()->GetRenderer());
+   FrictionlessGraphic* b = new FrictionlessGraphic("assets/shot2.png", _mapBounds, GetImageInfo()->GetRenderer());
    b->SetUpdateRate(_updateRate);
    b->SetLifetime(5.0, _deletionList);
    b->SetAngle(_angle);
