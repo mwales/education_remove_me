@@ -4,19 +4,62 @@
 #include "SpaceshipCommands.h"
 #include "Logger.h"
 #include "GameMath.h"
+#include "Bullet.h"
 
 static const float THRUST_ACCELERATION = 800.0;
 
 Spaceship::Spaceship(XYPair mapBounds):
    GraphicEntity(mapBounds),
    _turningDirection(0),
-   _thrustOn(false)
+   _thrustOn(false),
+   _fireBullet(false),
+   _additionList(nullptr),
+   _deletionList(nullptr)
 {
+}
+
+
+void Spaceship::SetAddDeleteLists(std::vector<GameEntity*>* addList,
+                                  std::vector<GameEntity*>* delList)
+{
+   _additionList = addList;
+   _deletionList = delList;
 }
 
 void Spaceship::Fire()
 {
-   LOG_DEBUG() << "Fire!";
+   LOG_DEBUG() << "Fire";
+   _fireBullet = true;
+}
+
+void Spaceship::FireBullet()
+{
+   LOG_DEBUG() << "FireBullet";
+
+   if ( (_deletionList == nullptr) || (_additionList == nullptr) )
+   {
+      LOG_WARNING() << "Can't fire because we never got spaceship doesn't have add / del list";
+      return;
+   }
+
+   Bullet* b = new Bullet(_mapBounds, GetImageInfo()->GetRenderer());
+   b->SetUpdateRate(_updateRate);
+   b->SetLifetime(5.0, _deletionList);
+   b->SetAngle(_angle);
+
+   XYPair directionUnitVec = GameMath::GetUnitVector(_angle);
+   XYPair bulletVel = directionUnitVec;
+   bulletVel *= 100.0;
+   bulletVel += _velocity;
+   b->SetVelocity(bulletVel);
+
+   static float bulletOffset = GetImageInfo()->GetSize()[0] / 2.0;
+   XYPair bulletPos = _position + directionUnitVec * bulletOffset;
+   b->SetPosition(bulletPos);
+
+
+   _additionList->push_back(b);
+   _fireBullet = false;
 }
 
 
@@ -115,6 +158,11 @@ void Spaceship::Update()
    else
    {
       _acceleration = XYPair(0.0, 0.0);
+   }
+
+   if (_fireBullet)
+   {
+      FireBullet();
    }
 
    // Call parent update

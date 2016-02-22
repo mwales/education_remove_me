@@ -20,6 +20,8 @@ public:
 
    virtual void SetAngle(float angleDeg);
 
+   float GetAngle() { return _angle; }
+
    virtual void Draw(XYPair dst);
 
    virtual void Draw(XYPair dst, float _angleDeg);
@@ -37,6 +39,8 @@ public:
    virtual int GetNumberOfFrames() { return 0; }
 
    virtual void SetFrameNumber(int frame);
+
+   SDL_Renderer* GetRenderer() { return _renderer; }
 
 protected:
 

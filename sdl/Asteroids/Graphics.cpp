@@ -4,8 +4,8 @@
 
 
 Graphics::Graphics(uint32_t initFlags):
-  _window(NULL)
-, _renderer(NULL)
+  _window(nullptr)
+, _renderer(nullptr)
 {
    LOG_DEBUG() << "Starting graphics and SDL";
 
@@ -21,14 +21,14 @@ Graphics::Graphics(uint32_t initFlags):
 void Graphics::CreateWindow(char const * title, int width, int height, uint32_t flags)
 {
    _window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
-   if (_window == NULL)
+   if (_window == nullptr)
    {
       LOG_FATAL() << "SDL Create Window failed:" << SDL_GetError();
       return;
    }
 
    _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
-   if (_renderer == NULL)
+   if (_renderer == nullptr)
    {
       LOG_FATAL() << "SDL Create Renderer failed:" << SDL_GetError();
       return;

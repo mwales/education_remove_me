@@ -177,7 +177,7 @@ Scene* Scene::GetNextState(bool* deleteMe)
 {
    LOG_WARNING() << "Why the fuck did someone call the default GetNextState!";
    *deleteMe = false;
-   return NULL;
+   return nullptr;
 }
 
 std::string Scene::GetSceneName()

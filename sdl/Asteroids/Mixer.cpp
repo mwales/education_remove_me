@@ -2,7 +2,7 @@
 #include "Logger.h"
 
 Mixer::Mixer():
-  _bgMusic(NULL)
+  _bgMusic(nullptr)
 {
    int i,max=Mix_GetNumMusicDecoders();
    for(i=0; i<max; ++i)
@@ -66,7 +66,7 @@ void Mixer::LoadMusic(std::string const & filename)
    {
       // Song has not been loaded before
       _bgMusic = Mix_LoadMUS(filename.c_str());
-      if (_bgMusic == NULL)
+      if (_bgMusic == nullptr)
       {
          LOG_WARNING() << "Error loading BG Music (" << filename << "): " << Mix_GetError();
       }
@@ -159,7 +159,7 @@ Mix_Chunk* Mixer::LoadSound(std::string const & filename)
    }
 
    Mix_Chunk* retVal = Mix_LoadWAV(filename.c_str());
-   if (retVal == NULL)
+   if (retVal == nullptr)
    {
       LOG_WARNING() << "Error loading sound file (" << filename << "):" << Mix_GetError();
       return retVal;
@@ -174,7 +174,7 @@ Mix_Chunk* Mixer::LoadSound(std::string const & filename)
 
 void Mixer::PlaySound(Mix_Chunk* soundEffect)
 {
-   if ( (soundEffect == NULL) ||
+   if ( (soundEffect == nullptr) ||
         (_soundCache.count(soundEffect) == 0))
    {
       LOG_WARNING() << "Sound effect pointer not found in cache";
@@ -189,7 +189,7 @@ void Mixer::PlaySound(Mix_Chunk* soundEffect)
 
 void Mixer::UncacheSound(Mix_Chunk* soundEffect)
 {
-   if ( (soundEffect == NULL) ||
+   if ( (soundEffect == nullptr) ||
         (_soundCache.count(soundEffect) == 0))
    {
       LOG_WARNING() << "Sound effect pointer not found in cache";

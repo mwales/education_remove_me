@@ -21,7 +21,7 @@ ImageInfo::ImageInfo(char const * filename, SDL_Renderer* renderer):
    _texture = _cacheEntry->GetTexture();
    _usingCachedTexture = true;
 
-   if (_texture == NULL)
+   if (_texture == nullptr)
    {
       LOG_FATAL() << "Error loading image named" << filename;
       return;
@@ -38,7 +38,7 @@ ImageInfo::ImageInfo(char const * filename, SDL_Renderer* renderer):
 }
 
 ImageInfo::ImageInfo(SDL_Renderer* renderer):
-   _cacheEntry(NULL)
+   _cacheEntry(nullptr)
  , _renderer(renderer)
  , _angle(0.0)
  , _originAtCenter(true)
@@ -50,7 +50,7 @@ ImageInfo::ImageInfo(SDL_Renderer* renderer):
       _runOnce = false;
    }
 
-   _texture = NULL;
+   _texture = nullptr;
    _usingCachedTexture = false;
 
 }
@@ -60,14 +60,14 @@ ImageInfo::~ImageInfo()
    if (_cacheEntry)
    {
       delete _cacheEntry;
-      _cacheEntry = NULL;
+      _cacheEntry = nullptr;
    }
 
-   if (!_usingCachedTexture && ( _texture != NULL) )
+   if (!_usingCachedTexture && ( _texture != nullptr) )
    {
       LOG_DEBUG() << "Deleting non-cached texture";
       SDL_DestroyTexture(_texture);
-      _texture = NULL;
+      _texture = nullptr;
    }
 }
 
@@ -100,7 +100,7 @@ void ImageInfo::Draw(XYPair dst, float angleDeg)
    pos.w = _size[0];
    pos.h = _size[1];
 
-   if (0 != SDL_RenderCopyEx(_renderer, _texture, &_src, &pos, _angle, NULL, SDL_FLIP_NONE))
+   if (0 != SDL_RenderCopyEx(_renderer, _texture, &_src, &pos, _angle, nullptr, SDL_FLIP_NONE))
    {
       LOG_WARNING() << "Render call failed:" << SDL_GetError();
    }
@@ -129,7 +129,7 @@ void ImageInfo::Draw(XYPair dst, XYPair drawSize, float angleDeg)
    pos.w = drawSize[0];
    pos.h = drawSize[1];
 
-   if (0 != SDL_RenderCopyEx(_renderer, _texture, &_src, &pos, _angle, NULL, SDL_FLIP_NONE))
+   if (0 != SDL_RenderCopyEx(_renderer, _texture, &_src, &pos, _angle, nullptr, SDL_FLIP_NONE))
    {
       LOG_WARNING() << "Render call failed:" << SDL_GetError();
    }
@@ -137,7 +137,7 @@ void ImageInfo::Draw(XYPair dst, XYPair drawSize, float angleDeg)
 
 void ImageInfo::DrawFullScreen()
 {
-   if (0 != SDL_RenderCopy(_renderer, _texture, &_src, NULL))
+   if (0 != SDL_RenderCopy(_renderer, _texture, &_src, nullptr))
    {
       LOG_WARNING() << "Render call failed:" << SDL_GetError();
    }

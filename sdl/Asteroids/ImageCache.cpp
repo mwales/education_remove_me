@@ -14,7 +14,7 @@ std::vector<SDL_Texture*> ImageCache::_unusedTextures;
 
 ImageCache::ImageCache(char const * filename, SDL_Renderer* renderer)
 {
-   SDL_Surface* s = NULL;
+   SDL_Surface* s = nullptr;
 
    _texture = LookupTexture(filename);
    if (_texture)
@@ -26,7 +26,7 @@ ImageCache::ImageCache(char const * filename, SDL_Renderer* renderer)
    }
 
    s = IMG_Load(filename);
-   if (s == NULL)
+   if (s == nullptr)
    {
       LOG_FATAL() << "Error loading image named" << filename << ", error=" << IMG_GetError();
       return;
@@ -54,7 +54,7 @@ ImageCache::~ImageCache()
       if (it->second._userCount == 0)
       {
          LOG_DEBUG() << "Added image to unused image list";
-         ImageCacheDebugDump();
+         //ImageCacheDebugDump();
 
          // We were the last user, add to the list of unused textures
          _unusedTextures.push_back(_texture);
@@ -95,8 +95,8 @@ XYPair ImageCache::GetSize() const
 
 void ImageCache::ConvertToTexture(std::string const & filename, SDL_Surface* s, SDL_Renderer* renderer)
 {
-   assert(s != NULL);
-   assert(renderer != NULL);
+   assert(s != nullptr);
+   assert(renderer != nullptr);
 
    ImageCacheData cacheEntry;
 
@@ -105,7 +105,7 @@ void ImageCache::ConvertToTexture(std::string const & filename, SDL_Surface* s, 
 
    _texture = SDL_CreateTextureFromSurface(renderer, s);
 
-   if (_texture == NULL)
+   if (_texture == nullptr)
    {
       LOG_FATAL() << "Error converting surface to texture in ProcessSurface:" << SDL_GetError();
       return;
@@ -136,7 +136,7 @@ SDL_Texture* ImageCache::LookupTexture(std::string const & imageFile) const
    std::map<std::string, SDL_Texture*>::const_iterator it;
    it = _textureLookup.find(imageFile);
 
-   ImageCacheDebugDump();
+   //ImageCacheDebugDump();
 
    if (it != _textureLookup.end())
    {
@@ -146,7 +146,7 @@ SDL_Texture* ImageCache::LookupTexture(std::string const & imageFile) const
    else
    {
       LOG_DEBUG() << "Texture " << imageFile << " not in cache";
-      return NULL;
+      return nullptr;
    }
 }
 

@@ -1,6 +1,7 @@
 #include "GameEntity.h"
 
-GameEntity::GameEntity()
+GameEntity::GameEntity():
+   _updateRate { 0 }
 {
 }
 

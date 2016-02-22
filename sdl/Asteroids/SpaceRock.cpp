@@ -14,8 +14,8 @@ std::vector<std::string> SpaceRock::_explosionImageFilenames;
 
 SpaceRock::SpaceRock(XYPair mapBounds, SDL_Renderer* r):
    GraphicEntity(mapBounds),
-   _animator(NULL),
-   _deletionList(NULL)
+   _animator(nullptr),
+   _deletionList(nullptr)
 {
    if (_runOnce)
    {
@@ -49,12 +49,12 @@ SpaceRock::~SpaceRock()
    delete _explosionImage;
 
    // Image will be set to one of the 2 objects above, don't delete it in parent
-   _image = NULL;
+   _image = nullptr;
 
    if (_animator)
    {
       delete _animator;
-      _animator = NULL;
+      _animator = nullptr;
    }
 }
 
@@ -106,7 +106,7 @@ void SpaceRock::Update()
       {
          // Returns true when animation finishes
          delete _animator;
-         _animator = NULL;
+         _animator = nullptr;
 
          LOG_DEBUG() << "Animation finished for (" << (unsigned long) this << ")";
          _deletionList->push_back(this);

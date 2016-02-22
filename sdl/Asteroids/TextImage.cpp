@@ -52,7 +52,7 @@ TextImage::TextImage(std::string text, SDL_Color color, std::string font, int pt
 
 
    TTF_Font* f = GetFont(font, pt);
-   if (f == NULL)
+   if (f == nullptr)
    {
       // Fatal error already logged by LoadFont
       return;
@@ -67,7 +67,7 @@ TextImage::TextImage(std::string text, SDL_Color color, std::string font, int pt
 
 void TextImage::ProcessSurface(SDL_Surface* s)
 {
-   if (s == NULL)
+   if (s == nullptr)
    {
       LOG_FATAL() << "Process surface passed null surface";
       return;
@@ -83,7 +83,7 @@ void TextImage::ProcessSurface(SDL_Surface* s)
 
    _texture = SDL_CreateTextureFromSurface(_renderer, s);
 
-   if (_texture == NULL)
+   if (_texture == nullptr)
    {
       LOG_FATAL() << "Error converting surface to texture in ProcessSurface:" << SDL_GetError();
       return;
@@ -113,7 +113,7 @@ bool TextImage::LoadFont(std::string font, int pt)
    {
       // We didn't have that font cached
       TTF_Font* f = TTF_OpenFont(font.c_str(), pt);
-      if (f == NULL)
+      if (f == nullptr)
       {
          LOG_WARNING() << "Error loading font (" << font << "," << pt << "):" << TTF_GetError();
          return false;
@@ -158,10 +158,10 @@ TTF_Font* TextImage::GetFont(std::string font, int pt)
    {
       // We didn't have that font cached
       TTF_Font* f = TTF_OpenFont(font.c_str(), pt);
-      if (f == NULL)
+      if (f == nullptr)
       {
          LOG_FATAL() << "Error loading font (" << font << "," << pt << "):" << TTF_GetError();
-         return NULL;
+         return nullptr;
       }
 
       LOG_DEBUG() << "Font (" << font << "," << pt << ") added to font cache";

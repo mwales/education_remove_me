@@ -11,7 +11,7 @@ const float FRICTION_SCALAR = 0.1;
 const float ROT_FRICTION_SCALAR = 0.3;
 
 GraphicEntity::GraphicEntity(XYPair mapBounds):
-   _image(NULL),
+   _image(nullptr),
    _fullscreen(false),
    _mapBounds(mapBounds),
    _translationalFrictionScalar(FRICTION_SCALAR),
@@ -35,10 +35,11 @@ GraphicEntity::~GraphicEntity()
 {
    LOG_DEBUG() << "Graphic Entity destructor (" << (unsigned long) this << ")";
 
-   if (_image)
+   LOG_DEBUG() << "~GraphicEntity: this = " << _image;
+   if (_image != nullptr)
    {
       delete _image;
-      _image = NULL;
+      _image = nullptr;
    }
 }
 
@@ -98,7 +99,7 @@ void GraphicEntity::SetRotationalFriction(float scalar)
 
 void GraphicEntity::Draw()
 {
-   if (_image == NULL)
+   if (_image == nullptr)
    {
       LOG_WARNING() << "Drawing graphical entity with no image information";
       return;
@@ -163,7 +164,7 @@ void GraphicEntity::SetAngle(float degrees)
       _angle = fmod(_angle, 360.0);
    }
 
-   if (_image != NULL)
+   if (_image != nullptr)
    {
       _image->SetAngle(_angle);
    }

@@ -24,7 +24,7 @@ void printBacktrace(void)
        would produce similar output to the following: */
 
     strings = backtrace_symbols(buffer, nptrs);
-    if (strings == NULL) {
+    if (strings == nullptr) {
         perror("backtrace_symbols");
         exit(EXIT_FAILURE);
     }

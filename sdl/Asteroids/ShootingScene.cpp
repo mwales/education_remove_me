@@ -15,7 +15,7 @@ ShootingScene::ShootingScene(Graphics* g, Mixer* m):
    _rockSpawnCounter(10),
    _ship(g->GetWindowSize()),
    _pauseState(false),
-   _nextState(NULL),
+   _nextState(nullptr),
    _collisionMgr(g->GetWindowSize()[0], g->GetWindowSize()[1], g->GetWindowSize()[0] / 15)
 {
    _name = "Shooting";
@@ -30,6 +30,7 @@ ShootingScene::ShootingScene(Graphics* g, Mixer* m):
                            TiledImage::PROVIDING_SINGLE_TILE_DIMENSIONS);
    _ship.SetPosition(shipPosition);
    _ship.SetFullscreen(false);
+   _ship.SetAddDeleteLists(&_additionList, &_deletionList);
 
    _entities.push_back(&_background);
    _entities.push_back(&_ship);
@@ -44,7 +45,7 @@ ShootingScene::ShootingScene(Graphics* g, Mixer* m):
    g->GetJoystick()->RegisterCommand(&_ship, true);
    g->GetJoystick()->AddButtonDownHandler(7, new PauseCommand(this));
 
-   ImageCache::ImageCacheDebugDump();
+   //ImageCache::ImageCacheDebugDump();
 }
 
 ShootingScene::~ShootingScene()
@@ -77,7 +78,7 @@ bool ShootingScene::ProcessEvent(SDL_Event const & ev)
 
          int scancode = ev.key.keysym.scancode;
 
-         std::map<int, Command*>::iterator scanCmd = _keyboardDownMappedCommands.find(scancode);
+         auto scanCmd = _keyboardDownMappedCommands.find(scancode);
          if (scanCmd == _keyboardDownMappedCommands.end())
          {
             LOG_DEBUG() << "Keystroke down not mapped to command";
@@ -141,7 +142,7 @@ Scene* ShootingScene::GetNextState(bool* deleteMe)
       {
          *deleteMe = false;
          Scene* retVal = _nextState;
-         _nextState = NULL;
+         _nextState = nullptr;
          return retVal;
       }
       else
@@ -153,7 +154,7 @@ Scene* ShootingScene::GetNextState(bool* deleteMe)
    else
    {
       *deleteMe = false;
-      return NULL;
+      return nullptr;
    }
 
 }

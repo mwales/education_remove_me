@@ -61,7 +61,7 @@ bool AnimationDriver::StepAnimation()
          }
 
          LOG_DEBUG() << "Animation over!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
-         _image = NULL;
+         _image = nullptr;
 
          // Need to add a list of AnimationDrivers to delete as well
          return true;

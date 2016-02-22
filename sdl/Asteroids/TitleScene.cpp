@@ -10,7 +10,7 @@ TitleScene::TitleScene(Graphics* g, Mixer* m):
    _background(g->GetWindowSize()),
    _splashImage(g->GetWindowSize()),
    _authorName(g->GetWindowSize()),
-   _nextScene(NULL)
+   _nextScene(nullptr)
 {
    _name = "Title";
    _background.SetImageInfo("assets/nebula_blue.png", _renderer);

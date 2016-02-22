@@ -6,7 +6,7 @@
 #include "Logger.h"
 
 Joystick::Joystick():
-   _joystick(NULL),
+   _joystick(nullptr),
    _deadzone(25)
 {
    // SDL not initialized yet
@@ -21,7 +21,7 @@ std::string Joystick::JoystickInfoString(int index)
 
 std::string Joystick::JoystickInfoString(SDL_Joystick* js)
 {
-   if (js == NULL)
+   if (js == nullptr)
    {
       return "Joystick[NULL]";
    }
@@ -44,7 +44,7 @@ void Joystick::CloseAllJoysticks()
    {
       LOG_DEBUG() << "Closing joystick";
       SDL_JoystickClose(_joystick);
-      _joystick = NULL;
+      _joystick = nullptr;
    }
 }
 
@@ -68,7 +68,7 @@ void Joystick::AddJoystick()
       }
 
       _joystick = SDL_JoystickOpen(0);
-      if (_joystick != NULL)
+      if (_joystick != nullptr)
       {
          LOG_DEBUG() << "Opened joystick" << JoystickInfoString(_joystick);
       }
@@ -81,14 +81,14 @@ void Joystick::AddJoystick()
 
 void Joystick::UpdateJoysticks()
 {
-   if ( (_joystick != NULL) && SDL_JoystickGetAttached(_joystick))
+   if ( (_joystick != nullptr) && SDL_JoystickGetAttached(_joystick))
    {
       // They joystick we are using hasn't disappeared, so do nothing
       LOG_DEBUG() << "UpdateJoysticks, nothing needs updating";
       return;
    }
 
-   if (_joystick != NULL)
+   if (_joystick != nullptr)
    {
       // We are no longer attached to the joystick
       LOG_WARNING() << "Joystick detached, attempt to add new one";
@@ -103,7 +103,7 @@ void Joystick::UpdateJoysticks()
 void Joystick::RegisterCommand(JoystickRegistrationCallbacks* subscriber,
                                bool clearExisting)
 {
-   if (subscriber == NULL)
+   if (subscriber == nullptr)
    {
       LOG_FATAL() << "Registering joystick commands with invalid callback";
       return;

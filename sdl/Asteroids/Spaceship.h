@@ -14,11 +14,16 @@ public:
 
    void Fire();
 
+   void FireBullet();
+
    void SetThrustState(bool state);
 
    void SetTurningDirection(int direction);
 
    void SetRotationalAcceleration(int rotAcc);
+
+   void SetAddDeleteLists(std::vector<GameEntity*>* addList,
+                          std::vector<GameEntity*>* delList);
 
    std::map<int, Command*> GetKeyboardDownCallbacks();
 
@@ -39,6 +44,12 @@ protected:
    int _turningDirection;\
 
    bool _thrustOn;
+
+   bool _fireBullet;
+
+   // Need this so we can pass it on to bullets so they can end themselves
+   std::vector<GameEntity*>* _additionList;
+   std::vector<GameEntity*>* _deletionList;
 
 
 };
