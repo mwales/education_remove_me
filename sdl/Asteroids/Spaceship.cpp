@@ -57,8 +57,15 @@ void Spaceship::FireBullet()
    XYPair bulletPos = _position + directionUnitVec * bulletOffset;
    b->SetPosition(bulletPos);
 
-
+   _newBullets.push_back(b);
    _additionList->push_back(b);
+}
+
+std::vector<GraphicEntity*> Spaceship::GetNewBullets()
+{
+   std::vector<GraphicEntity*> retVal = _newBullets;
+   _newBullets.clear();
+   return retVal;
 }
 
 

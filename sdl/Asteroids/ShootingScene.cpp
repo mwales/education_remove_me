@@ -241,6 +241,10 @@ void ShootingScene::Update()
       {
          LOG_DEBUG() << "Our ship explodes too!!";
       }
+      else
+      {
+         LOG_DEBUG() << "Bullet shot a rock";
+      }
 
    }
 
@@ -255,8 +259,23 @@ void ShootingScene::Update()
 
    _collisionMgr.ClearCollisions();
 
+   for(auto bullet : _ship.GetNewBullets())
+   {
+      _collisionMgr.AddToB(bullet);
+   }
+
    // Call parent implementation
    Scene::Update();
+}
+
+void ShootingScene::ManageEntityLifetimes()
+{
+   for(GameEntity* ge : _deletionList)
+   {
+      _collisionMgr.RemoveFromB( dynamic_cast<GraphicEntity*>(ge));
+   }
+
+   Scene::ManageEntityLifetimes();
 }
 
 //*****************************************************************************

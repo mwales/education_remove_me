@@ -10,6 +10,7 @@
 #include "CollisionManager.h"
 
 class SpaceRock;
+class FrictionlessGraphic;
 
 class ShootingScene : public Scene
 {
@@ -22,7 +23,9 @@ public:
 
    void PauseGame();
 
-   virtual void Update();
+   virtual void Update() override;
+
+   virtual void ManageEntityLifetimes() override;
 
 protected:
 

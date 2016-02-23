@@ -33,6 +33,8 @@ public:
 
    virtual void Update();
 
+   std::vector<GraphicEntity*> GetNewBullets();
+
    // Joystick registration and callbacks
 
    virtual std::map<int, Command*> GetButtonDownHandlers();
@@ -53,6 +55,6 @@ protected:
    std::vector<GameEntity*>* _additionList;
    std::vector<GameEntity*>* _deletionList;
 
-
+   std::vector<GraphicEntity*> _newBullets;
 };
 
