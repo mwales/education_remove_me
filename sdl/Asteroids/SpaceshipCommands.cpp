@@ -5,15 +5,16 @@
 // FireCommand
 //*****************************************************************************
 
-FireCommand::FireCommand(Spaceship* ship):
-   _ship(ship)
+FireCommand::FireCommand(Spaceship* ship, bool fireState):
+   _ship(ship),
+   _fireState(fireState)
 {
    // Empty
 }
 
 bool FireCommand::Execute()
 {
-   _ship->Fire();
+   _ship->Fire(_fireState);
    return false;
 }
 

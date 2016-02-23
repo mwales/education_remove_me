@@ -11,13 +11,14 @@ class FireCommand: public Command
 {
 public:
 
-   FireCommand(Spaceship* ship);
+   FireCommand(Spaceship* ship, bool fireState);
 
    bool Execute();
 
 protected:
 
    Spaceship* _ship;
+   bool _fireState;
 
 };
 

@@ -12,8 +12,10 @@ class Spaceship : public GraphicEntity, public JoystickRegistrationCallbacks
 public:
    Spaceship(XYPair mapBounds);
 
-   void Fire();
+   // Event that tells us we should start/stop firing on the next update call
+   void Fire(bool fireState);
 
+   // Fires a bullet (call this during the update call)
    void FireBullet();
 
    void SetThrustState(bool state);

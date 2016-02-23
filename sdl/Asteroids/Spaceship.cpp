@@ -26,10 +26,10 @@ void Spaceship::SetAddDeleteLists(std::vector<GameEntity*>* addList,
    _deletionList = delList;
 }
 
-void Spaceship::Fire()
+void Spaceship::Fire(bool fireState)
 {
    LOG_DEBUG() << "Fire";
-   _fireBullet = true;
+   _fireBullet = fireState;
 }
 
 void Spaceship::FireBullet()
@@ -59,7 +59,6 @@ void Spaceship::FireBullet()
 
 
    _additionList->push_back(b);
-   _fireBullet = false;
 }
 
 
@@ -94,7 +93,7 @@ void Spaceship::SetTurningDirection(int direction)
 std::map<int, Command*> Spaceship::GetKeyboardDownCallbacks()
 {
    std::map<int, Command*> callbacks;
-   callbacks[SDL_SCANCODE_LCTRL] = new FireCommand(this);
+   callbacks[SDL_SCANCODE_LCTRL] = new FireCommand(this, true);
 
    callbacks[SDL_SCANCODE_UP] = new ThrustCommand(this, true);
    callbacks[SDL_SCANCODE_W] = new ThrustCommand(this, true);
@@ -111,6 +110,8 @@ std::map<int, Command*> Spaceship::GetKeyboardDownCallbacks()
 std::map<int, Command*> Spaceship::GetKeyboardUpCallbacks()
 {
    std::map<int, Command*> callbacks;
+   callbacks[SDL_SCANCODE_LCTRL] = new FireCommand(this, false);
+
    callbacks[SDL_SCANCODE_UP] = new ThrustCommand(this, false);
    callbacks[SDL_SCANCODE_W] = new ThrustCommand(this, false);
 
@@ -126,7 +127,7 @@ std::map<int, Command*> Spaceship::GetKeyboardUpCallbacks()
 std::map<int, Command*> Spaceship::GetButtonDownHandlers()
 {
    std::map<int, Command*> callbacks;
-   callbacks[0] = new FireCommand(this);
+   callbacks[0] = new FireCommand(this, true);
    callbacks[5] = new ThrustCommand(this, true);
    return callbacks;
 }
@@ -134,6 +135,7 @@ std::map<int, Command*> Spaceship::GetButtonDownHandlers()
 std::map<int, Command*> Spaceship::GetButtonUpHandlers()
 {
    std::map<int, Command*> callbacks;
+   callbacks[0] = new FireCommand(this, false);
    callbacks[5] = new ThrustCommand(this, false);
    return callbacks;
 }
