@@ -11,11 +11,10 @@ static const float THRUST_ACCELERATION = 800.0;
 Spaceship::Spaceship(XYPair mapBounds):
    GraphicEntity(mapBounds),
    _turningDirection(0),
-   _thrustOn(false),
-   _fireBullet(false),
    _additionList(nullptr),
    _deletionList(nullptr)
 {
+   // empty
 }
 
 
@@ -35,6 +34,18 @@ void Spaceship::Fire(bool fireState)
 void Spaceship::FireBullet()
 {
    LOG_DEBUG() << "FireBullet";
+   _ticksSinceLastBullet++;
+
+   if (_ticksSinceLastBullet < _fireDelayMap[_fireMode])
+   {
+      // Gun is in the cooldown period still
+      return;
+   }
+   else
+   {
+      // Reseting cooldown period
+      _ticksSinceLastBullet = 0;
+   }
 
    if ( (_deletionList == nullptr) || (_additionList == nullptr) )
    {
@@ -176,6 +187,16 @@ void Spaceship::Update()
 
    // Call parent update
    GraphicEntity::Update();
+}
+
+void Spaceship::SetUpdateRate(int updateHz)
+{
+   _fireDelayMap.clear();
+   _fireDelayMap[BulletFireMode::RAPID_SHOT] = updateHz / 15;
+   _fireDelayMap[BulletFireMode::SPREAD_SHOT] = updateHz / 4;
+   _fireDelayMap[BulletFireMode::HEAVY_SHOT] = updateHz;
+
+   GraphicEntity::SetUpdateRate(updateHz);
 }
 
 void Spaceship::SetRotationalAcceleration(int rotAcc)

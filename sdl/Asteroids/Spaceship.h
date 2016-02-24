@@ -10,6 +10,13 @@
 class Spaceship : public GraphicEntity, public JoystickRegistrationCallbacks
 {
 public:
+   enum class BulletFireMode
+   {
+      RAPID_SHOT,
+      SPREAD_SHOT,
+      HEAVY_SHOT
+   };
+
    Spaceship(XYPair mapBounds);
 
    // Event that tells us we should start/stop firing on the next update call
@@ -31,7 +38,9 @@ public:
 
    std::map<int, Command*> GetKeyboardUpCallbacks();
 
-   virtual void Update();
+   virtual void Update() override;
+
+   virtual void SetUpdateRate(int updateHz) override;
 
    std::vector<GraphicEntity*> GetNewBullets();
 
@@ -47,9 +56,15 @@ protected:
 
    int _turningDirection;\
 
-   bool _thrustOn;
+   bool _thrustOn { false };
 
-   bool _fireBullet;
+   bool _fireBullet { false };
+
+   int _ticksSinceLastBullet { 0 };
+
+   BulletFireMode _fireMode { BulletFireMode::RAPID_SHOT };
+
+   std::map<BulletFireMode, int> _fireDelayMap;
 
    // Need this so we can pass it on to bullets so they can end themselves
    std::vector<GameEntity*>* _additionList;
