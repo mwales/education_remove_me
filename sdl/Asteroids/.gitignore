@@ -1,3 +1,5 @@
 AsteroidsQtProject
 asteroids
 build
+CMakeLists.txt.user
+core
