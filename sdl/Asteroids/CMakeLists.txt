@@ -51,6 +51,23 @@ ELSE()
     MESSAGE("Not optimizing for ARM processor")
 ENDIF()
 
+# Are we going to try an emscripten build?
+IF(DEFINED EMSCRIPTEN)
+    
+    IF(${EMSCRIPTEN} STREQUAL "1")
+        MESSAGE("Emscripten build: ${EMSCRIPTEN}")
+        set(CMAKE_CXX_COMPILER "emcc")
+        set(CMAKE_CXX_FLAGS "-s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2")
+    ELSE()
+        MESSAGE("Regular native build (not emscripten): ${EMSCRIPTEN}")
+        set(CMAKE_CXX_COMPILER "g++")
+        #set(CMAKE_CXX_COMPILER "clang++")
+    ENDIF()
+
+ELSE()
+    MESSAGE("Regular native build (EMSCRIPTEN not defined)")
+ENDIF()
+
 # Modern C++ support
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11 -Wall")
 #set_property(TARGET asteroids PROPERTY CXX_STANDARD 11)
