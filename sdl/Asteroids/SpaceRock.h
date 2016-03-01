@@ -25,6 +25,10 @@ public:
 
    virtual void Update();
 
+   virtual void Draw() override;
+
+   void DisplayCollisionArea(bool display);
+
 protected:
 
    static bool _runOnce;
@@ -40,4 +44,6 @@ protected:
    AnimationDriver* _animator;
 
    std::vector<GameEntity*>* _deletionList;
+
+   bool _displayCollisionArea;
 };

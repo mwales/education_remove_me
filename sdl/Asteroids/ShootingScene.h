@@ -27,6 +27,8 @@ public:
 
    virtual void ManageEntityLifetimes() override;
 
+   void ToggleDebug();
+
 protected:
 
    bool ProcessEvent(SDL_Event const & ev);
@@ -53,6 +55,9 @@ protected:
    //  list A = Rocks
    //  list B = Bullets and Ship
    CollisionManager _collisionMgr;
+
+   // Variable that can be toggled to enable special debug functions
+   bool _debugMode;
 };
 
 
@@ -61,6 +66,18 @@ class PauseCommand: public Command
 {
 public:
    PauseCommand(ShootingScene* scene);
+
+   virtual bool Execute();
+
+protected:
+
+   ShootingScene* _scene;
+};
+
+class ToggleDebugCommand: public Command
+{
+public:
+   ToggleDebugCommand(ShootingScene* scene);
 
    virtual bool Execute();
 

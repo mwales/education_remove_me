@@ -16,7 +16,8 @@ ShootingScene::ShootingScene(Graphics* g, Mixer* m):
    _ship(g->GetWindowSize()),
    _pauseState(false),
    _nextState(nullptr),
-   _collisionMgr(g->GetWindowSize()[0], g->GetWindowSize()[1], g->GetWindowSize()[0] / 15)
+   _collisionMgr(g->GetWindowSize()[0], g->GetWindowSize()[1], g->GetWindowSize()[0] / 15),
+   _debugMode(false)
 {
    _name = "Shooting";
 
@@ -39,6 +40,7 @@ ShootingScene::ShootingScene(Graphics* g, Mixer* m):
 
    _keyboardDownMappedCommands = _ship.GetKeyboardDownCallbacks();
    _keyboardDownMappedCommands[SDL_SCANCODE_SPACE] = new PauseCommand(this);
+   _keyboardDownMappedCommands[SDL_SCANCODE_P] = new ToggleDebugCommand(this);
 
    _keyboardUpMappedCommands = _ship.GetKeyboardUpCallbacks();
 
@@ -195,6 +197,11 @@ void ShootingScene::SpawnRock()
       _bigRocks.push_back(rock);
       _entities.push_back(rock);
       _collisionMgr.AddToA(rock);
+
+      if (_debugMode)
+      {
+         rock->DisplayCollisionArea(true);
+      }
    }
 }
 
@@ -278,6 +285,18 @@ void ShootingScene::ManageEntityLifetimes()
    Scene::ManageEntityLifetimes();
 }
 
+void ShootingScene::ToggleDebug()
+{
+   _debugMode = !_debugMode;
+   LOG_DEBUG() << "Toggling debug mode:" << (_debugMode ? "On" : "Off");
+
+   for(auto rock : _bigRocks)
+   {
+      rock->DisplayCollisionArea(_debugMode);
+      _ship.DisplayCollisionArea(_debugMode);
+   }
+}
+
 //*****************************************************************************
 // PauseCommand
 //*****************************************************************************
@@ -292,5 +311,17 @@ PauseCommand::PauseCommand(ShootingScene* scene):
 bool PauseCommand::Execute()
 {
    _scene->PauseGame();
+   return false;
+}
+
+ToggleDebugCommand::ToggleDebugCommand(ShootingScene* scene):
+   _scene(scene)
+{
+   // Empty
+}
+
+bool ToggleDebugCommand::Execute()
+{
+   _scene->ToggleDebug();
    return false;
 }

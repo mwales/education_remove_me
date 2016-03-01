@@ -52,6 +52,10 @@ public:
 
    std::vector<SDL_Rect> GetCollisionBoxes() const override;
 
+   virtual void Draw() override;
+
+   void DisplayCollisionArea(bool display);
+
 protected:
 
    int _turningDirection;\
@@ -71,5 +75,7 @@ protected:
    std::vector<GameEntity*>* _deletionList;
 
    std::vector<GraphicEntity*> _newBullets;
+
+   bool _displayCollisionArea;
 };
 

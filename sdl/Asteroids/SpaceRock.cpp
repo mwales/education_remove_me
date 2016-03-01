@@ -15,7 +15,8 @@ std::vector<std::string> SpaceRock::_explosionImageFilenames;
 SpaceRock::SpaceRock(XYPair mapBounds, SDL_Renderer* r):
    GraphicEntity(mapBounds),
    _animator(nullptr),
-   _deletionList(nullptr)
+   _deletionList(nullptr),
+   _displayCollisionArea(false)
 {
    if (_runOnce)
    {
@@ -112,4 +113,25 @@ void SpaceRock::Update()
          _deletionList->push_back(this);
       }
    }
+}
+
+void SpaceRock::Draw()
+{
+   GraphicEntity::Draw();
+
+   if (_displayCollisionArea)
+   {
+      SDL_Renderer* r = _image->GetRenderer();
+
+      for(auto singleBox : GetCollisionBoxes())
+      {
+
+         SDL_RenderDrawRect(r, &singleBox);
+      }
+   }
+}
+
+void SpaceRock::DisplayCollisionArea(bool display)
+{
+   _displayCollisionArea = display;
 }

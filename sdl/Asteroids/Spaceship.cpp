@@ -12,7 +12,8 @@ Spaceship::Spaceship(XYPair mapBounds):
    GraphicEntity(mapBounds),
    _turningDirection(0),
    _additionList(nullptr),
-   _deletionList(nullptr)
+   _deletionList(nullptr),
+   _displayCollisionArea(false)
 {
    // empty
 }
@@ -215,4 +216,25 @@ std::vector<SDL_Rect> Spaceship::GetCollisionBoxes() const
    std::vector<SDL_Rect> retVal;
    retVal.push_back(basicRectangle);
    return retVal;
+}
+
+void Spaceship::Draw()
+{
+   GraphicEntity::Draw();
+
+   if (_displayCollisionArea)
+   {
+      SDL_Renderer* r = _image->GetRenderer();
+
+      for(auto singleBox : GetCollisionBoxes())
+      {
+
+         SDL_RenderDrawRect(r, &singleBox);
+      }
+   }
+}
+
+void Spaceship::DisplayCollisionArea(bool display)
+{
+   _displayCollisionArea = display;
 }
