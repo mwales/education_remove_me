@@ -20,8 +20,8 @@ CollisionManager::CollisionManager(int areaWidth, int areaHeight, int containerS
         return;
     }
 
-    _compartmentCols = ceil(_width / _compartmentSize);
-    _compartmentRows = ceil(_height / _compartmentSize);
+    _compartmentCols = ceil( (float) _width / (float) _compartmentSize);
+    _compartmentRows = ceil( (float) _height / (float) _compartmentSize);
 }
 
 CollisionManager::CollisionManager(int areaWidth, int areaHeight, int containerSize,
