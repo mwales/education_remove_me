@@ -14,11 +14,11 @@ class SDL_Renderer;
 
 struct ImageCacheData
 {
-   std::string _filename;
+   std::string theFilename;
 
-   XYPair _size;
+   XYPair theSize;
 
-   int _userCount;
+   int theUserCount;
 };
 
 /**
@@ -56,16 +56,16 @@ protected:
 
    static void DeleteFromCache(SDL_Texture* t);
 
-   SDL_Texture* _texture;
+   SDL_Texture* theTexture;
 
    /// Stores the number of users of a cached texture
-   static std::map<SDL_Texture*, ImageCacheData> _textureData;
+   static std::map<SDL_Texture*, ImageCacheData> theTextureData;
 
    /// Maps image filename to textures in cache
-   static std::map<std::string, SDL_Texture*> _textureLookup;
+   static std::map<std::string, SDL_Texture*> theTextureLookup;
 
    /// List of currently unused textures, if this list count() > NUM_CACHED_UNUSED_IMAGES_MAX, then old images will be
    /// deleted
-   static std::vector<SDL_Texture*> _unusedTextures;
+   static std::vector<SDL_Texture*> theUnusedTextures;
 
 };

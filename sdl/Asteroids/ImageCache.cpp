@@ -8,20 +8,20 @@
 #include <cassert>
 
 // Static variables
-std::map<SDL_Texture*, struct ImageCacheData> ImageCache::_textureData;
-std::map<std::string, SDL_Texture*> ImageCache::_textureLookup;
-std::vector<SDL_Texture*> ImageCache::_unusedTextures;
+std::map<SDL_Texture*, struct ImageCacheData> ImageCache::theTextureData;
+std::map<std::string, SDL_Texture*> ImageCache::theTextureLookup;
+std::vector<SDL_Texture*> ImageCache::theUnusedTextures;
 
 ImageCache::ImageCache(char const * filename, SDL_Renderer* renderer)
 {
    SDL_Surface* s = nullptr;
 
-   _texture = LookupTexture(filename);
-   if (_texture)
+   theTexture = LookupTexture(filename);
+   if (theTexture)
    {
       // Texture was already cached
       LOG_DEBUG() << "Found texture for " << filename << " in cache!";
-      _textureData[_texture]._userCount++;
+      theTextureData[theTexture].theUserCount++;
       return;
    }
 
@@ -40,31 +40,31 @@ ImageCache::ImageCache(char const * filename, SDL_Renderer* renderer)
 
 ImageCache::~ImageCache()
 {
-   if (_texture)
+   if (theTexture)
    {
       // Drop the user count 1 - texture is always in the list
       std::map<SDL_Texture*, ImageCacheData>::iterator it;
-      it = _textureData.find(_texture);
+      it = theTextureData.find(theTexture);
 
       // Texture should always be in the map
-      assert(it != _textureData.end());
+      assert(it != theTextureData.end());
 
-      it->second._userCount--;
+      it->second.theUserCount--;
 
-      if (it->second._userCount == 0)
+      if (it->second.theUserCount == 0)
       {
          LOG_DEBUG() << "Added image to unused image list";
          //ImageCacheDebugDump();
 
          // We were the last user, add to the list of unused textures
-         _unusedTextures.push_back(_texture);
+         theUnusedTextures.push_back(theTexture);
 
-         if (_unusedTextures.size() > NUM_CACHED_UNUSED_IMAGES_MAX)
+         if (theUnusedTextures.size() > NUM_CACHED_UNUSED_IMAGES_MAX)
          {
             LOG_DEBUG() << "Too many old unused images, removing one";
 
             // Delete the oldest unused texture on the unused textures list
-            SDL_Texture* t = _unusedTextures.back();
+            SDL_Texture* t = theUnusedTextures.back();
             DeleteFromCache(t);
          }
       }
@@ -77,14 +77,14 @@ ImageCache::~ImageCache()
 
 SDL_Texture* ImageCache::GetTexture() const
 {
-   return _texture;
+   return theTexture;
 }
 
 XYPair ImageCache::GetSize() const
 {
-   if (_texture)
+   if (theTexture)
    {
-      return _textureData[_texture]._size;
+      return theTextureData[theTexture].theSize;
    }
    else
    {
@@ -100,12 +100,12 @@ void ImageCache::ConvertToTexture(std::string const & filename, SDL_Surface* s, 
 
    ImageCacheData cacheEntry;
 
-   cacheEntry._size[0] = s->w;
-   cacheEntry._size[1] = s->h;
+   cacheEntry.theSize[0] = s->w;
+   cacheEntry.theSize[1] = s->h;
 
-   _texture = SDL_CreateTextureFromSurface(renderer, s);
+   theTexture = SDL_CreateTextureFromSurface(renderer, s);
 
-   if (_texture == nullptr)
+   if (theTexture == nullptr)
    {
       LOG_FATAL() << "Error converting surface to texture in ProcessSurface:" << SDL_GetError();
       return;
@@ -113,10 +113,10 @@ void ImageCache::ConvertToTexture(std::string const & filename, SDL_Surface* s, 
 
    SDL_FreeSurface(s);
 
-   cacheEntry._userCount = 1;
-   cacheEntry._filename = filename;
-   _textureData[_texture] = cacheEntry;
-   _textureLookup[filename] = _texture;
+   cacheEntry.theUserCount = 1;
+   cacheEntry.theFilename = filename;
+   theTextureData[theTexture] = cacheEntry;
+   theTextureLookup[filename] = theTexture;
 
    LOG_DEBUG() << "Successfully converted surface to texture";
 }
@@ -124,9 +124,9 @@ void ImageCache::ConvertToTexture(std::string const & filename, SDL_Surface* s, 
 /// Clears the image cache (useful for running the application with Valgrind so it doesn't leak memory)
 void ImageCache::ClearCache()
 {
-   while (!_textureLookup.empty())
+   while (!theTextureLookup.empty())
    {
-      std::map<std::string, SDL_Texture*>::const_iterator it = _textureLookup.begin();
+      std::map<std::string, SDL_Texture*>::const_iterator it = theTextureLookup.begin();
       DeleteFromCache(it->second);
    }
 }
@@ -134,11 +134,11 @@ void ImageCache::ClearCache()
 SDL_Texture* ImageCache::LookupTexture(std::string const & imageFile) const
 {
    std::map<std::string, SDL_Texture*>::const_iterator it;
-   it = _textureLookup.find(imageFile);
+   it = theTextureLookup.find(imageFile);
 
    //ImageCacheDebugDump();
 
-   if (it != _textureLookup.end())
+   if (it != theTextureLookup.end())
    {
       LOG_DEBUG() << "Texture " << imageFile << " found in cache";
       return it->second;
@@ -153,22 +153,21 @@ SDL_Texture* ImageCache::LookupTexture(std::string const & imageFile) const
 void ImageCache::DeleteFromCache(SDL_Texture* t)
 {
    std::map<SDL_Texture*, ImageCacheData>::iterator cacheDataIt;
-   cacheDataIt = _textureData.find(t);
+   cacheDataIt = theTextureData.find(t);
 
-   if (cacheDataIt != _textureData.end())
+   if (cacheDataIt != theTextureData.end())
    {
-      _textureData.erase(cacheDataIt);
+      theTextureData.erase(cacheDataIt);
    }
    else
    {
       LOG_WARNING() << "Attempting to delete a texture from cache, but couldn't find texture cache data";
    }
 
-   std::vector<SDL_Texture*>::iterator unusedIt;
-   unusedIt = std::find(_unusedTextures.begin(), _unusedTextures.end(), t);
-   if (unusedIt != _unusedTextures.end())
+   auto unusedIt = std::find(theUnusedTextures.begin(), theUnusedTextures.end(), t);
+   if (unusedIt != theUnusedTextures.end())
    {
-      _unusedTextures.erase(unusedIt);
+      theUnusedTextures.erase(unusedIt);
    }
    else
    {
@@ -176,13 +175,13 @@ void ImageCache::DeleteFromCache(SDL_Texture* t)
    }
 
    std::map<std::string, SDL_Texture*>::iterator it;
-   for(it = _textureLookup.begin(); it != _textureLookup.end(); it++)
+   for(it = theTextureLookup.begin(); it != theTextureLookup.end(); it++)
    {
       if (it->second == t)
       {
          LOG_DEBUG() << "Deleting " << it->first << " from cache";
          SDL_DestroyTexture(t);
-         _textureLookup.erase(it);
+         theTextureLookup.erase(it);
          return;
       }
    }
@@ -198,24 +197,24 @@ void ImageCache::ImageCacheDebugDump()
 
    LOG_DEBUG() << "* _textureLookup:";
    std::map<std::string, SDL_Texture*>::const_iterator lookupIt;
-   for(lookupIt = _textureLookup.begin(); lookupIt != _textureLookup.end(); lookupIt++)
+   for(lookupIt = theTextureLookup.begin(); lookupIt != theTextureLookup.end(); lookupIt++)
    {
       LOG_DEBUG() << "*   " << lookupIt->first << " -> " << (unsigned long) lookupIt->second;
    }
 
    LOG_DEBUG() << "* _textureData:";
    std::map<SDL_Texture*, ImageCacheData>::const_iterator dataIt;
-   for(dataIt = _textureData.begin(); dataIt != _textureData.end(); dataIt++)
+   for(dataIt = theTextureData.begin(); dataIt != theTextureData.end(); dataIt++)
    {
       LOG_DEBUG() << "*   " << (unsigned long) dataIt->first << " -> ("
-                  << dataIt->second._filename << ", "
-                  << dataIt->second._size << ", "
-                  << dataIt->second._userCount << ")";
+                  << dataIt->second.theFilename << ", "
+                  << dataIt->second.theSize << ", "
+                  << dataIt->second.theUserCount << ")";
    }
 
    LOG_DEBUG() << "* _unusedTextures:";
    std::vector<SDL_Texture*>::const_iterator unusedIt;
-   for(unusedIt = _unusedTextures.begin(); unusedIt != _unusedTextures.end(); unusedIt++)
+   for(unusedIt = theUnusedTextures.begin(); unusedIt != theUnusedTextures.end(); unusedIt++)
    {
       LOG_DEBUG() << "*   " << (unsigned long) (*unusedIt);
    }

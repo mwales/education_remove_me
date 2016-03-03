@@ -4,8 +4,8 @@
 
 
 Graphics::Graphics(uint32_t initFlags):
-  _window(nullptr)
-, _renderer(nullptr)
+  theWindow(nullptr)
+, theRenderer(nullptr)
 {
    LOG_DEBUG() << "Starting graphics and SDL";
 
@@ -14,50 +14,50 @@ Graphics::Graphics(uint32_t initFlags):
       LOG_FATAL() << "SDL Initialization failed:" << SDL_GetError();
    }
 
-   _joystick.AddJoystick();
+   theJoystick.AddJoystick();
 }
 
 
 void Graphics::CreateWindow(char const * title, int width, int height, uint32_t flags)
 {
-   _window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
-   if (_window == nullptr)
+   theWindow = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
+   if (theWindow == nullptr)
    {
       LOG_FATAL() << "SDL Create Window failed:" << SDL_GetError();
       return;
    }
 
-   _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
-   if (_renderer == nullptr)
+   theRenderer = SDL_CreateRenderer(theWindow, -1, SDL_RENDERER_ACCELERATED);
+   if (theRenderer == nullptr)
    {
       LOG_FATAL() << "SDL Create Renderer failed:" << SDL_GetError();
       return;
    }
 
    // Set color
-   if (0 != SDL_SetRenderDrawColor(_renderer, 0xff, 0xff, 0xff, 0xff))
+   if (0 != SDL_SetRenderDrawColor(theRenderer, 0xff, 0xff, 0xff, 0xff))
    {
       LOG_WARNING() << "Setting renderer draw color failed:" << SDL_GetError();
    }
 
-   _windowSize[0] = width;
-   _windowSize[1] = height;
+   theWindowSize[0] = width;
+   theWindowSize[1] = height;
 }
 
 Graphics::~Graphics()
 {
    LOG_DEBUG() << "Closing graphics and SDL";
 
-   _joystick.CloseAllJoysticks();
+   theJoystick.CloseAllJoysticks();
 
-   if (_renderer)
+   if (theRenderer)
    {
-      SDL_DestroyRenderer(_renderer);
+      SDL_DestroyRenderer(theRenderer);
    }
 
-   if (_window)
+   if (theWindow)
    {
-      SDL_DestroyWindow(_window);
+      SDL_DestroyWindow(theWindow);
    }
 
    SDL_Quit();
@@ -66,7 +66,7 @@ Graphics::~Graphics()
 void Graphics::Clear()
 {
    // No way we got in here with invalid pointers, bypassing null checks
-   if (0 != SDL_RenderClear(_renderer))
+   if (0 != SDL_RenderClear(theRenderer))
    {
       LOG_WARNING() << "Renderer clear failed:" << SDL_GetError();
    }
@@ -75,13 +75,13 @@ void Graphics::Clear()
 
 XYPair Graphics::GetWindowSize()
 {
-   return _windowSize;
+   return theWindowSize;
 }
 
 void Graphics::DisplayRendererInfo()
 {
     SDL_RendererInfo info;
-    if (0 != SDL_GetRendererInfo(_renderer, &info))
+    if (0 != SDL_GetRendererInfo(theRenderer, &info))
     {
         LOG_WARNING() << "Error getting renderer info";
         return;

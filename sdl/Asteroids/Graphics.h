@@ -19,25 +19,25 @@ public:
 
    void Clear();
 
-   void Render() { SDL_RenderPresent(_renderer); }
+   void Render() { SDL_RenderPresent(theRenderer); }
 
-   inline SDL_Renderer* GetRenderer() { return _renderer; }
+   inline SDL_Renderer* GetRenderer() { return theRenderer; }
 
-   inline SDL_Window* GetWindow() { return _window; }
+   inline SDL_Window* GetWindow() { return theWindow; }
 
    XYPair GetWindowSize();
 
-   Joystick* GetJoystick() { return &_joystick; }
+   Joystick* GetJoystick() { return &theJoystick; }
 
    void DisplayRendererInfo();
 
 protected:
-   SDL_Window* _window;
+   SDL_Window* theWindow;
 
-   SDL_Renderer* _renderer;
+   SDL_Renderer* theRenderer;
 
-   XYPair _windowSize;
+   XYPair theWindowSize;
 
-   Joystick _joystick;
+   Joystick theJoystick;
 };
 
