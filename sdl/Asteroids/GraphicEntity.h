@@ -29,9 +29,9 @@ public:
                                   int spacing,
                                   TiledImage::TilingMode mode);
 
-   virtual void Update();
+   virtual void Update() override;
 
-   virtual void Draw();
+   virtual void Draw() override;
 
    void SetAngle(float degrees);
 
@@ -43,9 +43,9 @@ public:
 
    void SetFrameNumber(int fn);
 
-   inline ImageInfo* GetImageInfo() { return _image; }
+   inline ImageInfo* GetImageInfo() { return theImage; }
 
-   virtual void SetUpdateRate(int updateHz);
+   virtual void SetUpdateRate(int updateHz) override;
 
    void SetVelocity(XYPair vel);
 
@@ -61,9 +61,9 @@ public:
 
    // ICollidable interface
 
-   virtual XYPair GetPosition() const;
+   virtual XYPair GetPosition() const override;
 
-   virtual std::vector<SDL_Rect> GetCollisionBoxes() const;
+   virtual std::vector<SDL_Rect> GetCollisionBoxes() const override;
 
    //virtual bool CollisionDetected(std::string collidingObject) const;
 
@@ -72,29 +72,29 @@ public:
 
 protected:
 
-   XYPair _position;
+   XYPair thePosition;
 
-   ImageInfo* _image;
+   ImageInfo* theImage;
 
-   bool _fullscreen;
+   bool theFullscreen;
 
-   float _angle;
+   float theAngle;
 
-   XYPair _mapBounds;
+   XYPair theMapBounds;
 
-   XYPair _graphicBounds;
+   XYPair theGraphicBounds;
 
-   float _updateRateScalar;
+   float theUpdateRateScalar;
 
-   XYPair _velocity;
+   XYPair theVelocity;
 
-   XYPair _acceleration;
+   XYPair theAcceleration;
 
-   float _rotVelocity;
+   float theRotVelocity;
 
-   float _rotAcceleration;
+   float theRotAcceleration;
 
-   float _translationalFrictionScalar;
+   float theTranslationalFrictionScalar;
 
-   float _rotationalFrictionScalar;
+   float theRotationalFrictionScalar;
 };

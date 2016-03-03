@@ -38,8 +38,8 @@ SpaceRock::SpaceRock(XYPair mapBounds, SDL_Renderer* r):
    _explosionImage = new TiledImage(filenameExplosion.c_str(), r, 24, 1, 0, TiledImage::CALCULATE_SINGLE_TILE_DIMENSIONS);
    SetImageInfo(_rockImage);
 
-   _translationalFrictionScalar = 0;
-   _rotationalFrictionScalar = 0;
+   theTranslationalFrictionScalar = 0;
+   theRotationalFrictionScalar = 0;
 }
 
 SpaceRock::~SpaceRock()
@@ -50,7 +50,7 @@ SpaceRock::~SpaceRock()
    delete _explosionImage;
 
    // Image will be set to one of the 2 objects above, don't delete it in parent
-   _image = nullptr;
+   theImage = nullptr;
 
    if (_animator)
    {
@@ -65,7 +65,7 @@ void SpaceRock::Explode(std::vector<GameEntity*>* deletionList,
    LOG_DEBUG() << "Rock exploding";
    SetImageInfo(_explosionImage);
    _animator = new AnimationDriver(_explosionImage, false);
-   _animator->SetAnimationDuration(1, _updateRate);
+   _animator->SetAnimationDuration(1, theUpdateRateHz);
 
    // Remember the reference to the deletion list
    _deletionList = deletionList;
@@ -77,21 +77,21 @@ void SpaceRock::SetRandomLocation(XYPair shipPos)
    int loopGuard = 5;
    do
    {
-      _position[0] = rand() % (int) _mapBounds[0];
-      _position[1] = rand() % (int) _mapBounds[1];
+      thePosition[0] = rand() % (int) theMapBounds[0];
+      thePosition[1] = rand() % (int) theMapBounds[1];
       loopGuard--;
-   } while (loopGuard && (GameMath::Distance(shipPos, _position) < 50) );
+   } while (loopGuard && (GameMath::Distance(shipPos, thePosition) < 50) );
 
    if (!loopGuard)
    {
       LOG_WARNING() << "Space rock location used maximum number of iterations to find position";
    }
 
-   _angle = rand() % 360;
+   theAngle = rand() % 360;
 
-   _velocity = GameMath::GetUnitVector(_angle);
-   _velocity *= rand() % ROCK_MAX_SPEED;
-   _rotVelocity = (rand() % (ROCK_MAX_ROT_SPEED * 2)) - ROCK_MAX_ROT_SPEED;
+   theVelocity = GameMath::GetUnitVector(theAngle);
+   theVelocity *= rand() % ROCK_MAX_SPEED;
+   theRotVelocity = (rand() % (ROCK_MAX_ROT_SPEED * 2)) - ROCK_MAX_ROT_SPEED;
 
 
 }
@@ -121,7 +121,7 @@ void SpaceRock::Draw()
 
    if (_displayCollisionArea)
    {
-      SDL_Renderer* r = _image->GetRenderer();
+      SDL_Renderer* r = theImage->GetRenderer();
 
       for(auto singleBox : GetCollisionBoxes())
       {

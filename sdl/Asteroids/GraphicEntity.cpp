@@ -11,123 +11,123 @@ const float FRICTION_SCALAR = 0.1;
 const float ROT_FRICTION_SCALAR = 0.3;
 
 GraphicEntity::GraphicEntity(XYPair mapBounds):
-   _image(nullptr),
-   _fullscreen(false),
-   _mapBounds(mapBounds),
-   _translationalFrictionScalar(FRICTION_SCALAR),
-   _rotationalFrictionScalar(ROT_FRICTION_SCALAR)
+   theImage(nullptr),
+   theFullscreen(false),
+   theMapBounds(mapBounds),
+   theTranslationalFrictionScalar(FRICTION_SCALAR),
+   theRotationalFrictionScalar(ROT_FRICTION_SCALAR)
 {
-   _position = XYPair(0,0);
-   _angle = 0.0;
+   thePosition = XYPair(0,0);
+   theAngle = 0.0;
 
-   _updateRateScalar = 0.0;
+   theUpdateRateScalar = 0.0;
 
-   _velocity = XYPair(0.0, 0.0);
+   theVelocity = XYPair(0.0, 0.0);
 
-   _acceleration = XYPair(0.0, 0.0);
+   theAcceleration = XYPair(0.0, 0.0);
 
-   _rotVelocity = 0.0;
+   theRotVelocity = 0.0;
 
-   _rotAcceleration = 0.0;
+   theRotAcceleration = 0.0;
 }
 
 GraphicEntity::~GraphicEntity()
 {
    LOG_DEBUG() << "Graphic Entity destructor (" << (unsigned long) this << ")";
 
-   LOG_DEBUG() << "~GraphicEntity: this = " << _image;
-   if (_image != nullptr)
+   LOG_DEBUG() << "~GraphicEntity: this = " << theImage;
+   if (theImage != nullptr)
    {
-      delete _image;
-      _image = nullptr;
+      delete theImage;
+      theImage = nullptr;
    }
 }
 
 void GraphicEntity::Update()
 {
-   _velocity += _acceleration * _updateRateScalar;
+   theVelocity += theAcceleration * theUpdateRateScalar;
 
-   _velocity *= (1.0 - _translationalFrictionScalar * _updateRateScalar);
+   theVelocity *= (1.0 - theTranslationalFrictionScalar * theUpdateRateScalar);
 
-   _position += _velocity * _updateRateScalar;
+   thePosition += theVelocity * theUpdateRateScalar;
 
-   _rotVelocity += _rotAcceleration * _updateRateScalar;
+   theRotVelocity += theRotAcceleration * theUpdateRateScalar;
 
-   _rotVelocity *= (1.0 - _rotationalFrictionScalar * _updateRateScalar);
+   theRotVelocity *= (1.0 - theRotationalFrictionScalar * theUpdateRateScalar);
 
-   AddAngle(_rotVelocity * _updateRateScalar);
+   AddAngle(theRotVelocity * theUpdateRateScalar);
 
    // Wrap position around
-   _position = GameMath::PositionModulus(_position, _mapBounds);
+   thePosition = GameMath::PositionModulus(thePosition, theMapBounds);
 }
 
 void GraphicEntity::SetUpdateRate(int updateHz)
 {
-   _updateRate = updateHz;
-   _updateRateScalar = 1.0 / (float) updateHz;
+   theUpdateRateHz = updateHz;
+   theUpdateRateScalar = 1.0 / (float) updateHz;
 }
 
 void GraphicEntity::SetVelocity(XYPair vel)
 {
-   _velocity = vel;
+   theVelocity = vel;
 }
 
 void GraphicEntity::SetAcceleration(XYPair acc)
 {
-   _acceleration = acc;
+   theAcceleration = acc;
 }
 
 void GraphicEntity::SetAngularVelocity(float degPerSec)
 {
-   _rotVelocity = degPerSec;
+   theRotVelocity = degPerSec;
 }
 
 void GraphicEntity::SetAngularAcceleration(float degPerSecSquared)
 {
-   _rotAcceleration = degPerSecSquared;
+   theRotAcceleration = degPerSecSquared;
 }
 
 void GraphicEntity::SetTranslationalFriction(float scalar)
 {
-   _translationalFrictionScalar = scalar;
+   theTranslationalFrictionScalar = scalar;
 }
 
 void GraphicEntity::SetRotationalFriction(float scalar)
 {
-   _rotationalFrictionScalar = scalar;
+   theRotationalFrictionScalar = scalar;
 }
 
 void GraphicEntity::Draw()
 {
-   if (_image == nullptr)
+   if (theImage == nullptr)
    {
       LOG_WARNING() << "Drawing graphical entity with no image information";
       return;
    }
 
-   if (_fullscreen)
+   if (theFullscreen)
    {
-      _image->DrawFullScreen();
+      theImage->DrawFullScreen();
    }
    else
    {
-      _image->Draw(_position);
+      theImage->Draw(thePosition);
    }
 }
 
 void GraphicEntity::SetImageInfo(char const * filename, SDL_Renderer* r)
 {
-   _image = new ImageInfo(filename, r);
+   theImage = new ImageInfo(filename, r);
 }
 
 void GraphicEntity::SetTextImageInfo(std::string text, SDL_Color color, SDL_Renderer* r)
 {
-   _image = new TextImage(text, color, r);
+   theImage = new TextImage(text, color, r);
 }
 
 void GraphicEntity::SetImageInfo(ImageInfo* ii)
 {
-   _image = ii;
+   theImage = ii;
 }
 
 void GraphicEntity::SetTiledImageInfo(char const * filename,
@@ -137,60 +137,60 @@ void GraphicEntity::SetTiledImageInfo(char const * filename,
                                       int spacing,
                                       TiledImage::TilingMode mode)
 {
-   _image = new TiledImage(filename, renderer, width, height, spacing, mode);
+   theImage = new TiledImage(filename, renderer, width, height, spacing, mode);
 }
 
 
 void GraphicEntity::SetAngle(float degrees)
 {
-   _angle = degrees;
+   theAngle = degrees;
 
    // Force the angle to be between 0 and 360
-   if (_angle < 0.0)
+   if (theAngle < 0.0)
    {
       // Negative angle
-      LOG_DEBUG() << "Wrapping negative angle" << _angle << " fmod=" << fmod(_angle, 360.0);
+      LOG_DEBUG() << "Wrapping negative angle" << theAngle << " fmod=" << fmod(theAngle, 360.0);
 
-      _angle *= -1;
-      _angle = fmod(_angle, 360.0);
-      _angle = 360.0 - _angle;
+      theAngle *= -1;
+      theAngle = fmod(theAngle, 360.0);
+      theAngle = 360.0 - theAngle;
 
-      LOG_DEBUG() << "The long way=" << _angle ;
+      LOG_DEBUG() << "The long way=" << theAngle ;
 
    }
-   else if (_angle > 360.0)
+   else if (theAngle > 360.0)
    {
-      LOG_DEBUG() << "Wrapping angle around from" << _angle << "to" << fmod(_angle, 360.0);
-      _angle = fmod(_angle, 360.0);
+      LOG_DEBUG() << "Wrapping angle around from" << theAngle << "to" << fmod(theAngle, 360.0);
+      theAngle = fmod(theAngle, 360.0);
    }
 
-   if (_image != nullptr)
+   if (theImage != nullptr)
    {
-      _image->SetAngle(_angle);
+      theImage->SetAngle(theAngle);
    }
 }
 
 void GraphicEntity::AddAngle(float addDegrees)
 {
-   SetAngle(_angle + addDegrees);
+   SetAngle(theAngle + addDegrees);
 }
 
 void GraphicEntity::SetPosition(XYPair pos)
 {
-   _position = pos;
-   _fullscreen = false;
+   thePosition = pos;
+   theFullscreen = false;
 }
 
 XYPair GraphicEntity::GetPosition() const
 {
-   return _position;
+   return thePosition;
 }
 
 std::vector<SDL_Rect> GraphicEntity::GetCollisionBoxes() const
 {
    // Basic collision box is the size of the image
-   XYPair rectSize = _image->GetSize();
-   XYPair topLeftPoint = _position - rectSize * 0.5;
+   XYPair rectSize = theImage->GetSize();
+   XYPair topLeftPoint = thePosition - rectSize * 0.5;
 
    SDL_Rect basicRectangle { (int) topLeftPoint[0], (int) topLeftPoint[1], (int) rectSize[0], (int) rectSize[1] };
    std::vector<SDL_Rect> retVal;
@@ -200,15 +200,15 @@ std::vector<SDL_Rect> GraphicEntity::GetCollisionBoxes() const
 
 void GraphicEntity::SetFullscreen(bool fullscreenEnable)
 {
-   _fullscreen = fullscreenEnable;
-   if (_fullscreen)
+   theFullscreen = fullscreenEnable;
+   if (theFullscreen)
    {
-      _position[0] = 0;
-      _position[1] = 0;
+      thePosition[0] = 0;
+      thePosition[1] = 0;
    }
 }
 
 void GraphicEntity::SetFrameNumber(int fn)
 {
-   _image->SetFrameNumber(fn);
+   theImage->SetFrameNumber(fn);
 }

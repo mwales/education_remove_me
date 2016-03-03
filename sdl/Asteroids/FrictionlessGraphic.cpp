@@ -3,36 +3,36 @@
 
 FrictionlessGraphic::FrictionlessGraphic(std::string filename, XYPair mapBounds, SDL_Renderer* r):
    GraphicEntity(mapBounds),
-   _framesToLive { 0 },
-   _deletionList { nullptr }
+   theFramesToLive { 0 },
+   theDeletionList { nullptr }
 {
-   _image = new ImageInfo(filename.c_str(), r);
-   SetImageInfo(_image);
+   theImage = new ImageInfo(filename.c_str(), r);
+   SetImageInfo(theImage);
 }
 
 FrictionlessGraphic::~FrictionlessGraphic()
 {
-   LOG_DEBUG() << "~FrictionlessGraphic: this = " << _image;
-   delete _image;
-   _image = nullptr;
+   LOG_DEBUG() << "~FrictionlessGraphic: this = " << theImage;
+   delete theImage;
+   theImage = nullptr;
 }
 
 void FrictionlessGraphic::Update()
 {
    // Not using parent implementation of physics, Frictionless Graphics don't slow down or rotate
-   _position += _velocity * _updateRateScalar;
+   thePosition += theVelocity * theUpdateRateScalar;
 
    // Wrap position around
-   _position = GameMath::PositionModulus(_position, _mapBounds);
+   thePosition = GameMath::PositionModulus(thePosition, theMapBounds);
 
    // Update object lifetime if it has a fixed lifetime
-   if (_framesToLive > 0)
+   if (theFramesToLive > 0)
    {
-      _framesToLive--;
-      if (_framesToLive == 0)
+      theFramesToLive--;
+      if (theFramesToLive == 0)
       {
          // FrictionlessGraphic lifetime expired
-         _deletionList->push_back(this);
+         theDeletionList->push_back(this);
       }
    }
 
@@ -40,12 +40,12 @@ void FrictionlessGraphic::Update()
 
 void FrictionlessGraphic::SetLifetime(float secs, std::vector<GameEntity*>* deletionList)
 {
-   if (_updateRate == 0)
+   if (theUpdateRateHz == 0)
    {
       LOG_FATAL() << "Can't set FrictionlessGraphic lifetime before setting update rate";
       return;
    }
 
-   _framesToLive = _updateRate * secs;
-   _deletionList = deletionList;
+   theFramesToLive = theUpdateRateHz * secs;
+   theDeletionList = deletionList;
 }

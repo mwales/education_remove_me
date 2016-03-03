@@ -26,7 +26,7 @@ public:
    void SetLifetime(float secs, std::vector<GameEntity*>* deletionList);
 
 protected:
-   int _framesToLive;
+   int theFramesToLive;
 
-   std::vector<GameEntity*>* _deletionList;
+   std::vector<GameEntity*>* theDeletionList;
 };

@@ -5,6 +5,9 @@
 class TiledImage;
 class GraphicEntity;
 
+/**
+ * Keeps tracks of and updates animation frame indexes
+ */
 class AnimationDriver
 {
 public:
@@ -23,19 +26,19 @@ public:
 
 protected:
 
-   TiledImage* _image;
+   TiledImage* theImage;
 
-   int _updatesPerFrame;
+   int theUpdatePerFrame;
 
-   bool _loopForever;
+   bool theLoopForever;
 
-   bool _deleteAfterwards;
+   bool theDeleteAfterwordsFlag;
 
-   int _startFrame;
+   int theStartFrame;
 
-   int _stopFrame;
+   int theStopFrame;
 
-   int _currentFrame;
+   int theCurrentFrame;
 
-   int _currentUpdateCall;
+   int theCurrentUpdateCall;
 };

@@ -54,19 +54,19 @@ void Spaceship::FireBullet()
       return;
    }
 
-   FrictionlessGraphic* b = new FrictionlessGraphic("assets/shot2.png", _mapBounds, GetImageInfo()->GetRenderer());
-   b->SetUpdateRate(_updateRate);
+   FrictionlessGraphic* b = new FrictionlessGraphic("assets/shot2.png", theMapBounds, GetImageInfo()->GetRenderer());
+   b->SetUpdateRate(theUpdateRateHz);
    b->SetLifetime(5.0, _deletionList);
-   b->SetAngle(_angle);
+   b->SetAngle(theAngle);
 
-   XYPair directionUnitVec = GameMath::GetUnitVector(_angle);
+   XYPair directionUnitVec = GameMath::GetUnitVector(theAngle);
    XYPair bulletVel = directionUnitVec;
    bulletVel *= 100.0;
-   bulletVel += _velocity;
+   bulletVel += theVelocity;
    b->SetVelocity(bulletVel);
 
    static float bulletOffset = GetImageInfo()->GetSize()[0] / 2.0;
-   XYPair bulletPos = _position + directionUnitVec * bulletOffset;
+   XYPair bulletPos = thePosition + directionUnitVec * bulletOffset;
    b->SetPosition(bulletPos);
 
    _newBullets.push_back(b);
@@ -96,15 +96,15 @@ void Spaceship::SetTurningDirection(int direction)
 
    if (_turningDirection < 0)
    {
-      _rotAcceleration = -700.0;
+      theRotAcceleration = -700.0;
    }
    else if (_turningDirection > 0)
    {
-      _rotAcceleration = +700.0;
+      theRotAcceleration = +700.0;
    }
    else
    {
-      _rotAcceleration = 0;
+      theRotAcceleration = 0;
    }
 
 }
@@ -173,12 +173,12 @@ void Spaceship::Update()
    // Reset thrust vector
    if (_thrustOn)
    {
-      XYPair accelDir = GameMath::GetUnitVector(_angle);
-      _acceleration = (accelDir * THRUST_ACCELERATION);
+      XYPair accelDir = GameMath::GetUnitVector(theAngle);
+      theAcceleration = (accelDir * THRUST_ACCELERATION);
    }
    else
    {
-      _acceleration = XYPair(0.0, 0.0);
+      theAcceleration = XYPair(0.0, 0.0);
    }
 
    if (_fireBullet)
@@ -203,14 +203,14 @@ void Spaceship::SetUpdateRate(int updateHz)
 void Spaceship::SetRotationalAcceleration(int rotAcc)
 {
    LOG_DEBUG() << "Rotational acc=" << rotAcc * 9.0;
-   _rotAcceleration = rotAcc * 9.0;
+   theRotAcceleration = rotAcc * 9.0;
 }
 
 std::vector<SDL_Rect> Spaceship::GetCollisionBoxes() const
 {
    // Basic collision box is the size of the image
-   XYPair rectSize = _image->GetSize() * 0.5;
-   XYPair topLeftPoint = _position - rectSize * 0.5;
+   XYPair rectSize = theImage->GetSize() * 0.5;
+   XYPair topLeftPoint = thePosition - rectSize * 0.5;
 
    SDL_Rect basicRectangle { (int) topLeftPoint[0], (int) topLeftPoint[1], (int) rectSize[0], (int) rectSize[1] };
    std::vector<SDL_Rect> retVal;
@@ -224,7 +224,7 @@ void Spaceship::Draw()
 
    if (_displayCollisionArea)
    {
-      SDL_Renderer* r = _image->GetRenderer();
+      SDL_Renderer* r = theImage->GetRenderer();
 
       for(auto singleBox : GetCollisionBoxes())
       {

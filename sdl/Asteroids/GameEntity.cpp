@@ -1,13 +1,13 @@
 #include "GameEntity.h"
 
 GameEntity::GameEntity():
-   _updateRate { 0 }
+   theUpdateRateHz { 0 }
 {
 }
 
 void GameEntity::SetUpdateRate(int updateHz)
 {
-   _updateRate = updateHz;
+   theUpdateRateHz = updateHz;
 }
 
 void GameEntity::Update()

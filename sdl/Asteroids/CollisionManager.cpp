@@ -9,49 +9,48 @@
 #define MORE_FLOATY_MATH_FOR_COMPARTMENTIZATION
 
 CollisionManager::CollisionManager(int areaWidth, int areaHeight, int containerSize):
- _width(areaWidth),
- _height(areaHeight),
- _compartmentSize(containerSize),
- _currentCollisionMode(CollisionMode::GRID)
+ theWidth(areaWidth),
+ theHeight(areaHeight),
+ theCompartmentSize(containerSize),
+ theCurrentCollisionMode(CollisionMode::GRID)
 {
-    if ( (_width <= 0) || (_height <= 0))
+    if ( (theWidth <= 0) || (theHeight <= 0))
     {
         LOG_FATAL() << "Collision manager area of" << areaWidth << "x" << areaHeight << " is invalid";
         return;
     }
 
-    _compartmentCols = ceil( (float) _width / (float) _compartmentSize);
-    _compartmentRows = ceil( (float) _height / (float) _compartmentSize);
+    theCompartmentCols = ceil( (float) theWidth / (float) theCompartmentSize);
+    theCompartmentRows = ceil( (float) theHeight / (float) theCompartmentSize);
 }
 
 CollisionManager::CollisionManager(int areaWidth, int areaHeight, int containerSize,
                  std::vector<ICollidable const *> const & bodiesA,
                  std::vector<ICollidable const *> const & bodiesB):
-   _width(areaWidth),
-   _height(areaHeight),
-   _compartmentSize(containerSize),
-   _bodiesA(bodiesA),
-   _bodiesB(bodiesB)
+   theWidth(areaWidth),
+   theHeight(areaHeight),
+   theCompartmentSize(containerSize),
+   theBodiesA(bodiesA),
+   theBodiesB(bodiesB)
 {
-   if ( (_width <= 0) || (_height <= 0))
+   if ( (theWidth <= 0) || (theHeight <= 0))
    {
        LOG_FATAL() << "Collision manager area of" << areaWidth << "x" << areaHeight << " is invalid";
        return;
    }
 
-   _compartmentCols = ceil(_width / _compartmentSize);
-   _compartmentRows = ceil(_height / _compartmentSize);
+   theCompartmentCols = ceil(theWidth / theCompartmentSize);
+   theCompartmentRows = ceil(theHeight / theCompartmentSize);
 }
 
 bool CollisionManager::RemoveFromA(ICollidable const * obj)
 {
-   std::vector<ICollidable const *>::iterator it;
-   it = std::find(_bodiesA.begin(), _bodiesA.end(), obj);
+   auto it = std::find(theBodiesA.begin(), theBodiesA.end(), obj);
 
-   if (it != _bodiesA.end())
+   if (it != theBodiesA.end())
    {
       LOG_DEBUG() << "Erasing object from bodies A list (" << (unsigned long) *it << ")";
-      _bodiesA.erase(it);
+      theBodiesA.erase(it);
 
       return true;
    }
@@ -61,13 +60,12 @@ bool CollisionManager::RemoveFromA(ICollidable const * obj)
 
 bool CollisionManager::RemoveFromB(ICollidable const * obj)
 {
-   std::vector<ICollidable const *>::iterator it;
-   it = std::find(_bodiesB.begin(), _bodiesB.end(), obj);
+   auto it = std::find(theBodiesB.begin(), theBodiesB.end(), obj);
 
-   if (it != _bodiesB.end())
+   if (it != theBodiesB.end())
    {
       LOG_DEBUG() << "Erasing object from bodies B list";
-      _bodiesB.erase(it);
+      theBodiesB.erase(it);
 
       return true;
    }
@@ -77,25 +75,25 @@ bool CollisionManager::RemoveFromB(ICollidable const * obj)
 
 void CollisionManager::AddToA(ICollidable const * obj)
 {
-   _bodiesA.push_back(obj);
+   theBodiesA.push_back(obj);
 }
 
 void CollisionManager::AddToB(ICollidable const * obj)
 {
-   _bodiesB.push_back(obj);
+   theBodiesB.push_back(obj);
 }
 
 void CollisionManager::ClearCollisions()
 {
-   _currentCollisions.clear();
+   theCurrentCollisions.clear();
 }
 
 void CollisionManager::CheckForCollisions()
 {
-   switch(_currentCollisionMode)
+   switch(theCurrentCollisionMode)
    {
       case CollisionMode::EXPONENTIAL:
-         CheckForCollisionsExponentialModern(&_bodiesA, &_bodiesB);
+         CheckForCollisionsExponentialModern(&theBodiesA, &theBodiesB);
          break;
       case CollisionMode::GRID:
          CheckForCollisionsWithGrid();
@@ -104,34 +102,28 @@ void CollisionManager::CheckForCollisions()
 
 void CollisionManager::SetCollisionManagerMode(CollisionMode mode)
 {
-   _currentCollisionMode = mode;
+   theCurrentCollisionMode = mode;
 }
 
 void CollisionManager::CheckForCollisionsExponential()
 {
    // For now, just do a simple comparison of comparing everything in A to B
-   std::vector<ICollidable const *>::const_iterator iterA;
-   std::vector<ICollidable const *>::const_iterator iterB;
 
-   for(iterA = _bodiesA.begin(); iterA != _bodiesA.end(); iterA++)
+   for(auto curA : theBodiesA)
    {
-      ICollidable const * curA = *iterA;
-
-      for(iterB = _bodiesB.begin(); iterB != _bodiesB.end(); iterB++)
+      for(auto curB : theBodiesB)
       {
-         ICollidable const * curB = *iterB;
-
          XYPair aPosition = curA->GetPosition();
          XYPair bPosition = curB->GetPosition();
 
          if (GameMath::Distance(aPosition, bPosition) <= 50)
          {
-//            LOG_DEBUG() << "We have a collision.  A @ ("
-//                        << curA->GetPosition()[0] << "," << curA->GetPosition()[1] << ") and B @ ("
-//                        << curB->GetPosition()[0] << "," << curB->GetPosition()[1] << ")";
+            // LOG_DEBUG() << "We have a collision.  A @ ("
+            //             << curA->GetPosition()[0] << "," << curA->GetPosition()[1] << ") and B @ ("
+            //             << curB->GetPosition()[0] << "," << curB->GetPosition()[1] << ")";
 
             Collision col(curA, curB);
-            _currentCollisions.push_back(col);
+            theCurrentCollisions.push_back(col);
          }
       }
    }
@@ -155,7 +147,7 @@ void CollisionManager::CheckForCollisionsWithGrid()
    // empty until i write stuff
 
    // Put the objects into compartments
-   int numCompartmentsTotal = _compartmentCols * _compartmentRows;
+   int numCompartmentsTotal = theCompartmentCols * theCompartmentRows;
    std::vector< std::vector<ICollidable const *> > aGrid(numCompartmentsTotal);
    std::vector< std::vector<ICollidable const *> > bGrid(numCompartmentsTotal);
 
@@ -175,27 +167,27 @@ void CollisionManager::CheckForCollisionsWithGrid()
 void CollisionManager::GridHelper_PutIntoCompartments(std::vector<std::vector<ICollidable const *> >* gridA,
                                                       std::vector<std::vector<ICollidable const *> >* gridB)
 {
-   //LOG_DEBUG() << "GRID SIZE: " << _compartmentCols << " x " << _compartmentRows;
+   // LOG_DEBUG() << "GRID SIZE: " << _compartmentCols << " x " << _compartmentRows;
 
-   for (ICollidable const * curObj : _bodiesA)
+   for (ICollidable const * curObj : theBodiesA)
    {
       XYPair pos = curObj->GetPosition();
-      int compX = pos[0] / _compartmentSize;
-      int compY = pos[1] / _compartmentSize;
-      int gridPos = compY * _compartmentCols + compX;
-//      LOG_DEBUG() << "Object going into compartment A" << gridPos << " with coord (" << pos[0]
-//                  << "," << pos[1] << ")";
+      int compX = pos[0] / theCompartmentSize;
+      int compY = pos[1] / theCompartmentSize;
+      int gridPos = compY * theCompartmentCols + compX;
+      // LOG_DEBUG() << "Object going into compartment A" << gridPos << " with coord (" << pos[0]
+      //             << "," << pos[1] << ")";
       (*gridA)[gridPos].push_back(curObj);
    }
 
-   for (ICollidable const * curObj : _bodiesB)
+   for (ICollidable const * curObj : theBodiesB)
    {
       XYPair pos = curObj->GetPosition();
-      int compX = pos[0] / _compartmentSize;
-      int compY = pos[1] / _compartmentSize;
-      int gridPos = compY * _compartmentCols + compX;
-//      LOG_DEBUG() << "Object going into compartment B " << gridPos << " with coord (" << pos[0]
-//                  << "," << pos[1] << ")";
+      int compX = pos[0] / theCompartmentSize;
+      int compY = pos[1] / theCompartmentSize;
+      int gridPos = compY * theCompartmentCols + compX;
+      // LOG_DEBUG() << "Object going into compartment B " << gridPos << " with coord (" << pos[0]
+      //             << "," << pos[1] << ")";
       (*gridB)[gridPos].push_back(curObj);
    }
 }
@@ -205,7 +197,7 @@ void CollisionManager::GridHelper_PutIntoCompartments(std::vector<std::vector<IC
 void CollisionManager::GridHelper_PutIntoCompartments(std::vector<std::vector<ICollidable const *> >* gridA,
                                                       std::vector<std::vector<ICollidable const *> >* gridB)
 {
-   //LOG_DEBUG() << "GRID SIZE: " << _compartmentCols << " x " << _compartmentRows;
+   // LOG_DEBUG() << "GRID SIZE: " << _compartmentCols << " x " << _compartmentRows;
 
    std::vector<ICollidable const *> bodiesACopy = _bodiesA;
    std::vector<ICollidable const *> bodiesBCopy = _bodiesB;
@@ -227,7 +219,7 @@ void CollisionManager::GridHelper_PutIntoCompartments(std::vector<std::vector<IC
             if ( (objPos[0] < xCoord) && (objPos[1] < yCoord) )
             {
                // Belongs in this compartment
-               //LOG_DEBUG() << "Found an object A compartment filler.  x=" << xCoord << ", y=" << yCoord << ", comp=" << curCompartmentNum << ", Obj pos = " << objPos;
+               // LOG_DEBUG() << "Found an object A compartment filler.  x=" << xCoord << ", y=" << yCoord << ", comp=" << curCompartmentNum << ", Obj pos = " << objPos;
                (*gridA)[curCompartmentNum].push_back(*aIter);
                aIter = bodiesACopy.erase(aIter);
             }
@@ -261,18 +253,18 @@ void CollisionManager::GridHelper_PutIntoCompartments(std::vector<std::vector<IC
 void CollisionManager::GridHelper_CollideCompartments(std::vector<std::vector<ICollidable const *> >* gridA,
                                                       std::vector<std::vector<ICollidable const *> >* gridB)
 {
-   for (int curRow = 0; curRow < _compartmentRows; curRow++)
+   for (int curRow = 0; curRow < theCompartmentRows; curRow++)
    {
-      for (int curCol = 0; curCol < _compartmentCols; curCol++)
+      for (int curCol = 0; curCol < theCompartmentCols; curCol++)
       {
          // Collide everything in my current grid
-         int gridPos = curRow * _compartmentCols + curCol;
-//         LOG_DEBUG() << "Checking " << curCol << "," << curRow << " for collisions, sizes"
-//                     << (*gridA)[gridPos].size() << " and " << (*gridB)[gridPos].size();
+         int gridPos = curRow * theCompartmentCols + curCol;
+         // LOG_DEBUG() << "Checking " << curCol << "," << curRow << " for collisions, sizes"
+         //             << (*gridA)[gridPos].size() << " and " << (*gridB)[gridPos].size();
          CheckForCollisionsExponentialModern( &(*gridA)[gridPos] , &(*gridB)[gridPos]);
 
          // Collide everything in my grid with one to the right
-         if (curCol + 1 < _compartmentCols)
+         if (curCol + 1 < theCompartmentCols)
          {
             int altPos = gridPos + 1;
             CheckForCollisionsExponentialModern( &(*gridA)[altPos] , &(*gridB)[gridPos]);
@@ -280,25 +272,25 @@ void CollisionManager::GridHelper_CollideCompartments(std::vector<std::vector<IC
          }
 
          // Collide everything in my grid with on below
-         if (curRow + 1 < _compartmentRows)
+         if (curRow + 1 < theCompartmentRows)
          {
-            int altPos = gridPos + _compartmentCols;
+            int altPos = gridPos + theCompartmentCols;
             CheckForCollisionsExponentialModern( &(*gridA)[altPos] , &(*gridB)[gridPos]);
             CheckForCollisionsExponentialModern( &(*gridA)[gridPos] , &(*gridB)[altPos]);
          }
 
-         // Collide everything in my grid wiht one to the right-below
-         if ( (curRow + 1 < _compartmentRows) && (curCol + 1 < _compartmentCols) )
+         // Collide everything in my grid with one to the right-below
+         if ( (curRow + 1 < theCompartmentRows) && (curCol + 1 < theCompartmentCols) )
          {
-            int altPos = gridPos + _compartmentCols + 1;
+            int altPos = gridPos + theCompartmentCols + 1;
             CheckForCollisionsExponentialModern( &(*gridA)[altPos] , &(*gridB)[gridPos]);
             CheckForCollisionsExponentialModern( &(*gridA)[gridPos] , &(*gridB)[altPos]);
          }
 
          // Collide everything in my grid wiht one to the left-below
-         if ( (curRow + 1 < _compartmentRows) && (curCol - 1 >= 0) )
+         if ( (curRow + 1 < theCompartmentRows) && (curCol - 1 >= 0) )
          {
-            int altPos = gridPos + _compartmentCols - 1;
+            int altPos = gridPos + theCompartmentCols - 1;
             CheckForCollisionsExponentialModern( &(*gridA)[altPos] , &(*gridB)[gridPos]);
             CheckForCollisionsExponentialModern( &(*gridA)[gridPos] , &(*gridB)[altPos]);
          }
@@ -315,7 +307,7 @@ bool CollisionManager::DoObjectsOverlap(ICollidable const * objA, ICollidable co
          if (SDL_HasIntersection(&boxA, &boxB) == SDL_TRUE)
          {
             Collision kaboom { objA, objB };
-            _currentCollisions.push_back(kaboom);
+            theCurrentCollisions.push_back(kaboom);
             return true;
          }
       }
@@ -326,5 +318,5 @@ bool CollisionManager::DoObjectsOverlap(ICollidable const * objA, ICollidable co
 
 std::vector<Collision> CollisionManager::GetCollisions()
 {
-   return _currentCollisions;
+   return theCurrentCollisions;
 }

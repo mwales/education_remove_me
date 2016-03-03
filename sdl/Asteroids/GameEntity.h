@@ -2,6 +2,9 @@
 
 #include <SDL2/SDL.h>
 
+/**
+ * All game objects that are drawn / updated each frame should derive from GameEntity
+ */
 class GameEntity
 {
 public:
@@ -17,6 +20,6 @@ public:
 
 protected:
 
-   int _updateRate;
+   int theUpdateRateHz;
 };
 

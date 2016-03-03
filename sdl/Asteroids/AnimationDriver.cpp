@@ -4,18 +4,18 @@
 #include "Logger.h"
 
 AnimationDriver::AnimationDriver(TiledImage* image, bool repeating, int startFrame, int endFrame):
-   _image(image),
-   _updatesPerFrame(1),
-   _loopForever(repeating),
-   _deleteAfterwards(false),
-   _startFrame(startFrame),
-   _currentUpdateCall(0)
+   theImage(image),
+   theUpdatePerFrame(1),
+   theLoopForever(repeating),
+   theDeleteAfterwordsFlag(false),
+   theStartFrame(startFrame),
+   theCurrentUpdateCall(0)
 {
    if ( (startFrame < 0) || (startFrame >= image->GetNumberOfFrames()) )
    {
       LOG_WARNING() << "Animation driver given an invalid start frame of" << startFrame
                     << "and tile image only has" << image->GetNumberOfFrames() << "frames";
-      _startFrame = 0;
+      theStartFrame = 0;
    }
 
    if ( (endFrame < 0) || (endFrame >= image->GetNumberOfFrames()) )
@@ -27,41 +27,40 @@ AnimationDriver::AnimationDriver(TiledImage* image, bool repeating, int startFra
                        << "and tile image only has" << image->GetNumberOfFrames() << "frames";
       }
 
-      _stopFrame = image->GetNumberOfFrames() - 1;
+      theStopFrame = image->GetNumberOfFrames() - 1;
    }
 
-   LOG_DEBUG() << "Animation driver will animate from frame" << _startFrame << "to" << _stopFrame;
-   _currentFrame = _startFrame;
+   LOG_DEBUG() << "Animation driver will animate from frame" << theStartFrame << "to" << theStopFrame;
+   theCurrentFrame = theStartFrame;
 }
 
 void AnimationDriver::SetDeleteAfterAnimation(bool deleteAfterwards)
 {
-   _deleteAfterwards = deleteAfterwards;
+   theDeleteAfterwordsFlag = deleteAfterwards;
 }
 
 void AnimationDriver::SetInfiniteLoop(bool loopForever)
 {
-   _loopForever = loopForever;
+   theLoopForever = loopForever;
 }
 
 bool AnimationDriver::StepAnimation()
 {
-   _currentUpdateCall++;
-   if (_currentUpdateCall >= _updatesPerFrame)
+   theCurrentUpdateCall++;
+   if (theCurrentUpdateCall >= theUpdatePerFrame)
    {
-      _currentUpdateCall = 0;
+      theCurrentUpdateCall = 0;
 
-      if (_currentFrame == _stopFrame)
+      if (theCurrentFrame == theStopFrame)
       {
          // We are at the end of the animation
-         if (_loopForever)
+         if (theLoopForever)
          {
-            _currentFrame = _startFrame;
+            theCurrentFrame = theStartFrame;
             return false;
          }
 
-         LOG_DEBUG() << "Animation over!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
-         _image = nullptr;
+         theImage = nullptr;
 
          // Need to add a list of AnimationDrivers to delete as well
          return true;
@@ -69,8 +68,8 @@ bool AnimationDriver::StepAnimation()
       else
       {
          // Next frame
-         _currentFrame++;
-         _image->SetFrameNumber(_currentFrame);
+         theCurrentFrame++;
+         theImage->SetFrameNumber(theCurrentFrame);
       }
    }
 
@@ -80,7 +79,7 @@ bool AnimationDriver::StepAnimation()
 void AnimationDriver::SetAnimationDuration(float seconds, int updateRateHz)
 {
    // Time it would take to run the animation at it's fasetest rate, which is 1 update/frame
-   float minAnimationTime = (_stopFrame - _startFrame + 1) / (float) updateRateHz;
+   float minAnimationTime = (theStopFrame - theStartFrame + 1) / (float) updateRateHz;
 
    float idealUpdatesPerAnimation = seconds / minAnimationTime;
 
@@ -89,14 +88,14 @@ void AnimationDriver::SetAnimationDuration(float seconds, int updateRateHz)
 
    if ( (idealUpdatesPerAnimation - updatesPerFrameLess) < (updatesPerFrameMore - idealUpdatesPerAnimation))
    {
-      _updatesPerFrame = (int) (updatesPerFrameLess + 0.1);
+      theUpdatePerFrame = (int) (updatesPerFrameLess + 0.1);
    }
    else
    {
-      _updatesPerFrame = (int) (updatesPerFrameMore + 0.1);
+      theUpdatePerFrame = (int) (updatesPerFrameMore + 0.1);
    }
 
-   LOG_DEBUG() << "Setting updates per frame to" << _updatesPerFrame;
+   LOG_DEBUG() << "Setting updates per frame to" << theUpdatePerFrame;
 }
 
 void AnimationDriver::SetUpdatesPerFrame(int upf)
@@ -107,5 +106,5 @@ void AnimationDriver::SetUpdatesPerFrame(int upf)
       return;
    }
 
-   _updatesPerFrame = upf;
+   theUpdatePerFrame = upf;
 }
