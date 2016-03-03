@@ -12,12 +12,12 @@ TitleScene::TitleScene(Graphics* g, Mixer* m):
    _authorName(g->GetWindowSize()),
    _nextScene(nullptr)
 {
-   _name = "Title";
-   _background.SetImageInfo("assets/nebula_blue.png", _renderer);
-   _splashImage.SetImageInfo("assets/splash.png", _renderer);
+   theName = "Title";
+   _background.SetImageInfo("assets/nebula_blue.png", theRenderer);
+   _splashImage.SetImageInfo("assets/splash.png", theRenderer);
 
    SDL_Color nameColor = { 0xff, 0xff, 0xff, 0xff };
-   _authorName.SetTextImageInfo("Created by Michael Wales", nameColor, _renderer);
+   _authorName.SetTextImageInfo("Created by Michael Wales", nameColor, theRenderer);
 
    _background.SetFullscreen(true);
 
@@ -30,17 +30,17 @@ TitleScene::TitleScene(Graphics* g, Mixer* m):
    splashCenter *= 0.5;
    _splashImage.SetPosition(splashCenter);
 
-   _entities.push_back(&_background);
-   _entities.push_back(&_splashImage);
-   _entities.push_back(&_authorName);
+   theEntities.push_back(&_background);
+   theEntities.push_back(&_splashImage);
+   theEntities.push_back(&_authorName);
 
-   _mixer->LoadMusic("assets/cobra.ogg");
+   theMixer->LoadMusic("assets/cobra.ogg");
    //_mixer->PlayMusic();
 }
 
 TitleScene::~TitleScene()
 {
-   _mixer->PauseMusic();
+   theMixer->PauseMusic();
 }
 
 bool TitleScene::ProcessEvent(SDL_Event const & ev)
@@ -54,7 +54,7 @@ bool TitleScene::ProcessEvent(SDL_Event const & ev)
          {
             LOG_DEBUG() << "Yeah, space bar";
 
-            _nextScene = new ShootingScene(_graphics, _mixer);
+            _nextScene = new ShootingScene(theGraphics, theMixer);
             return true;
          }
          break;
@@ -69,7 +69,7 @@ bool TitleScene::ProcessEvent(SDL_Event const & ev)
          if ( (ev.jbutton.button == 0) || (ev.jbutton.button == 7) )
          {
             // User pressed A or Start on x360 controller
-            _nextScene = new ShootingScene(_graphics, _mixer);
+            _nextScene = new ShootingScene(theGraphics, theMixer);
             return true;
          }
          break;

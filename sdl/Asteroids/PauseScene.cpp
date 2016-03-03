@@ -10,21 +10,21 @@ PauseScene::PauseScene(Graphics* g, Mixer* m, Scene* underneath):
    _pauseText(g->GetWindowSize()),
    _nextScene(nullptr)
 {
-   _name = "Pause";
+   theName = "Pause";
 
    SDL_Color textColor = { 0xff, 0xff, 0xff, 0xff };
-   _pauseText.SetTextImageInfo("Game Paused", textColor, _renderer);
+   _pauseText.SetTextImageInfo("Game Paused", textColor, theRenderer);
 
    XYPair textPosition = g->GetWindowSize();
    textPosition *= 0.5;
    _pauseText.SetPosition(textPosition);
 
-   _entities.push_back(&_pauseText);
+   theEntities.push_back(&_pauseText);
 }
 
 PauseScene::~PauseScene()
 {
-   _mixer->PauseMusic();
+   theMixer->PauseMusic();
 }
 
 bool PauseScene::ProcessEvent(SDL_Event const & ev)
@@ -75,7 +75,7 @@ void PauseScene::Draw()
    // Draw the scene underneath the pause screen
    _underneath->Draw();
 
-   for(std::vector<GameEntity*>::iterator it = _entities.begin(); it != _entities.end(); it++)
+   for(std::vector<GameEntity*>::iterator it = theEntities.begin(); it != theEntities.end(); it++)
    {
       (*it)->Draw();
    }

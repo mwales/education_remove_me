@@ -19,22 +19,22 @@ ShootingScene::ShootingScene(Graphics* g, Mixer* m):
    _collisionMgr(g->GetWindowSize()[0], g->GetWindowSize()[1], g->GetWindowSize()[0] / 15),
    _debugMode(false)
 {
-   _name = "Shooting";
+   theName = "Shooting";
 
-   _background.SetImageInfo("assets/nebula_brown.png", _renderer);
+   _background.SetImageInfo("assets/nebula_brown.png", theRenderer);
    _background.SetFullscreen(true);
 
    XYPair shipPosition = g->GetWindowSize();
    shipPosition *= 0.5;
 
-   _ship.SetTiledImageInfo("assets/double_ship.png", _renderer, 90, 90, 0,
+   _ship.SetTiledImageInfo("assets/double_ship.png", theRenderer, 90, 90, 0,
                            TiledImage::PROVIDING_SINGLE_TILE_DIMENSIONS);
    _ship.SetPosition(shipPosition);
    _ship.SetFullscreen(false);
-   _ship.SetAddDeleteLists(&_additionList, &_deletionList);
+   _ship.SetAddDeleteLists(&theAdditionList, &theDeletionList);
 
-   _entities.push_back(&_background);
-   _entities.push_back(&_ship);
+   theEntities.push_back(&_background);
+   theEntities.push_back(&_ship);
 
    _collisionMgr.AddToB(&_ship);
 
@@ -52,7 +52,7 @@ ShootingScene::ShootingScene(Graphics* g, Mixer* m):
 
 ShootingScene::~ShootingScene()
 {
-   _graphics->GetJoystick()->ClearRegisteredCommands();
+   theGraphics->GetJoystick()->ClearRegisteredCommands();
 
    std::map<int, Command*>::const_iterator it;
    for (it = _keyboardDownMappedCommands.begin(); it != _keyboardDownMappedCommands.end(); it++)
@@ -123,7 +123,7 @@ bool ShootingScene::ProcessEvent(SDL_Event const & ev)
       case SDL_JOYBUTTONDOWN:
       case SDL_JOYBUTTONUP:
       {
-         if (_graphics->GetJoystick()->ProcessEvent(ev))
+         if (theGraphics->GetJoystick()->ProcessEvent(ev))
          {
             // Scene will change now
             return true;
@@ -166,7 +166,7 @@ void ShootingScene::PauseGame()
    LOG_DEBUG() << "Pausing game";
 
    _pauseState = true;
-   _nextState = new PauseScene(_graphics, _mixer, this);
+   _nextState = new PauseScene(theGraphics, theMixer, this);
 }
 
 void ShootingScene::SpawnRock()
@@ -181,7 +181,7 @@ void ShootingScene::SpawnRock()
    // Rock spawn counter hit zero, time to spawn a rock!
 
    // Set timer for the next attempted rock spawning
-   _rockSpawnCounter = _updateRateHz / 2; //* 5;
+   _rockSpawnCounter = theUpdateRateHz / 2; //* 5;
 
    if (_bigRocks.size() >= MAX_ROCKS)
    {
@@ -191,11 +191,11 @@ void ShootingScene::SpawnRock()
 
    for(auto i = 0; i < 20; i++)
    {
-      SpaceRock* rock = new SpaceRock(_graphics->GetWindowSize(), _renderer);
+      SpaceRock* rock = new SpaceRock(theGraphics->GetWindowSize(), theRenderer);
       rock->SetRandomLocation(_ship.GetPosition());
-      rock->SetUpdateRate(_updateRateHz);
+      rock->SetUpdateRate(theUpdateRateHz);
       _bigRocks.push_back(rock);
-      _entities.push_back(rock);
+      theEntities.push_back(rock);
       _collisionMgr.AddToA(rock);
 
       if (_debugMode)
@@ -235,7 +235,7 @@ void ShootingScene::Update()
 
             // We found the rock in our list
             SpaceRock* splodingRock = *rockIt;
-            splodingRock->Explode(&_deletionList, &_additionList);
+            splodingRock->Explode(&theDeletionList, &theAdditionList);
             _collisionMgr.RemoveFromA(splodingRock);
             rocksToDelete.insert(splodingRock);
 
@@ -277,7 +277,7 @@ void ShootingScene::Update()
 
 void ShootingScene::ManageEntityLifetimes()
 {
-   for(GameEntity* ge : _deletionList)
+   for(GameEntity* ge : theDeletionList)
    {
       _collisionMgr.RemoveFromB( dynamic_cast<GraphicEntity*>(ge));
    }

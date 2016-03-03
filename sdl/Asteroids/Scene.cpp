@@ -10,35 +10,35 @@
 
 
 Scene::Scene(Graphics* g, Mixer* m):
-   _graphics(g),
-   _mixer(m),
-   _name("Base"),
-   _updateRateHz(60)
+   theGraphics(g),
+   theMixer(m),
+   theName("Base"),
+   theUpdateRateHz(60)
 {
-   _renderer = g->GetRenderer();
+   theRenderer = g->GetRenderer();
 }
 
 Scene::~Scene()
 {
-   LOG_DEBUG() << "End of scene" << _name;
+   LOG_DEBUG() << "End of scene" << theName;
 }
 
 void Scene::Update()
 {
    // LOG_DEBUG() << "Updating Scene (" << (unsigned long) this << ")";
 
-   for(std::vector<GameEntity*>::iterator it = _entities.begin(); it != _entities.end(); it++)
+   for(auto e : theEntities)
    {
       // LOG_DEBUG() << "Updating entity (" << (unsigned long) *it << ")";
-      (*it)->Update();
+      e->Update();
    }
 }
 
 void Scene::Draw()
 {
-   for(std::vector<GameEntity*>::iterator it = _entities.begin(); it != _entities.end(); it++)
+   for(auto e : theEntities)
    {
-      (*it)->Draw();
+      e->Draw();
    }
 }
 
@@ -46,40 +46,40 @@ void Scene::ManageEntityLifetimes()
 {
    std::vector<GameEntity*>::iterator it;
 
-   while(!_deletionList.empty())
+   while(!theDeletionList.empty())
    {
       //it = _entities.find(_deletionList.back());
-      it = std::find(_entities.begin(), _entities.end(), _deletionList.back());
-      if (it != _entities.end())
+      it = std::find(theEntities.begin(), theEntities.end(), theDeletionList.back());
+      if (it != theEntities.end())
       {
          LOG_DEBUG() << "Deleting entity" << (unsigned long) *it;
          delete (*it);
-         _entities.erase(it);
+         theEntities.erase(it);
       }
       else
       {
          LOG_WARNING() << "Couldn't find entity to delete, already deleted?";
       }
 
-      _deletionList.pop_back();
+      theDeletionList.pop_back();
    }
 
-   while(!_additionList.empty())
+   while(!theAdditionList.empty())
    {
       LOG_DEBUG() << "Adding a new entity to scene";
-      _entities.push_back(_additionList.back());
-      _additionList.pop_back();
+      theEntities.push_back(theAdditionList.back());
+      theAdditionList.pop_back();
    }
 }
 
 void Scene::SetUpdateRate(int updateHz)
 {
-   for(std::vector<GameEntity*>::iterator it = _entities.begin(); it != _entities.end(); it++)
+   for(auto e : theEntities)
    {
-      (*it)->SetUpdateRate(updateHz);
+      e->SetUpdateRate(updateHz);
    }
 
-   _updateRateHz = updateHz;
+   theUpdateRateHz = updateHz;
 }
 
 void Scene::LoadBgMusic(char* filename)
@@ -116,7 +116,7 @@ bool Scene::PollInputs(int ticksToWait)
                return true;
             case SDL_JOYDEVICEADDED:
             case SDL_JOYDEVICEREMOVED:
-               _graphics->GetJoystick()->UpdateJoysticks();
+               theGraphics->GetJoystick()->UpdateJoysticks();
                break;
             default:
             {
@@ -150,7 +150,7 @@ bool Scene::PollInputsUntilEmpty()
               return true;
            case SDL_JOYDEVICEADDED:
            case SDL_JOYDEVICEREMOVED:
-              _graphics->GetJoystick()->UpdateJoysticks();
+              theGraphics->GetJoystick()->UpdateJoysticks();
               break;
            default:
            {
@@ -182,5 +182,15 @@ Scene* Scene::GetNextState(bool* deleteMe)
 
 std::string Scene::GetSceneName()
 {
-   return _name;
+   return theName;
+}
+
+void Scene::AddEntity(GameEntity * e)
+{
+   theAdditionList.push_back(e);
+}
+
+void Scene::DeleteEntity(GameEntity * e)
+{
+   theDeletionList.push_back(e);
 }

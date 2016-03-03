@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ILifetimeManager.h"
 #include <SDL2/SDL.h>
 #include <vector>
 #include <string>
@@ -7,7 +8,11 @@
 class Graphics;
 class Mixer;
 class GameEntity;
-class Scene
+
+/**
+ * The scene is the main state machine for the game
+ */
+class Scene : public ILifetimeManager
 {
 public:
    Scene(Graphics* g, Mixer* m);
@@ -51,24 +56,28 @@ public:
 
    std::string GetSceneName();
 
+   void AddEntity(GameEntity * e) override;
+
+   void DeleteEntity(GameEntity * e) override;
+
 protected:
 
    virtual bool ProcessEvent(SDL_Event const & ev);
 
-   SDL_Renderer* _renderer;
+   SDL_Renderer* theRenderer;
 
-   std::vector<GameEntity*> _entities;
+   std::vector<GameEntity*> theEntities;
 
-   Graphics* _graphics;
+   Graphics* theGraphics;
 
-   Mixer* _mixer;
+   Mixer* theMixer;
 
-   std::string _name;
+   std::string theName;
 
-   int _updateRateHz;
+   int theUpdateRateHz;
 
    // After an update, these are the objects that should be deleted/added
-   std::vector<GameEntity*> _deletionList;
-   std::vector<GameEntity*> _additionList;
+   std::vector<GameEntity *> theDeletionList;
+   std::vector<GameEntity *> theAdditionList;
 };
 
