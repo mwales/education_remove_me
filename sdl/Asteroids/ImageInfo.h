@@ -20,7 +20,7 @@ public:
 
    virtual void SetAngle(float angleDeg);
 
-   float GetAngle() { return _angle; }
+   float GetAngle() { return theAngle; }
 
    virtual void Draw(XYPair dst);
 
@@ -32,7 +32,7 @@ public:
 
    virtual void DrawFullScreen();
 
-   XYPair GetSize() { return _size; }
+   XYPair GetSize() { return theSize; }
 
    void SetOriginAtCenter(bool enable);
 
@@ -40,31 +40,31 @@ public:
 
    virtual void SetFrameNumber(int frame);
 
-   SDL_Renderer* GetRenderer() { return _renderer; }
+   SDL_Renderer* GetRenderer() { return theRenderer; }
 
 protected:
 
    ImageInfo(SDL_Renderer* renderer);
 
    // Flag for run library initialization
-   static bool _runOnce;
+   static bool theRunOnce;
 
-   ImageCache* _cacheEntry;
+   ImageCache* theCacheEntry;
 
    // Set to true if texture was loaded using ImageCache
-   bool _usingCachedTexture;
+   bool theUsingCachedTexture;
 
-   SDL_Texture* _texture;
+   SDL_Texture* theTexture;
 
-   SDL_Renderer* _renderer;
+   SDL_Renderer* theRenderer;
 
-   float _angle;
+   float theAngle;
 
-   XYPair _size;
+   XYPair theSize;
 
    /// True if image is tracked at center, or false at top-left corner
-   bool _originAtCenter;
+   bool theOriginAtCenter;
 
    /// Box of the source image
-   SDL_Rect _src;
+   SDL_Rect theSrc;
 };

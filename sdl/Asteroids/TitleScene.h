@@ -16,12 +16,12 @@ protected:
 
    bool ProcessEvent(SDL_Event const & ev);
 
-   GraphicEntity _background;
+   GraphicEntity theBackground;
 
-   GraphicEntity _splashImage;
+   GraphicEntity theSplashImage;
 
-   GraphicEntity _authorName;
+   GraphicEntity theAuthorName;
 
-   Scene* _nextScene;
+   Scene* theNextScene;
 };
 

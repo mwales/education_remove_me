@@ -8,35 +8,35 @@ int ROCK_MAX_SPEED = 30;
 int ROCK_MAX_ROT_SPEED = 90;
 
 // Static variable initializers
-bool SpaceRock::_runOnce = true;
-std::vector<std::string> SpaceRock::_rockImageFilenames;
-std::vector<std::string> SpaceRock::_explosionImageFilenames;
+bool SpaceRock::theRunOnce = true;
+std::vector<std::string> SpaceRock::theRockImageFilename;
+std::vector<std::string> SpaceRock::theExplosionImageFilenames;
 
 SpaceRock::SpaceRock(XYPair mapBounds, SDL_Renderer* r):
    GraphicEntity(mapBounds),
-   _animator(nullptr),
-   _deletionList(nullptr),
-   _displayCollisionArea(false)
+   theAnimator(nullptr),
+   theDeletionList(nullptr),
+   theDisplayCollisionArea(false)
 {
-   if (_runOnce)
+   if (theRunOnce)
    {
-      _rockImageFilenames.push_back("assets/asteroid_blend.png");
-      _rockImageFilenames.push_back("assets/asteroid_blue.png");
-      _rockImageFilenames.push_back("assets/asteroid_brown.png");
+      theRockImageFilename.push_back("assets/asteroid_blend.png");
+      theRockImageFilename.push_back("assets/asteroid_blue.png");
+      theRockImageFilename.push_back("assets/asteroid_brown.png");
 
-      _explosionImageFilenames.push_back("assets/explosion_blue.png");
-      _explosionImageFilenames.push_back("assets/explosion_blue2.png");
-      _explosionImageFilenames.push_back("assets/explosion_orange.png");
+      theExplosionImageFilenames.push_back("assets/explosion_blue.png");
+      theExplosionImageFilenames.push_back("assets/explosion_blue2.png");
+      theExplosionImageFilenames.push_back("assets/explosion_orange.png");
 
-      _runOnce = false;
+      theRunOnce = false;
    }
 
-   std::string filenameRock = _rockImageFilenames[rand() % _rockImageFilenames.size()];
-   std::string filenameExplosion = _explosionImageFilenames[rand() % _explosionImageFilenames.size()];
+   std::string filenameRock = theRockImageFilename[rand() % theRockImageFilename.size()];
+   std::string filenameExplosion = theExplosionImageFilenames[rand() % theExplosionImageFilenames.size()];
 
-   _rockImage = new ImageInfo(filenameRock.c_str(), r);
-   _explosionImage = new TiledImage(filenameExplosion.c_str(), r, 24, 1, 0, TiledImage::CALCULATE_SINGLE_TILE_DIMENSIONS);
-   SetImageInfo(_rockImage);
+   theRockImage = new ImageInfo(filenameRock.c_str(), r);
+   theExplosionImage = new TiledImage(filenameExplosion.c_str(), r, 24, 1, 0, TiledImage::CALCULATE_SINGLE_TILE_DIMENSIONS);
+   SetImageInfo(theRockImage);
 
    theTranslationalFrictionScalar = 0;
    theRotationalFrictionScalar = 0;
@@ -46,16 +46,16 @@ SpaceRock::~SpaceRock()
 {
    LOG_DEBUG() << "SpaceRock destruction (" << (unsigned long) this << ")";
 
-   delete _rockImage;
-   delete _explosionImage;
+   delete theRockImage;
+   delete theExplosionImage;
 
    // Image will be set to one of the 2 objects above, don't delete it in parent
    theImage = nullptr;
 
-   if (_animator)
+   if (theAnimator)
    {
-      delete _animator;
-      _animator = nullptr;
+      delete theAnimator;
+      theAnimator = nullptr;
    }
 }
 
@@ -63,12 +63,12 @@ void SpaceRock::Explode(std::vector<GameEntity*>* deletionList,
                         std::vector<GameEntity*>* additionList)
 {
    LOG_DEBUG() << "Rock exploding";
-   SetImageInfo(_explosionImage);
-   _animator = new AnimationDriver(_explosionImage, false);
-   _animator->SetAnimationDuration(1, theUpdateRateHz);
+   SetImageInfo(theExplosionImage);
+   theAnimator = new AnimationDriver(theExplosionImage, false);
+   theAnimator->SetAnimationDuration(1, theUpdateRateHz);
 
    // Remember the reference to the deletion list
-   _deletionList = deletionList;
+   theDeletionList = deletionList;
 }
 
 
@@ -100,17 +100,17 @@ void SpaceRock::Update()
 {
    GraphicEntity::Update();
 
-   if (_animator)
+   if (theAnimator)
    {
       // Step the iteration
-      if (_animator->StepAnimation())
+      if (theAnimator->StepAnimation())
       {
          // Returns true when animation finishes
-         delete _animator;
-         _animator = nullptr;
+         delete theAnimator;
+         theAnimator = nullptr;
 
          LOG_DEBUG() << "Animation finished for (" << (unsigned long) this << ")";
-         _deletionList->push_back(this);
+         theDeletionList->push_back(this);
       }
    }
 }
@@ -119,7 +119,7 @@ void SpaceRock::Draw()
 {
    GraphicEntity::Draw();
 
-   if (_displayCollisionArea)
+   if (theDisplayCollisionArea)
    {
       SDL_Renderer* r = theImage->GetRenderer();
 
@@ -133,5 +133,5 @@ void SpaceRock::Draw()
 
 void SpaceRock::DisplayCollisionArea(bool display)
 {
-   _displayCollisionArea = display;
+   theDisplayCollisionArea = display;
 }

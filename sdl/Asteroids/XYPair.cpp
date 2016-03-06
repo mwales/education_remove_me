@@ -5,22 +5,22 @@
 
 
 XYPair::XYPair():
-   _x(0.0),
-   _y(0.0)
+   theX(0.0),
+   theY(0.0)
 {
    // Intentionally empty
 }
 
 XYPair::XYPair(XYPair const & rhs):
-   _x(rhs._x),
-   _y(rhs._y)
+   theX(rhs.theX),
+   theY(rhs.theY)
 {
    // Intentionally empty
 }
 
 XYPair::XYPair(float x, float y):
-   _x(x),
-   _y(y)
+   theX(x),
+   theY(y)
 {
    // Intentionally empty
 }
@@ -29,8 +29,8 @@ XYPair & XYPair::operator=(XYPair const & rhs)
 {
    if (this != &rhs)
    {
-      _x = rhs._x;
-      _y = rhs._y;
+      theX = rhs.theX;
+      theY = rhs.theY;
    }
    return *this;
 }
@@ -44,8 +44,8 @@ XYPair XYPair::operator+(XYPair const & rhs) const
 
 XYPair & XYPair::operator+=(XYPair const & rhs)
 {
-   _x += rhs._x;
-   _y += rhs._y;
+   theX += rhs.theX;
+   theY += rhs.theY;
    return *this;
 }
 
@@ -58,8 +58,8 @@ XYPair XYPair::operator-(XYPair const & rhs) const
 
 XYPair & XYPair::operator-=(XYPair const & rhs)
 {
-   _x -= rhs._x;
-   _y -= rhs._y;
+   theX -= rhs.theX;
+   theY -= rhs.theY;
    return *this;
 }
 
@@ -72,8 +72,8 @@ XYPair XYPair::operator*(float const & rhs) const
 
 XYPair & XYPair::operator*=(float const & rhs)
 {
-   _x *= rhs;
-   _y *= rhs;
+   theX *= rhs;
+   theY *= rhs;
    return *this;
 }
 
@@ -82,16 +82,16 @@ float& XYPair::operator[](std::size_t idx)
    if (idx > 1)
    {
       LOG_FATAL() << "XYPair index" << idx << "out of bounds";
-      return _x;
+      return theX;
    }
 
    if (idx == 0)
    {
-      return _x;
+      return theX;
    }
    else
    {
-      return _y;
+      return theY;
    }
 }
 
@@ -100,16 +100,16 @@ float const & XYPair::operator[](std::size_t idx) const
    if (idx > 1)
    {
       LOG_FATAL() << "XYPair index" << idx << "out of bounds";
-      return _x;
+      return theX;
    }
 
    if (idx == 0)
    {
-      return _x;
+      return theX;
    }
    else
    {
-      return _y;
+      return theY;
    }
 }
 

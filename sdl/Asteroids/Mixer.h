@@ -41,13 +41,13 @@ public:
 
 protected:
 
-   Mix_Music* _bgMusic;
+   Mix_Music* theBgMusic;
 
    // Don't unload music, just cache it in RAM for use later
-   std::map<std::string, Mix_Music* > _musicCatalog;
+   std::map<std::string, Mix_Music* > theMusicCatalog;
 
-   std::set<Mix_Chunk*> _soundCache;
+   std::set<Mix_Chunk*> theSoundCache;
 
-   std::map<std::string, Mix_Chunk*> _soundCatalog;
+   std::map<std::string, Mix_Chunk*> theSoundCatalog;
 };
 

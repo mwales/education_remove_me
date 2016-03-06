@@ -2,7 +2,7 @@
 #include "Logger.h"
 
 Mixer::Mixer():
-  _bgMusic(nullptr)
+  theBgMusic(nullptr)
 {
    int i,max=Mix_GetNumMusicDecoders();
    for(i=0; i<max; ++i)
@@ -25,14 +25,14 @@ Mixer::Mixer():
 Mixer::~Mixer()
 {
    std::map<std::string, Mix_Music*>::const_iterator musicIt;
-   for (musicIt = _musicCatalog.begin(); musicIt != _musicCatalog.end(); musicIt++)
+   for (musicIt = theMusicCatalog.begin(); musicIt != theMusicCatalog.end(); musicIt++)
    {
       LOG_DEBUG() << "Deleting music file from memory:" << musicIt->first;
       Mix_FreeMusic(musicIt->second);
    }
 
    std::map<std::string, Mix_Chunk*>::const_iterator soundIt;
-   for(soundIt = _soundCatalog.begin(); soundIt != _soundCatalog.end(); soundIt++)
+   for(soundIt = theSoundCatalog.begin(); soundIt != theSoundCatalog.end(); soundIt++)
    {
       LOG_DEBUG() << "Deleting sound file from memory:" << soundIt->first;
       Mix_FreeChunk(soundIt->second);
@@ -46,7 +46,7 @@ Mixer::~Mixer()
 
 void Mixer::LoadMusic(std::string const & filename)
 {
-   if (_bgMusic)
+   if (theBgMusic)
    {
       LOG_DEBUG() << "Changing BG music to:" << filename;
 
@@ -61,37 +61,37 @@ void Mixer::LoadMusic(std::string const & filename)
       LOG_DEBUG() << "Loading BG music:" << filename;
    }
 
-   std::map<std::string, Mix_Music*>::const_iterator cachedSong = _musicCatalog.find(filename);
-   if (cachedSong == _musicCatalog.end())
+   std::map<std::string, Mix_Music*>::const_iterator cachedSong = theMusicCatalog.find(filename);
+   if (cachedSong == theMusicCatalog.end())
    {
       // Song has not been loaded before
-      _bgMusic = Mix_LoadMUS(filename.c_str());
-      if (_bgMusic == nullptr)
+      theBgMusic = Mix_LoadMUS(filename.c_str());
+      if (theBgMusic == nullptr)
       {
          LOG_WARNING() << "Error loading BG Music (" << filename << "): " << Mix_GetError();
       }
       else
       {
-         _musicCatalog[filename] = _bgMusic;
+         theMusicCatalog[filename] = theBgMusic;
       }
    }
    else
    {
       // We already had this song in our cache songs!
       LOG_DEBUG() << "Loading song from cache:" << filename;
-      _bgMusic = (cachedSong->second);
+      theBgMusic = (cachedSong->second);
    }
 }
 
 void Mixer::PlayMusic(int numberOfPlays)
 {
-   if (!_bgMusic)
+   if (!theBgMusic)
    {
       LOG_WARNING() << "Play music failed because no music was loaded";
       return;
    }
 
-   if (0 != Mix_PlayMusic(_bgMusic, numberOfPlays))
+   if (0 != Mix_PlayMusic(theBgMusic, numberOfPlays))
    {
       LOG_WARNING() << "Error playing music:" << Mix_GetError();
    }
@@ -108,7 +108,7 @@ void Mixer::PlayMusic(int numberOfPlays)
 
 void Mixer::PauseMusic()
 {
-   if (!_bgMusic)
+   if (!theBgMusic)
    {
       LOG_WARNING() << "Trying to pause music, but never loaded any";
       return;
@@ -119,7 +119,7 @@ void Mixer::PauseMusic()
 
 void Mixer::ResumeMusic()
 {
-   if (!_bgMusic)
+   if (!theBgMusic)
    {
       LOG_WARNING() << "Trying to resume music, but never loaded any";
       return;
@@ -130,32 +130,32 @@ void Mixer::ResumeMusic()
 
 void Mixer::UncacheMusic(std::string const & filename)
 {
-   std::map<std::string, Mix_Music*>::iterator it = _musicCatalog.find(filename);
+   std::map<std::string, Mix_Music*>::iterator it = theMusicCatalog.find(filename);
 
-   if (it == _musicCatalog.end())
+   if (it == theMusicCatalog.end())
    {
       LOG_WARNING() << "Uncache music failed, filename not in cache:" << filename;
       return;
    }
 
-   if (it->second == _bgMusic)
+   if (it->second == theBgMusic)
    {
       LOG_WARNING() << "Uncache music failed, music being played!" << filename;
       return;
    }
 
    Mix_Music* fileToDestroy = it->second;
-   _musicCatalog.erase(it);
+   theMusicCatalog.erase(it);
 
    Mix_FreeMusic(fileToDestroy);
 }
 
 Mix_Chunk* Mixer::LoadSound(std::string const & filename)
 {
-   if (_soundCatalog.find(filename) != _soundCatalog.end())
+   if (theSoundCatalog.find(filename) != theSoundCatalog.end())
    {
       LOG_DEBUG() << "Sound load found sound file in catalog:" << filename;
-      return _soundCatalog[filename];
+      return theSoundCatalog[filename];
    }
 
    Mix_Chunk* retVal = Mix_LoadWAV(filename.c_str());
@@ -167,15 +167,15 @@ Mix_Chunk* Mixer::LoadSound(std::string const & filename)
 
    // Add sound to the cache if successfully loaded
    LOG_DEBUG() << "Sound" << filename << "successfully loaded and cataloged";
-   _soundCache.insert(retVal);
-   _soundCatalog[filename] = retVal;
+   theSoundCache.insert(retVal);
+   theSoundCatalog[filename] = retVal;
    return retVal;
 }
 
 void Mixer::PlaySound(Mix_Chunk* soundEffect)
 {
    if ( (soundEffect == nullptr) ||
-        (_soundCache.count(soundEffect) == 0))
+        (theSoundCache.count(soundEffect) == 0))
    {
       LOG_WARNING() << "Sound effect pointer not found in cache";
       return;
@@ -190,21 +190,21 @@ void Mixer::PlaySound(Mix_Chunk* soundEffect)
 void Mixer::UncacheSound(Mix_Chunk* soundEffect)
 {
    if ( (soundEffect == nullptr) ||
-        (_soundCache.count(soundEffect) == 0))
+        (theSoundCache.count(soundEffect) == 0))
    {
       LOG_WARNING() << "Sound effect pointer not found in cache";
       return;
    }
 
-   _soundCache.erase(soundEffect);
+   theSoundCache.erase(soundEffect);
 
    std::map<std::string, Mix_Chunk*>::iterator it;
-   for(it = _soundCatalog.begin(); it != _soundCatalog.end(); it++)
+   for(it = theSoundCatalog.begin(); it != theSoundCatalog.end(); it++)
    {
       if (it->second == soundEffect)
       {
          LOG_DEBUG() << "Removing sound (" << it->first << ") from sound catalog";
-         _soundCatalog.erase(it);
+         theSoundCatalog.erase(it);
 
          Mix_FreeChunk(soundEffect);
 

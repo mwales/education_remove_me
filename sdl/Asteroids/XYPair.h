@@ -29,9 +29,9 @@ public:
 
 protected:
 
-   float _x;
+   float theX;
 
-   float _y;
+   float theY;
 };
 
 std::ostream& operator<<(std::ostream& os, const XYPair& obj);

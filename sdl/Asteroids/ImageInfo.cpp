@@ -3,104 +3,104 @@
 
 #include "Logger.h"
 
-bool ImageInfo::_runOnce = true;
+bool ImageInfo::theRunOnce = true;
 
 ImageInfo::ImageInfo(char const * filename, SDL_Renderer* renderer):
-   _cacheEntry(new ImageCache(filename, renderer))
- , _renderer(renderer)
- , _angle(0.0)
- , _originAtCenter(true)
+   theCacheEntry(new ImageCache(filename, renderer))
+ , theRenderer(renderer)
+ , theAngle(0.0)
+ , theOriginAtCenter(true)
  {
-   if (_runOnce)
+   if (theRunOnce)
    {
       // Initialize the library
       IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
-      _runOnce = false;
+      theRunOnce = false;
    }
 
-   _texture = _cacheEntry->GetTexture();
-   _usingCachedTexture = true;
+   theTexture = theCacheEntry->GetTexture();
+   theUsingCachedTexture = true;
 
-   if (_texture == nullptr)
+   if (theTexture == nullptr)
    {
       LOG_FATAL() << "Error loading image named" << filename;
       return;
    }
 
-   _size = _cacheEntry->GetSize();
+   theSize = theCacheEntry->GetSize();
 
-   _src.w = _size[0];
-   _src.h = _size[1];
-   _src.x = 0;
-   _src.y = 0;
+   theSrc.w = theSize[0];
+   theSrc.h = theSize[1];
+   theSrc.x = 0;
+   theSrc.y = 0;
 
-   LOG_DEBUG() << "Loaded image:" << filename << "(" << _size << ")";
+   LOG_DEBUG() << "Loaded image:" << filename << "(" << theSize << ")";
 }
 
 ImageInfo::ImageInfo(SDL_Renderer* renderer):
-   _cacheEntry(nullptr)
- , _renderer(renderer)
- , _angle(0.0)
- , _originAtCenter(true)
+   theCacheEntry(nullptr)
+ , theRenderer(renderer)
+ , theAngle(0.0)
+ , theOriginAtCenter(true)
  {
-   if (_runOnce)
+   if (theRunOnce)
    {
       // Initialize the library
       IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
-      _runOnce = false;
+      theRunOnce = false;
    }
 
-   _texture = nullptr;
-   _usingCachedTexture = false;
+   theTexture = nullptr;
+   theUsingCachedTexture = false;
 
 }
 
 ImageInfo::~ImageInfo()
 {
-   if (_cacheEntry)
+   if (theCacheEntry)
    {
-      delete _cacheEntry;
-      _cacheEntry = nullptr;
+      delete theCacheEntry;
+      theCacheEntry = nullptr;
    }
 
-   if (!_usingCachedTexture && ( _texture != nullptr) )
+   if (!theUsingCachedTexture && ( theTexture != nullptr) )
    {
       LOG_DEBUG() << "Deleting non-cached texture";
-      SDL_DestroyTexture(_texture);
-      _texture = nullptr;
+      SDL_DestroyTexture(theTexture);
+      theTexture = nullptr;
    }
 }
 
 void ImageInfo::SetAngle(float angleDeg)
 {
-   _angle = angleDeg;
+   theAngle = angleDeg;
 }
 
 void ImageInfo::Draw(XYPair dst)
 {
-   Draw(dst, _angle);
+   Draw(dst, theAngle);
 }
 
 void ImageInfo::Draw(XYPair dst, float angleDeg)
 {
-   _angle = angleDeg;
+   theAngle = angleDeg;
 
    SDL_Rect pos;
 
-   if (_originAtCenter)
+   if (theOriginAtCenter)
    {
-      pos.x = dst[0] - _size[0]/2;
-      pos.y = dst[1] - _size[1]/2;
+      pos.x = dst[0] - theSize[0]/2;
+      pos.y = dst[1] - theSize[1]/2;
    }
    else
    {
       pos.x = dst[0];
       pos.y = dst[1];
    }
-   pos.w = _size[0];
-   pos.h = _size[1];
+   pos.w = theSize[0];
+   pos.h = theSize[1];
 
-   if (0 != SDL_RenderCopyEx(_renderer, _texture, &_src, &pos, _angle, nullptr, SDL_FLIP_NONE))
+   if (0 != SDL_RenderCopyEx(theRenderer, theTexture, &theSrc, &pos, theAngle, nullptr, SDL_FLIP_NONE))
    {
       LOG_WARNING() << "Render call failed:" << SDL_GetError();
    }
@@ -108,18 +108,18 @@ void ImageInfo::Draw(XYPair dst, float angleDeg)
 
 void ImageInfo::Draw(XYPair dst, XYPair drawSize)
 {
-   Draw(dst, drawSize, _angle);
+   Draw(dst, drawSize, theAngle);
 }
 
 void ImageInfo::Draw(XYPair dst, XYPair drawSize, float angleDeg)
 {
-   _angle = angleDeg;
+   theAngle = angleDeg;
 
    SDL_Rect pos;
-   if (_originAtCenter)
+   if (theOriginAtCenter)
    {
-      pos.x = dst[0] - _size[0]/2;
-      pos.y = dst[1] - _size[1]/2;
+      pos.x = dst[0] - theSize[0]/2;
+      pos.y = dst[1] - theSize[1]/2;
    }
    else
    {
@@ -129,7 +129,7 @@ void ImageInfo::Draw(XYPair dst, XYPair drawSize, float angleDeg)
    pos.w = drawSize[0];
    pos.h = drawSize[1];
 
-   if (0 != SDL_RenderCopyEx(_renderer, _texture, &_src, &pos, _angle, nullptr, SDL_FLIP_NONE))
+   if (0 != SDL_RenderCopyEx(theRenderer, theTexture, &theSrc, &pos, theAngle, nullptr, SDL_FLIP_NONE))
    {
       LOG_WARNING() << "Render call failed:" << SDL_GetError();
    }
@@ -137,7 +137,7 @@ void ImageInfo::Draw(XYPair dst, XYPair drawSize, float angleDeg)
 
 void ImageInfo::DrawFullScreen()
 {
-   if (0 != SDL_RenderCopy(_renderer, _texture, &_src, nullptr))
+   if (0 != SDL_RenderCopy(theRenderer, theTexture, &theSrc, nullptr))
    {
       LOG_WARNING() << "Render call failed:" << SDL_GetError();
    }
@@ -145,7 +145,7 @@ void ImageInfo::DrawFullScreen()
 
 void ImageInfo::SetOriginAtCenter(bool enable)
 {
-   _originAtCenter = enable;
+   theOriginAtCenter = enable;
 }
 
 void ImageInfo::SetFrameNumber(int frame)

@@ -26,13 +26,13 @@ public:
 
 protected:
 
-   int _framesWide;
+   int theFramesWide;
 
-   int _framesHigh;
+   int theFramesHigh;
 
-   int _frameSpacing;
+   int theFrameSpacing;
 
-   int _currentFrameNumber;
+   int theCurrentFrameNumber;
 
 
 };

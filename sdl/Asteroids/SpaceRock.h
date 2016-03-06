@@ -31,19 +31,19 @@ public:
 
 protected:
 
-   static bool _runOnce;
+   static bool theRunOnce;
 
-   ImageInfo* _rockImage;
+   ImageInfo* theRockImage;
 
-   TiledImage* _explosionImage;
+   TiledImage* theExplosionImage;
 
-   static std::vector<std::string> _rockImageFilenames;
+   static std::vector<std::string> theRockImageFilename;
 
-   static std::vector<std::string> _explosionImageFilenames;
+   static std::vector<std::string> theExplosionImageFilenames;
 
-   AnimationDriver* _animator;
+   AnimationDriver* theAnimator;
 
-   std::vector<GameEntity*>* _deletionList;
+   std::vector<GameEntity*>* theDeletionList;
 
-   bool _displayCollisionArea;
+   bool theDisplayCollisionArea;
 };

@@ -11,40 +11,40 @@ const int MAX_ROCKS = 100;
 
 ShootingScene::ShootingScene(Graphics* g, Mixer* m):
    Scene(g, m),
-   _background(g->GetWindowSize()),
-   _rockSpawnCounter(10),
-   _ship(g->GetWindowSize()),
-   _pauseState(false),
-   _nextState(nullptr),
-   _collisionMgr(g->GetWindowSize()[0], g->GetWindowSize()[1], g->GetWindowSize()[0] / 15),
-   _debugMode(false)
+   theBackground(g->GetWindowSize()),
+   theRockSpawnCounter(10),
+   theShip(g->GetWindowSize()),
+   thePauseState(false),
+   theNextState(nullptr),
+   theCollisionMgr(g->GetWindowSize()[0], g->GetWindowSize()[1], g->GetWindowSize()[0] / 15),
+   theDebugMode(false)
 {
    theName = "Shooting";
 
-   _background.SetImageInfo("assets/nebula_brown.png", theRenderer);
-   _background.SetFullscreen(true);
+   theBackground.SetImageInfo("assets/nebula_brown.png", theRenderer);
+   theBackground.SetFullscreen(true);
 
    XYPair shipPosition = g->GetWindowSize();
    shipPosition *= 0.5;
 
-   _ship.SetTiledImageInfo("assets/double_ship.png", theRenderer, 90, 90, 0,
+   theShip.SetTiledImageInfo("assets/double_ship.png", theRenderer, 90, 90, 0,
                            TiledImage::PROVIDING_SINGLE_TILE_DIMENSIONS);
-   _ship.SetPosition(shipPosition);
-   _ship.SetFullscreen(false);
-   _ship.SetAddDeleteLists(&theAdditionList, &theDeletionList);
+   theShip.SetPosition(shipPosition);
+   theShip.SetFullscreen(false);
+   theShip.SetAddDeleteLists(&theAdditionList, &theDeletionList);
 
-   theEntities.push_back(&_background);
-   theEntities.push_back(&_ship);
+   theEntities.push_back(&theBackground);
+   theEntities.push_back(&theShip);
 
-   _collisionMgr.AddToB(&_ship);
+   theCollisionMgr.AddToB(&theShip);
 
-   _keyboardDownMappedCommands = _ship.GetKeyboardDownCallbacks();
-   _keyboardDownMappedCommands[SDL_SCANCODE_SPACE] = new PauseCommand(this);
-   _keyboardDownMappedCommands[SDL_SCANCODE_P] = new ToggleDebugCommand(this);
+   theKeyboardDownMappedCommands = theShip.GetKeyboardDownCallbacks();
+   theKeyboardDownMappedCommands[SDL_SCANCODE_SPACE] = new PauseCommand(this);
+   theKeyboardDownMappedCommands[SDL_SCANCODE_P] = new ToggleDebugCommand(this);
 
-   _keyboardUpMappedCommands = _ship.GetKeyboardUpCallbacks();
+   theKeyboardUpMappedCommands = theShip.GetKeyboardUpCallbacks();
 
-   g->GetJoystick()->RegisterCommand(&_ship, true);
+   g->GetJoystick()->RegisterCommand(&theShip, true);
    g->GetJoystick()->AddButtonDownHandler(7, new PauseCommand(this));
 
    //ImageCache::ImageCacheDebugDump();
@@ -55,11 +55,11 @@ ShootingScene::~ShootingScene()
    theGraphics->GetJoystick()->ClearRegisteredCommands();
 
    std::map<int, Command*>::const_iterator it;
-   for (it = _keyboardDownMappedCommands.begin(); it != _keyboardDownMappedCommands.end(); it++)
+   for (it = theKeyboardDownMappedCommands.begin(); it != theKeyboardDownMappedCommands.end(); it++)
    {
       delete it->second;
    }
-   for (it = _keyboardUpMappedCommands.begin(); it != _keyboardUpMappedCommands.end(); it++)
+   for (it = theKeyboardUpMappedCommands.begin(); it != theKeyboardUpMappedCommands.end(); it++)
    {
       delete it->second;
    }
@@ -80,8 +80,8 @@ bool ShootingScene::ProcessEvent(SDL_Event const & ev)
 
          int scancode = ev.key.keysym.scancode;
 
-         auto scanCmd = _keyboardDownMappedCommands.find(scancode);
-         if (scanCmd == _keyboardDownMappedCommands.end())
+         auto scanCmd = theKeyboardDownMappedCommands.find(scancode);
+         if (scanCmd == theKeyboardDownMappedCommands.end())
          {
             LOG_DEBUG() << "Keystroke down not mapped to command";
          }
@@ -104,8 +104,8 @@ bool ShootingScene::ProcessEvent(SDL_Event const & ev)
          }
          int scancode = ev.key.keysym.scancode;
 
-         std::map<int, Command*>::iterator scanCmd = _keyboardUpMappedCommands.find(scancode);
-         if (scanCmd == _keyboardUpMappedCommands.end())
+         std::map<int, Command*>::iterator scanCmd = theKeyboardUpMappedCommands.find(scancode);
+         if (scanCmd == theKeyboardUpMappedCommands.end())
          {
             LOG_DEBUG() << "Keystroke up not mapped to command";
          }
@@ -137,20 +137,20 @@ bool ShootingScene::ProcessEvent(SDL_Event const & ev)
 
 Scene* ShootingScene::GetNextState(bool* deleteMe)
 {
-   if (_nextState)
+   if (theNextState)
    {
       // Is game just paused?
-      if (_pauseState)
+      if (thePauseState)
       {
          *deleteMe = false;
-         Scene* retVal = _nextState;
-         _nextState = nullptr;
+         Scene* retVal = theNextState;
+         theNextState = nullptr;
          return retVal;
       }
       else
       {
          *deleteMe = true;
-         return _nextState;
+         return theNextState;
       }
    }
    else
@@ -165,15 +165,15 @@ void ShootingScene::PauseGame()
 {
    LOG_DEBUG() << "Pausing game";
 
-   _pauseState = true;
-   _nextState = new PauseScene(theGraphics, theMixer, this);
+   thePauseState = true;
+   theNextState = new PauseScene(theGraphics, theMixer, this);
 }
 
 void ShootingScene::SpawnRock()
 {
-   _rockSpawnCounter--;
+   theRockSpawnCounter--;
 
-   if (_rockSpawnCounter > 0)
+   if (theRockSpawnCounter > 0)
    {
       return;
    }
@@ -181,9 +181,9 @@ void ShootingScene::SpawnRock()
    // Rock spawn counter hit zero, time to spawn a rock!
 
    // Set timer for the next attempted rock spawning
-   _rockSpawnCounter = theUpdateRateHz / 2; //* 5;
+   theRockSpawnCounter = theUpdateRateHz / 2; //* 5;
 
-   if (_bigRocks.size() >= MAX_ROCKS)
+   if (theBigRocks.size() >= MAX_ROCKS)
    {
       LOG_WARNING() << "Can't spawn a rock, too many already";
       return;
@@ -192,13 +192,13 @@ void ShootingScene::SpawnRock()
    for(auto i = 0; i < 20; i++)
    {
       SpaceRock* rock = new SpaceRock(theGraphics->GetWindowSize(), theRenderer);
-      rock->SetRandomLocation(_ship.GetPosition());
+      rock->SetRandomLocation(theShip.GetPosition());
       rock->SetUpdateRate(theUpdateRateHz);
-      _bigRocks.push_back(rock);
+      theBigRocks.push_back(rock);
       theEntities.push_back(rock);
-      _collisionMgr.AddToA(rock);
+      theCollisionMgr.AddToA(rock);
 
-      if (_debugMode)
+      if (theDebugMode)
       {
          rock->DisplayCollisionArea(true);
       }
@@ -209,9 +209,9 @@ void ShootingScene::Update()
 {
    SpawnRock();
 
-   _collisionMgr.CheckForCollisions();
+   theCollisionMgr.CheckForCollisions();
 
-   std::vector<Collision> collisions = _collisionMgr.GetCollisions();
+   std::vector<Collision> collisions = theCollisionMgr.GetCollisions();
 
    /// @todo More collision management code needed!!!
    ///       What if ship hits 2 rocks at once?
@@ -225,7 +225,7 @@ void ShootingScene::Update()
    {
       // Find the rock in the list of rocks, and explode it, and delete it from collision manager
       std::vector<SpaceRock*>::iterator rockIt;
-      for(rockIt = _bigRocks.begin(); rockIt != _bigRocks.end(); rockIt++)
+      for(rockIt = theBigRocks.begin(); rockIt != theBigRocks.end(); rockIt++)
       {
          if ( (*it).first == *rockIt )
          {
@@ -236,7 +236,7 @@ void ShootingScene::Update()
             // We found the rock in our list
             SpaceRock* splodingRock = *rockIt;
             splodingRock->Explode(&theDeletionList, &theAdditionList);
-            _collisionMgr.RemoveFromA(splodingRock);
+            theCollisionMgr.RemoveFromA(splodingRock);
             rocksToDelete.insert(splodingRock);
 
             //ImageCache::ImageCacheDebugDump();
@@ -244,7 +244,7 @@ void ShootingScene::Update()
       }
 
 
-      if (&_ship == (*it).second)
+      if (&theShip == (*it).second)
       {
          LOG_DEBUG() << "Our ship explodes too!!";
       }
@@ -256,19 +256,19 @@ void ShootingScene::Update()
    }
 
    // Need to remove from rock list, then delete!
-   for (int i = _bigRocks.size() - 1; i >= 0; i--)
+   for (int i = theBigRocks.size() - 1; i >= 0; i--)
    {
-      if (rocksToDelete.find(_bigRocks[i]) != rocksToDelete.end())
+      if (rocksToDelete.find(theBigRocks[i]) != rocksToDelete.end())
       {
-         _bigRocks.erase(_bigRocks.begin() + i);
+         theBigRocks.erase(theBigRocks.begin() + i);
       }
    }
 
-   _collisionMgr.ClearCollisions();
+   theCollisionMgr.ClearCollisions();
 
-   for(auto bullet : _ship.GetNewBullets())
+   for(auto bullet : theShip.GetNewBullets())
    {
-      _collisionMgr.AddToB(bullet);
+      theCollisionMgr.AddToB(bullet);
    }
 
    // Call parent implementation
@@ -279,7 +279,7 @@ void ShootingScene::ManageEntityLifetimes()
 {
    for(GameEntity* ge : theDeletionList)
    {
-      _collisionMgr.RemoveFromB( dynamic_cast<GraphicEntity*>(ge));
+      theCollisionMgr.RemoveFromB( dynamic_cast<GraphicEntity*>(ge));
    }
 
    Scene::ManageEntityLifetimes();
@@ -287,13 +287,13 @@ void ShootingScene::ManageEntityLifetimes()
 
 void ShootingScene::ToggleDebug()
 {
-   _debugMode = !_debugMode;
-   LOG_DEBUG() << "Toggling debug mode:" << (_debugMode ? "On" : "Off");
+   theDebugMode = !theDebugMode;
+   LOG_DEBUG() << "Toggling debug mode:" << (theDebugMode ? "On" : "Off");
 
-   for(auto rock : _bigRocks)
+   for(auto rock : theBigRocks)
    {
-      rock->DisplayCollisionArea(_debugMode);
-      _ship.DisplayCollisionArea(_debugMode);
+      rock->DisplayCollisionArea(theDebugMode);
+      theShip.DisplayCollisionArea(theDebugMode);
    }
 }
 
@@ -303,25 +303,25 @@ void ShootingScene::ToggleDebug()
 
 
 PauseCommand::PauseCommand(ShootingScene* scene):
-   _scene(scene)
+   theScene(scene)
 {
    // Empty
 }
 
 bool PauseCommand::Execute()
 {
-   _scene->PauseGame();
+   theScene->PauseGame();
    return false;
 }
 
 ToggleDebugCommand::ToggleDebugCommand(ShootingScene* scene):
-   _scene(scene)
+   theScene(scene)
 {
    // Empty
 }
 
 bool ToggleDebugCommand::Execute()
 {
-   _scene->ToggleDebug();
+   theScene->ToggleDebug();
    return false;
 }

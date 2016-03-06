@@ -10,10 +10,10 @@ static const float THRUST_ACCELERATION = 800.0;
 
 Spaceship::Spaceship(XYPair mapBounds):
    GraphicEntity(mapBounds),
-   _turningDirection(0),
-   _additionList(nullptr),
-   _deletionList(nullptr),
-   _displayCollisionArea(false)
+   theTurningDirection(0),
+   theAdditionList(nullptr),
+   theDeletionList(nullptr),
+   theDisplayCollisionArea(false)
 {
    // empty
 }
@@ -22,22 +22,22 @@ Spaceship::Spaceship(XYPair mapBounds):
 void Spaceship::SetAddDeleteLists(std::vector<GameEntity*>* addList,
                                   std::vector<GameEntity*>* delList)
 {
-   _additionList = addList;
-   _deletionList = delList;
+   theAdditionList = addList;
+   theDeletionList = delList;
 }
 
 void Spaceship::Fire(bool fireState)
 {
    LOG_DEBUG() << "Fire";
-   _fireBullet = fireState;
+   theFireBullet = fireState;
 }
 
 void Spaceship::FireBullet()
 {
    LOG_DEBUG() << "FireBullet";
-   _ticksSinceLastBullet++;
+   theTicksSinceLastBullet++;
 
-   if (_ticksSinceLastBullet < _fireDelayMap[_fireMode])
+   if (theTicksSinceLastBullet < theFireDelayMap[theFireMode])
    {
       // Gun is in the cooldown period still
       return;
@@ -45,10 +45,10 @@ void Spaceship::FireBullet()
    else
    {
       // Reseting cooldown period
-      _ticksSinceLastBullet = 0;
+      theTicksSinceLastBullet = 0;
    }
 
-   if ( (_deletionList == nullptr) || (_additionList == nullptr) )
+   if ( (theDeletionList == nullptr) || (theAdditionList == nullptr) )
    {
       LOG_WARNING() << "Can't fire because we never got spaceship doesn't have add / del list";
       return;
@@ -56,7 +56,7 @@ void Spaceship::FireBullet()
 
    FrictionlessGraphic* b = new FrictionlessGraphic("assets/shot2.png", theMapBounds, GetImageInfo()->GetRenderer());
    b->SetUpdateRate(theUpdateRateHz);
-   b->SetLifetime(5.0, _deletionList);
+   b->SetLifetime(5.0, theDeletionList);
    b->SetAngle(theAngle);
 
    XYPair directionUnitVec = GameMath::GetUnitVector(theAngle);
@@ -69,14 +69,14 @@ void Spaceship::FireBullet()
    XYPair bulletPos = thePosition + directionUnitVec * bulletOffset;
    b->SetPosition(bulletPos);
 
-   _newBullets.push_back(b);
-   _additionList->push_back(b);
+   theNewBullets.push_back(b);
+   theAdditionList->push_back(b);
 }
 
 std::vector<GraphicEntity*> Spaceship::GetNewBullets()
 {
-   std::vector<GraphicEntity*> retVal = _newBullets;
-   _newBullets.clear();
+   std::vector<GraphicEntity*> retVal = theNewBullets;
+   theNewBullets.clear();
    return retVal;
 }
 
@@ -84,21 +84,21 @@ std::vector<GraphicEntity*> Spaceship::GetNewBullets()
 void Spaceship::SetThrustState(bool state)
 {
    LOG_DEBUG() << "Setting thrust state to" << state;
-   _thrustOn = state;
+   theThrustOn = state;
 
-   SetFrameNumber(_thrustOn ? 1 : 0);
+   SetFrameNumber(theThrustOn ? 1 : 0);
 }
 
 void Spaceship::SetTurningDirection(int direction)
 {
-   _turningDirection += direction;
-   LOG_DEBUG() << "Setting turning direction to" << _turningDirection;
+   theTurningDirection += direction;
+   LOG_DEBUG() << "Setting turning direction to" << theTurningDirection;
 
-   if (_turningDirection < 0)
+   if (theTurningDirection < 0)
    {
       theRotAcceleration = -700.0;
    }
-   else if (_turningDirection > 0)
+   else if (theTurningDirection > 0)
    {
       theRotAcceleration = +700.0;
    }
@@ -171,7 +171,7 @@ void Spaceship::Update()
    LOG_DEBUG() << "Updating spaceship (" << (unsigned long) this << ")";
 
    // Reset thrust vector
-   if (_thrustOn)
+   if (theThrustOn)
    {
       XYPair accelDir = GameMath::GetUnitVector(theAngle);
       theAcceleration = (accelDir * THRUST_ACCELERATION);
@@ -181,7 +181,7 @@ void Spaceship::Update()
       theAcceleration = XYPair(0.0, 0.0);
    }
 
-   if (_fireBullet)
+   if (theFireBullet)
    {
       FireBullet();
    }
@@ -192,10 +192,10 @@ void Spaceship::Update()
 
 void Spaceship::SetUpdateRate(int updateHz)
 {
-   _fireDelayMap.clear();
-   _fireDelayMap[BulletFireMode::RAPID_SHOT] = updateHz / 15;
-   _fireDelayMap[BulletFireMode::SPREAD_SHOT] = updateHz / 4;
-   _fireDelayMap[BulletFireMode::HEAVY_SHOT] = updateHz;
+   theFireDelayMap.clear();
+   theFireDelayMap[BulletFireMode::RAPID_SHOT] = updateHz / 15;
+   theFireDelayMap[BulletFireMode::SPREAD_SHOT] = updateHz / 4;
+   theFireDelayMap[BulletFireMode::HEAVY_SHOT] = updateHz;
 
    GraphicEntity::SetUpdateRate(updateHz);
 }
@@ -222,7 +222,7 @@ void Spaceship::Draw()
 {
    GraphicEntity::Draw();
 
-   if (_displayCollisionArea)
+   if (theDisplayCollisionArea)
    {
       SDL_Renderer* r = theImage->GetRenderer();
 
@@ -236,5 +236,5 @@ void Spaceship::Draw()
 
 void Spaceship::DisplayCollisionArea(bool display)
 {
-   _displayCollisionArea = display;
+   theDisplayCollisionArea = display;
 }

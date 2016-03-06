@@ -17,8 +17,8 @@ public:
 
 protected:
 
-   Spaceship* _ship;
-   bool _fireState;
+   Spaceship* theShip;
+   bool theFireState;
 
 };
 
@@ -35,8 +35,8 @@ public:
 
 protected:
 
-   Spaceship* _ship;
-   bool _thrustState;
+   Spaceship* theShip;
+   bool theThrustState;
 
 };
 
@@ -53,13 +53,13 @@ public:
 
 protected:
 
-   Spaceship* _ship;
+   Spaceship* theShip;
 
    // Like polar coordinates
    // Positive = CCW
    // 0 = not rotation
    // 1 = rotation CW
-   int _rotateDirection;
+   int theRotateDirection;
 
 };
 
@@ -76,7 +76,7 @@ public:
 
 protected:
 
-   Spaceship* _ship;
+   Spaceship* theShip;
 
 };
 

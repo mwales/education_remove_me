@@ -7,32 +7,32 @@
 
 TitleScene::TitleScene(Graphics* g, Mixer* m):
    Scene(g, m),
-   _background(g->GetWindowSize()),
-   _splashImage(g->GetWindowSize()),
-   _authorName(g->GetWindowSize()),
-   _nextScene(nullptr)
+   theBackground(g->GetWindowSize()),
+   theSplashImage(g->GetWindowSize()),
+   theAuthorName(g->GetWindowSize()),
+   theNextScene(nullptr)
 {
    theName = "Title";
-   _background.SetImageInfo("assets/nebula_blue.png", theRenderer);
-   _splashImage.SetImageInfo("assets/splash.png", theRenderer);
+   theBackground.SetImageInfo("assets/nebula_blue.png", theRenderer);
+   theSplashImage.SetImageInfo("assets/splash.png", theRenderer);
 
    SDL_Color nameColor = { 0xff, 0xff, 0xff, 0xff };
-   _authorName.SetTextImageInfo("Created by Michael Wales", nameColor, theRenderer);
+   theAuthorName.SetTextImageInfo("Created by Michael Wales", nameColor, theRenderer);
 
-   _background.SetFullscreen(true);
+   theBackground.SetFullscreen(true);
 
    XYPair namePosition = g->GetWindowSize();
    namePosition[1] *= 0.75;
    namePosition[0] *= 0.5;
-   _authorName.SetPosition(namePosition);
+   theAuthorName.SetPosition(namePosition);
 
    XYPair splashCenter = g->GetWindowSize();
    splashCenter *= 0.5;
-   _splashImage.SetPosition(splashCenter);
+   theSplashImage.SetPosition(splashCenter);
 
-   theEntities.push_back(&_background);
-   theEntities.push_back(&_splashImage);
-   theEntities.push_back(&_authorName);
+   theEntities.push_back(&theBackground);
+   theEntities.push_back(&theSplashImage);
+   theEntities.push_back(&theAuthorName);
 
    theMixer->LoadMusic("assets/cobra.ogg");
    //_mixer->PlayMusic();
@@ -54,7 +54,7 @@ bool TitleScene::ProcessEvent(SDL_Event const & ev)
          {
             LOG_DEBUG() << "Yeah, space bar";
 
-            _nextScene = new ShootingScene(theGraphics, theMixer);
+            theNextScene = new ShootingScene(theGraphics, theMixer);
             return true;
          }
          break;
@@ -69,7 +69,7 @@ bool TitleScene::ProcessEvent(SDL_Event const & ev)
          if ( (ev.jbutton.button == 0) || (ev.jbutton.button == 7) )
          {
             // User pressed A or Start on x360 controller
-            _nextScene = new ShootingScene(theGraphics, theMixer);
+            theNextScene = new ShootingScene(theGraphics, theMixer);
             return true;
          }
          break;
@@ -80,7 +80,7 @@ bool TitleScene::ProcessEvent(SDL_Event const & ev)
 
 Scene* TitleScene::GetNextState(bool* deleteMe)
 {
-   if (_nextScene)
+   if (theNextScene)
    {
       *deleteMe = true;
    }
@@ -88,5 +88,5 @@ Scene* TitleScene::GetNextState(bool* deleteMe)
    {
       *deleteMe = false;
    }
-   return _nextScene;
+   return theNextScene;
 }

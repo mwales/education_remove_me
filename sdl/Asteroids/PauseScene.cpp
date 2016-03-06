@@ -6,20 +6,20 @@
 
 PauseScene::PauseScene(Graphics* g, Mixer* m, Scene* underneath):
    Scene(g, m),
-   _underneath(underneath),
-   _pauseText(g->GetWindowSize()),
-   _nextScene(nullptr)
+   theBackScene(underneath),
+   thePauseText(g->GetWindowSize()),
+   theNextScene(nullptr)
 {
    theName = "Pause";
 
    SDL_Color textColor = { 0xff, 0xff, 0xff, 0xff };
-   _pauseText.SetTextImageInfo("Game Paused", textColor, theRenderer);
+   thePauseText.SetTextImageInfo("Game Paused", textColor, theRenderer);
 
    XYPair textPosition = g->GetWindowSize();
    textPosition *= 0.5;
-   _pauseText.SetPosition(textPosition);
+   thePauseText.SetPosition(textPosition);
 
-   theEntities.push_back(&_pauseText);
+   theEntities.push_back(&thePauseText);
 }
 
 PauseScene::~PauseScene()
@@ -37,7 +37,7 @@ bool PauseScene::ProcessEvent(SDL_Event const & ev)
          if (ev.key.keysym.scancode == SDL_SCANCODE_SPACE)
          {
             LOG_DEBUG() << "Yeah, space bar";
-            _nextScene = _underneath;
+            theNextScene = theBackScene;
             return true;
          }
          break;
@@ -48,7 +48,7 @@ bool PauseScene::ProcessEvent(SDL_Event const & ev)
          if (ev.jbutton.button == 7)
          {
             // User pressed A or Start on x360 controller
-            _nextScene = _underneath;
+            theNextScene = theBackScene;
             return true;
          }
          break;
@@ -59,7 +59,7 @@ bool PauseScene::ProcessEvent(SDL_Event const & ev)
 
 Scene* PauseScene::GetNextState(bool* deleteMe)
 {
-   if (_nextScene)
+   if (theNextScene)
    {
       *deleteMe = true;
    }
@@ -67,13 +67,13 @@ Scene* PauseScene::GetNextState(bool* deleteMe)
    {
       *deleteMe = false;
    }
-   return _nextScene;
+   return theNextScene;
 }
 
 void PauseScene::Draw()
 {
    // Draw the scene underneath the pause screen
-   _underneath->Draw();
+   theBackScene->Draw();
 
    for(std::vector<GameEntity*>::iterator it = theEntities.begin(); it != theEntities.end(); it++)
    {

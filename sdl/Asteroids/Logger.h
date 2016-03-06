@@ -29,7 +29,7 @@ public:
    template<typename T>
    Logger& operator<< (T const & rhs)
    {
-      _oss << " " << rhs;
+      theOss << " " << rhs;
       return *this;
    }
 
@@ -38,12 +38,12 @@ protected:
    static const int FILE_NAME_PRINTED_LENGTH;
 
    // Logging level
-   int _level;
+   int theLevel;
 
    // output stream
-   std::ostringstream _oss;
+   std::ostringstream theOss;
 
-   unsigned int _timestamp;
+   unsigned int theTimestamp;
 
 };
 

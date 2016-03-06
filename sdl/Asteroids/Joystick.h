@@ -49,15 +49,15 @@ public:
 
 protected:
 
-   SDL_Joystick* _joystick;
+   SDL_Joystick* theJoystick;
 
-   std::map<int, Command*> _buttonDownHandlers;
+   std::map<int, Command*> theButtonDownHandlers;
 
-   std::map<int, Command*> _buttonUpHandlers;
+   std::map<int, Command*> theButtonUpHandlers;
 
-   std::map<int, Command*> _movementHandlers;
+   std::map<int, Command*> theMovementHandlers;
 
-   int _deadzone;
+   int theDeadzone;
 };
 
 

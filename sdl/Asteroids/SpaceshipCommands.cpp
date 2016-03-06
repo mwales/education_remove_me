@@ -6,15 +6,15 @@
 //*****************************************************************************
 
 FireCommand::FireCommand(Spaceship* ship, bool fireState):
-   _ship(ship),
-   _fireState(fireState)
+   theShip(ship),
+   theFireState(fireState)
 {
    // Empty
 }
 
 bool FireCommand::Execute()
 {
-   _ship->Fire(_fireState);
+   theShip->Fire(theFireState);
    return false;
 }
 
@@ -25,15 +25,15 @@ bool FireCommand::Execute()
 
 
 ThrustCommand::ThrustCommand(Spaceship* ship, bool thrustState):
-   _ship(ship),
-   _thrustState(thrustState)
+   theShip(ship),
+   theThrustState(thrustState)
 {
    // Empty
 }
 
 bool ThrustCommand::Execute()
 {
-   _ship->SetThrustState(_thrustState);
+   theShip->SetThrustState(theThrustState);
    return false;
 }
 
@@ -44,15 +44,15 @@ bool ThrustCommand::Execute()
 
 
 TurnCommand::TurnCommand(Spaceship* ship, int rotationDir):
-   _ship(ship),
-   _rotateDirection(rotationDir)
+   theShip(ship),
+   theRotateDirection(rotationDir)
 {
    // Empty
 }
 
 bool TurnCommand::Execute()
 {
-   _ship->SetTurningDirection(_rotateDirection);
+   theShip->SetTurningDirection(theRotateDirection);
    return false;
 }
 
@@ -62,7 +62,7 @@ bool TurnCommand::Execute()
 
 
 TurnJSCommand::TurnJSCommand(Spaceship* ship):
-   _ship(ship)
+   theShip(ship)
 {
    // Empty
 }
@@ -72,7 +72,7 @@ bool TurnJSCommand::Execute()
    if (Command::GetBundleSize() > 0)
    {
       // Bundle parameter was a value of -100 to 100 that was converted to 0-200
-      _ship->SetRotationalAcceleration(GetBundleParameter(0)-100);
+      theShip->SetRotationalAcceleration(GetBundleParameter(0)-100);
       ClearBundle();
    }
    else

@@ -28,8 +28,8 @@ protected:
 
    TTF_Font* GetFont(std::string font, int pt);
 
-   static bool _runTtfInitOnce;
+   static bool theRunTtfInitOnce;
 
-   static std::map<std::string, TTF_Font*> _fonts;
+   static std::map<std::string, TTF_Font*> theFonts;
 };
 

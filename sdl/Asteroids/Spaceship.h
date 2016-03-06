@@ -58,24 +58,24 @@ public:
 
 protected:
 
-   int _turningDirection;\
+   int theTurningDirection;\
 
-   bool _thrustOn { false };
+   bool theThrustOn { false };
 
-   bool _fireBullet { false };
+   bool theFireBullet { false };
 
-   int _ticksSinceLastBullet { 0 };
+   int theTicksSinceLastBullet { 0 };
 
-   BulletFireMode _fireMode { BulletFireMode::RAPID_SHOT };
+   BulletFireMode theFireMode { BulletFireMode::RAPID_SHOT };
 
-   std::map<BulletFireMode, int> _fireDelayMap;
+   std::map<BulletFireMode, int> theFireDelayMap;
 
    // Need this so we can pass it on to bullets so they can end themselves
-   std::vector<GameEntity*>* _additionList;
-   std::vector<GameEntity*>* _deletionList;
+   std::vector<GameEntity*>* theAdditionList;
+   std::vector<GameEntity*>* theDeletionList;
 
-   std::vector<GraphicEntity*> _newBullets;
+   std::vector<GraphicEntity*> theNewBullets;
 
-   bool _displayCollisionArea;
+   bool theDisplayCollisionArea;
 };
 

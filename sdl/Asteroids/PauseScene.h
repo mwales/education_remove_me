@@ -18,9 +18,9 @@ protected:
 
    bool ProcessEvent(SDL_Event const & ev);
 
-   Scene* _underneath;
+   Scene* theBackScene;
 
-   GraphicEntity _pauseText;
+   GraphicEntity thePauseText;
 
-   Scene* _nextScene;
+   Scene* theNextScene;
 };

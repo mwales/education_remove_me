@@ -35,29 +35,29 @@ protected:
 
    void SpawnRock();
 
-   GraphicEntity _background;
+   GraphicEntity theBackground;
 
-   std::vector<SpaceRock*> _bigRocks;
+   std::vector<SpaceRock*> theBigRocks;
 
    // When counter hits zero, consider spawning a rock
-   int _rockSpawnCounter;
+   int theRockSpawnCounter;
 
-   Spaceship _ship;
+   Spaceship theShip;
 
-   std::map<int, Command*> _keyboardDownMappedCommands;
-   std::map<int, Command*> _keyboardUpMappedCommands;
+   std::map<int, Command*> theKeyboardDownMappedCommands;
+   std::map<int, Command*> theKeyboardUpMappedCommands;
 
 
-   bool _pauseState;
-   Scene* _nextState;
+   bool thePauseState;
+   Scene* theNextState;
 
    // Everything collides with rocks, so put them in their own list
    //  list A = Rocks
    //  list B = Bullets and Ship
-   CollisionManager _collisionMgr;
+   CollisionManager theCollisionMgr;
 
    // Variable that can be toggled to enable special debug functions
-   bool _debugMode;
+   bool theDebugMode;
 };
 
 
@@ -71,7 +71,7 @@ public:
 
 protected:
 
-   ShootingScene* _scene;
+   ShootingScene* theScene;
 };
 
 class ToggleDebugCommand: public Command
@@ -83,5 +83,5 @@ public:
 
 protected:
 
-   ShootingScene* _scene;
+   ShootingScene* theScene;
 };

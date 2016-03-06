@@ -40,17 +40,17 @@ void printBacktrace(void)
 const int Logger::FILE_NAME_PRINTED_LENGTH = 19;
 
 Logger::Logger(enum LogLevel logLevel):
-   _level(logLevel)
+   theLevel(logLevel)
 {
    // Empty block to make it align with other log messages
-   _oss << "[                    ]";
+   theOss << "[                    ]";
 
-   _timestamp = SDL_GetTicks();
-   _oss << " " << _timestamp << ":";
+   theTimestamp = SDL_GetTicks();
+   theOss << " " << theTimestamp << ":";
 }
 
 Logger::Logger(char const * filename, int lineNumber, enum LogLevel logLevel):
-   _level(logLevel)
+   theLevel(logLevel)
 {
    char buf[30];
 
@@ -62,10 +62,10 @@ Logger::Logger(char const * filename, int lineNumber, enum LogLevel logLevel):
    }
 
    snprintf(buf, sizeof(buf), "[%20s:%4d]", filename, lineNumber);
-   _oss << buf;
+   theOss << buf;
 
-   _timestamp = SDL_GetTicks();
-   _oss << " " << _timestamp << ":";
+   theTimestamp = SDL_GetTicks();
+   theOss << " " << theTimestamp << ":";
 }
 
 Logger::~Logger()
@@ -73,18 +73,18 @@ Logger::~Logger()
    /// @todo One day in the far off future, convert this to calling a singleton that could ensure messages don't
    /// get smashed together from multiple threads and what not
 
-   switch(_level)
+   switch(theLevel)
    {
       case LOG_LEVEL_DEBUG:
-         std::cout << "\x1b[32m" << _oss.str() << "\x1b[0m" << std::endl;
+         std::cout << "\x1b[32m" << theOss.str() << "\x1b[0m" << std::endl;
          break;
 
       case LOG_LEVEL_WARNING:
-         std::cout << "\x1b[33m" << _oss.str() << "\x1b[0m" << std::endl;
+         std::cout << "\x1b[33m" << theOss.str() << "\x1b[0m" << std::endl;
          break;
 
       default: // FATAL
-         std::cout << "\x1b[41m\x1b[30m" << _oss.str() << "\x1b[0m" << std::endl;
+         std::cout << "\x1b[41m\x1b[30m" << theOss.str() << "\x1b[0m" << std::endl;
 
          printBacktrace();
          SDL_Quit();

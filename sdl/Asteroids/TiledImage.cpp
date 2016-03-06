@@ -8,59 +8,59 @@ TiledImage::TiledImage(char const * filename,
            int spacing,
            TilingMode mode):
    ImageInfo(filename, renderer),
-   _frameSpacing(spacing),
-   _currentFrameNumber(0)
+   theFrameSpacing(spacing),
+   theCurrentFrameNumber(0)
 {
-   XYPair fullImageDim = _size;
+   XYPair fullImageDim = theSize;
 
    if (mode == PROVIDING_SINGLE_TILE_DIMENSIONS)
    {
-      _framesWide = (fullImageDim[0] + _frameSpacing) / (tileWidth + _frameSpacing);
-      _framesHigh = (fullImageDim[1] + _frameSpacing) / (tileHeight + _frameSpacing);
+      theFramesWide = (fullImageDim[0] + theFrameSpacing) / (tileWidth + theFrameSpacing);
+      theFramesHigh = (fullImageDim[1] + theFrameSpacing) / (tileHeight + theFrameSpacing);
 
-      int calculatedWidth = _framesWide * (tileWidth + _frameSpacing) - _frameSpacing;
-      int calculatedHeight = _framesHigh * (tileHeight + _frameSpacing) - _frameSpacing;
+      int calculatedWidth = theFramesWide * (tileWidth + theFrameSpacing) - theFrameSpacing;
+      int calculatedHeight = theFramesHigh * (tileHeight + theFrameSpacing) - theFrameSpacing;
 
-      if ( (calculatedWidth != _size[0]) || (calculatedHeight != _size[1]) )
+      if ( (calculatedWidth != theSize[0]) || (calculatedHeight != theSize[1]) )
       {
          LOG_FATAL() << "Tileset dimensions invalid.  (" << tileWidth << "," << tileHeight << ")"
-                     << "in a set" << _framesWide << "x" << _framesHigh << "with spacing"
-                     << _frameSpacing << "should be (" << calculatedWidth << "," << calculatedHeight
-                     << "), not" << _size;
+                     << "in a set" << theFramesWide << "x" << theFramesHigh << "with spacing"
+                     << theFrameSpacing << "should be (" << calculatedWidth << "," << calculatedHeight
+                     << "), not" << theSize;
       }
       else
       {
-         _size[0] = tileWidth;
-         _size[1] = tileHeight;
+         theSize[0] = tileWidth;
+         theSize[1] = tileHeight;
 
-         LOG_DEBUG() << "Tileset has" << _framesWide * _framesHigh << "frames, tiles are" << _size;
+         LOG_DEBUG() << "Tileset has" << theFramesWide * theFramesHigh << "frames, tiles are" << theSize;
       }
    }
    else
    {
       // mode == CALCULATE_SINGLE_TILE_DIMENSIONS
-      _framesWide = tileWidth;
-      _framesHigh = tileHeight;
+      theFramesWide = tileWidth;
+      theFramesHigh = tileHeight;
 
-      int singleTileWidth = (fullImageDim[0] - (_frameSpacing * (_framesWide -1) )) / _framesWide;
-      int singleTileHeight = (fullImageDim[1] - (_frameSpacing * (_framesHigh -1) )) / _framesHigh;
+      int singleTileWidth = (fullImageDim[0] - (theFrameSpacing * (theFramesWide -1) )) / theFramesWide;
+      int singleTileHeight = (fullImageDim[1] - (theFrameSpacing * (theFramesHigh -1) )) / theFramesHigh;
 
-      int calculatedWidth = _framesWide * (singleTileWidth + _frameSpacing) - _frameSpacing;
-      int calculatedHeight = _framesHigh * (singleTileHeight + _frameSpacing) - _frameSpacing;
+      int calculatedWidth = theFramesWide * (singleTileWidth + theFrameSpacing) - theFrameSpacing;
+      int calculatedHeight = theFramesHigh * (singleTileHeight + theFrameSpacing) - theFrameSpacing;
 
-      if ( (calculatedWidth != _size[0]) || (calculatedHeight != _size[1]) )
+      if ( (calculatedWidth != theSize[0]) || (calculatedHeight != theSize[1]) )
       {
          LOG_FATAL() << "Tileset dimensions invalid.  (" << singleTileWidth << "," << singleTileHeight << ")"
-                     << "in a set" << _framesWide << "x" << _framesHigh << "with spacing"
-                     << _frameSpacing << "should be (" << calculatedWidth << "," << calculatedHeight
-                     << "), not" << _size;
+                     << "in a set" << theFramesWide << "x" << theFramesHigh << "with spacing"
+                     << theFrameSpacing << "should be (" << calculatedWidth << "," << calculatedHeight
+                     << "), not" << theSize;
       }
       else
       {
-         _size[0] = singleTileWidth;
-         _size[1] = singleTileHeight;
+         theSize[0] = singleTileWidth;
+         theSize[1] = singleTileHeight;
 
-         LOG_DEBUG() << "Tileset has" << _framesWide * _framesHigh << "frames, tiles are" << _size;
+         LOG_DEBUG() << "Tileset has" << theFramesWide * theFramesHigh << "frames, tiles are" << theSize;
       }
    }
 
@@ -74,7 +74,7 @@ TiledImage::~TiledImage()
 
 int TiledImage::GetNumberOfFrames()
 {
-   return _framesWide * _framesHigh;
+   return theFramesWide * theFramesHigh;
 }
 
 void TiledImage::SetFrameNumber(int frame)
@@ -85,13 +85,13 @@ void TiledImage::SetFrameNumber(int frame)
    }
    else
    {
-      _currentFrameNumber = frame;
+      theCurrentFrameNumber = frame;
 
-      _src.w = _size[0];
-      _src.h = _size[1];
-      int column = _currentFrameNumber % _framesWide;
-      int row = _currentFrameNumber / _framesWide;
-      _src.x = column * (_size[0] + _frameSpacing);
-      _src.y = row * (_size[1] + _frameSpacing);
+      theSrc.w = theSize[0];
+      theSrc.h = theSize[1];
+      int column = theCurrentFrameNumber % theFramesWide;
+      int row = theCurrentFrameNumber / theFramesWide;
+      theSrc.x = column * (theSize[0] + theFrameSpacing);
+      theSrc.y = row * (theSize[1] + theFrameSpacing);
    }
 }
