@@ -60,6 +60,11 @@ bool CollisionManager::RemoveFromA(ICollidable const * obj)
 
 bool CollisionManager::RemoveFromB(ICollidable const * obj)
 {
+   if (obj == nullptr)
+   {
+      return false;
+   }
+
    auto it = std::find(theBodiesB.begin(), theBodiesB.end(), obj);
 
    if (it != theBodiesB.end())
@@ -90,6 +95,11 @@ void CollisionManager::ClearCollisions()
 
 void CollisionManager::CheckForCollisions()
 {
+   LOG_DEBUG() << "Enter CheckForCollisions";
+
+   // for debugging
+   DumpCollisionManager();
+
    switch(theCurrentCollisionMode)
    {
       case CollisionMode::EXPONENTIAL:
@@ -98,6 +108,7 @@ void CollisionManager::CheckForCollisions()
       case CollisionMode::GRID:
          CheckForCollisionsWithGrid();
    }
+   LOG_DEBUG() << "Exit CheckForCollisions";
 }
 
 void CollisionManager::SetCollisionManagerMode(CollisionMode mode)
@@ -319,4 +330,17 @@ bool CollisionManager::DoObjectsOverlap(ICollidable const * objA, ICollidable co
 std::vector<Collision> CollisionManager::GetCollisions()
 {
    return theCurrentCollisions;
+}
+
+void CollisionManager::DumpCollisionManager()
+{
+   LOG_DEBUG() << "A size=" << theBodiesA.size() << ", B size" << theBodiesB.size();
+   for(auto curBodA : theBodiesA)
+   {
+      LOG_DEBUG() << "\tA> " << (long) curBodA; // << " @ " << curBodA->GetPosition();
+   }
+   for(auto curBodB : theBodiesB)
+   {
+      LOG_DEBUG() << "\tB> " << (long) curBodB; // << " @ " << curBodB->GetPosition();
+   }
 }

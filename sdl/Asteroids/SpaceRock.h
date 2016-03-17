@@ -10,6 +10,7 @@ class AnimationDriver;
 class TiledImage;
 class GameEntity;
 class ImageInfo;
+class ILifetimeManager;
 
 class SpaceRock : public GraphicEntity
 {
@@ -20,8 +21,7 @@ public:
 
    void SetRandomLocation(XYPair shipPos);
 
-   void Explode(std::vector<GameEntity*>* deletionList,
-                std::vector<GameEntity*>* additionList);
+   void Explode(ILifetimeManager* mgr);
 
    virtual void Update();
 
@@ -43,7 +43,7 @@ protected:
 
    AnimationDriver* theAnimator;
 
-   std::vector<GameEntity*>* theDeletionList;
+   ILifetimeManager* theLifetimeMgr;
 
    bool theDisplayCollisionArea;
 };

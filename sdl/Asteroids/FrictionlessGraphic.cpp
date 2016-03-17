@@ -1,10 +1,11 @@
 #include "FrictionlessGraphic.h"
 #include "Logger.h"
+#include "ShootingSceneConstants.h"
 
 FrictionlessGraphic::FrictionlessGraphic(std::string filename, XYPair mapBounds, SDL_Renderer* r):
    GraphicEntity(mapBounds),
    theFramesToLive { 0 },
-   theDeletionList { nullptr }
+   theLifetimeManager { nullptr }
 {
    theImage = new ImageInfo(filename.c_str(), r);
    SetImageInfo(theImage);
@@ -32,13 +33,20 @@ void FrictionlessGraphic::Update()
       if (theFramesToLive == 0)
       {
          // FrictionlessGraphic lifetime expired
-         theDeletionList->push_back(this);
+         if (theLifetimeManager == nullptr)
+         {
+            LOG_FATAL() << "Bullet lifetime expired, but no lifetime manager set";
+            return;
+         }
+
+         LOG_DEBUG() << "End of life reached" << (long) this;
+         theLifetimeManager->DeleteEntity(this, theEndOfLifeCode);
       }
    }
 
 }
 
-void FrictionlessGraphic::SetLifetime(float secs, std::vector<GameEntity*>* deletionList)
+void FrictionlessGraphic::SetLifetime(float secs, ILifetimeManager* lm, int endOfLifeCode)
 {
    if (theUpdateRateHz == 0)
    {
@@ -47,5 +55,6 @@ void FrictionlessGraphic::SetLifetime(float secs, std::vector<GameEntity*>* dele
    }
 
    theFramesToLive = theUpdateRateHz * secs;
-   theDeletionList = deletionList;
+   theLifetimeManager = lm;
+   theEndOfLifeCode = endOfLifeCode;
 }

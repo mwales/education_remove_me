@@ -56,13 +56,17 @@ public:
 
    std::string GetSceneName();
 
-   void AddEntity(GameEntity * e) override;
+   void AddEntity(GameEntity * e, int addCode = 0) override;
 
-   void DeleteEntity(GameEntity * e) override;
+   void DeleteEntity(GameEntity * e, int delCode = 0) override;
 
 protected:
 
    virtual bool ProcessEvent(SDL_Event const & ev);
+
+   virtual void ProcessAddEntityQueue();
+
+   virtual void ProcessDelEntityQueue();
 
    SDL_Renderer* theRenderer;
 
@@ -76,8 +80,9 @@ protected:
 
    int theUpdateRateHz;
 
-   // After an update, these are the objects that should be deleted/added
-   std::vector<GameEntity *> theDeletionList;
-   std::vector<GameEntity *> theAdditionList;
+   // When objects that are running update loop need to delete or add entities, these queues will
+   // hold them until after Update() is complete and they can processed safely
+   std::vector< std::pair< GameEntity*, int > > theAddQueue;
+   std::vector< std::pair< GameEntity*, int > > theDelQueue;
 };
 

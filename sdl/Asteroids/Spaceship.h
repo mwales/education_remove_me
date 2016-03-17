@@ -6,6 +6,7 @@
 #include "GameMath.h"
 #include "Joystick.h"
 
+class ILifetimeManager;
 
 class Spaceship : public GraphicEntity, public JoystickRegistrationCallbacks
 {
@@ -31,8 +32,7 @@ public:
 
    void SetRotationalAcceleration(int rotAcc);
 
-   void SetAddDeleteLists(std::vector<GameEntity*>* addList,
-                          std::vector<GameEntity*>* delList);
+   void SetLifetimeManager(ILifetimeManager* lm);
 
    std::map<int, Command*> GetKeyboardDownCallbacks();
 
@@ -70,12 +70,10 @@ protected:
 
    std::map<BulletFireMode, int> theFireDelayMap;
 
-   // Need this so we can pass it on to bullets so they can end themselves
-   std::vector<GameEntity*>* theAdditionList;
-   std::vector<GameEntity*>* theDeletionList;
-
    std::vector<GraphicEntity*> theNewBullets;
 
    bool theDisplayCollisionArea;
+
+   ILifetimeManager* theLifetimeMgr;
 };
 

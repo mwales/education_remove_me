@@ -3,6 +3,7 @@
 #include "GraphicEntity.h"
 #include "ICollidable.h"
 #include "GameMath.h"
+#include "ILifetimeManager.h"
 
 class ImageInfo;
 
@@ -21,12 +22,15 @@ public:
     * @note Set the updateRate before setting lifetime
     *
     * @param secs
-    * @param deletionList
+    * @param lm
+    * @param code The code to pass to lifetime manager on end of life
     */
-   void SetLifetime(float secs, std::vector<GameEntity*>* deletionList);
+   void SetLifetime(float secs, ILifetimeManager* lm, int code);
 
 protected:
    int theFramesToLive;
 
-   std::vector<GameEntity*>* theDeletionList;
+   ILifetimeManager* theLifetimeManager;
+
+   int theEndOfLifeCode;
 };

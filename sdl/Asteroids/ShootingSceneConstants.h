@@ -1,0 +1,11 @@
+#pragma once
+
+enum ShootingSceneLifetimeCodes
+{
+   ADD_CODE_BULLET = 1337,
+   ADD_CODE_BIG_ROCK,
+   ADD_CODE_SMALL_ROCK,
+   REMOVE_CODE_BULLET,
+   REMOVE_CODE_BIG_ROCK,
+   REMOVE_CODE_SMALL_ROCK
+};

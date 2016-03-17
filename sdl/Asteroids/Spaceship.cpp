@@ -5,25 +5,23 @@
 #include "Logger.h"
 #include "GameMath.h"
 #include "FrictionlessGraphic.h"
+#include "ILifetimeManager.h"
+#include "ShootingSceneConstants.h"
 
 static const float THRUST_ACCELERATION = 800.0;
 
 Spaceship::Spaceship(XYPair mapBounds):
    GraphicEntity(mapBounds),
    theTurningDirection(0),
-   theAdditionList(nullptr),
-   theDeletionList(nullptr),
-   theDisplayCollisionArea(false)
+   theDisplayCollisionArea(false),
+   theLifetimeMgr(nullptr)
 {
    // empty
 }
 
-
-void Spaceship::SetAddDeleteLists(std::vector<GameEntity*>* addList,
-                                  std::vector<GameEntity*>* delList)
+void Spaceship::SetLifetimeManager(ILifetimeManager* lm)
 {
-   theAdditionList = addList;
-   theDeletionList = delList;
+   theLifetimeMgr = lm;
 }
 
 void Spaceship::Fire(bool fireState)
@@ -48,15 +46,15 @@ void Spaceship::FireBullet()
       theTicksSinceLastBullet = 0;
    }
 
-   if ( (theDeletionList == nullptr) || (theAdditionList == nullptr) )
+   if (theLifetimeMgr == nullptr)
    {
-      LOG_WARNING() << "Can't fire because we never got spaceship doesn't have add / del list";
+      LOG_WARNING() << "Can't fire because we never got spaceship doesn't have lifetime mgr";
       return;
    }
 
    FrictionlessGraphic* b = new FrictionlessGraphic("assets/shot2.png", theMapBounds, GetImageInfo()->GetRenderer());
    b->SetUpdateRate(theUpdateRateHz);
-   b->SetLifetime(5.0, theDeletionList);
+   b->SetLifetime(5.0, theLifetimeMgr, ShootingSceneLifetimeCodes::REMOVE_CODE_BULLET);
    b->SetAngle(theAngle);
 
    XYPair directionUnitVec = GameMath::GetUnitVector(theAngle);
@@ -69,17 +67,8 @@ void Spaceship::FireBullet()
    XYPair bulletPos = thePosition + directionUnitVec * bulletOffset;
    b->SetPosition(bulletPos);
 
-   theNewBullets.push_back(b);
-   theAdditionList->push_back(b);
+   theLifetimeMgr->AddEntity(b, ShootingSceneLifetimeCodes::ADD_CODE_BULLET);
 }
-
-std::vector<GraphicEntity*> Spaceship::GetNewBullets()
-{
-   std::vector<GraphicEntity*> retVal = theNewBullets;
-   theNewBullets.clear();
-   return retVal;
-}
-
 
 void Spaceship::SetThrustState(bool state)
 {

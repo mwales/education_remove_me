@@ -70,6 +70,8 @@ public:
 
    bool DoObjectsOverlap(ICollidable const * objA, ICollidable const * objB);
 
+   void DumpCollisionManager();
+
 protected:
 
    int theWidth;

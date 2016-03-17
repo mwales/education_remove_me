@@ -3,6 +3,8 @@
 #include "ImageInfo.h"
 #include "Logger.h"
 #include "AnimationDriver.h"
+#include "ILifetimeManager.h"
+#include "ShootingSceneConstants.h"
 
 int ROCK_MAX_SPEED = 30;
 int ROCK_MAX_ROT_SPEED = 90;
@@ -15,7 +17,7 @@ std::vector<std::string> SpaceRock::theExplosionImageFilenames;
 SpaceRock::SpaceRock(XYPair mapBounds, SDL_Renderer* r):
    GraphicEntity(mapBounds),
    theAnimator(nullptr),
-   theDeletionList(nullptr),
+   theLifetimeMgr(nullptr),
    theDisplayCollisionArea(false)
 {
    if (theRunOnce)
@@ -40,6 +42,8 @@ SpaceRock::SpaceRock(XYPair mapBounds, SDL_Renderer* r):
 
    theTranslationalFrictionScalar = 0;
    theRotationalFrictionScalar = 0;
+
+   LOG_DEBUG() << "Space Rock constructed at " << (long) this;
 }
 
 SpaceRock::~SpaceRock()
@@ -59,16 +63,15 @@ SpaceRock::~SpaceRock()
    }
 }
 
-void SpaceRock::Explode(std::vector<GameEntity*>* deletionList,
-                        std::vector<GameEntity*>* additionList)
+void SpaceRock::Explode(ILifetimeManager* mgr)
 {
    LOG_DEBUG() << "Rock exploding";
    SetImageInfo(theExplosionImage);
    theAnimator = new AnimationDriver(theExplosionImage, false);
    theAnimator->SetAnimationDuration(1, theUpdateRateHz);
 
-   // Remember the reference to the deletion list
-   theDeletionList = deletionList;
+   // Remember the reference to the lifetime manager
+   theLifetimeMgr = mgr;
 }
 
 
@@ -110,7 +113,7 @@ void SpaceRock::Update()
          theAnimator = nullptr;
 
          LOG_DEBUG() << "Animation finished for (" << (unsigned long) this << ")";
-         theDeletionList->push_back(this);
+         theLifetimeMgr->DeleteEntity(this, ShootingSceneLifetimeCodes::REMOVE_CODE_BIG_ROCK);
       }
    }
 }

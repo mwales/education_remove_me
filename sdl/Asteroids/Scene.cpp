@@ -25,8 +25,7 @@ Scene::~Scene()
 
 void Scene::Update()
 {
-   // LOG_DEBUG() << "Updating Scene (" << (unsigned long) this << ")";
-
+   LOG_DEBUG() << "Updating Scene, entity count = " << theEntities.size();
    for(auto e : theEntities)
    {
       // LOG_DEBUG() << "Updating entity (" << (unsigned long) *it << ")";
@@ -44,16 +43,36 @@ void Scene::Draw()
 
 void Scene::ManageEntityLifetimes()
 {
-   std::vector<GameEntity*>::iterator it;
+   LOG_DEBUG() << "Enter ManageEntityLifetimes";
+   ProcessDelEntityQueue();
 
-   while(!theDeletionList.empty())
+   ProcessAddEntityQueue();
+   LOG_DEBUG() << "Exit ManageEntityLifetimes";
+}
+
+void Scene::ProcessAddEntityQueue()
+{
+   while(!theAddQueue.empty())
    {
-      //it = _entities.find(_deletionList.back());
-      it = std::find(theEntities.begin(), theEntities.end(), theDeletionList.back());
+      std::pair<GameEntity*, int> & curEnt = theAddQueue.back();
+      LOG_DEBUG() << __FUNCTION__ << ": Adding a new entity (" << (long) curEnt.first << ") to scene, code = " << curEnt.second;
+      theEntities.push_back(curEnt.first);
+      theAddQueue.pop_back();
+   }
+}
+
+void Scene::ProcessDelEntityQueue()
+{
+   while(!theDelQueue.empty())
+   {
+      std::pair<GameEntity*, int> & curEnt = theAddQueue.back();
+      LOG_DEBUG() << __FUNCTION__ << ": Removing an entity from scene, e=" << curEnt.first << " ,code = " << curEnt.second;
+
+      auto it = std::find(theEntities.begin(), theEntities.end(), curEnt.first);
       if (it != theEntities.end())
       {
          LOG_DEBUG() << "Deleting entity" << (unsigned long) *it;
-         delete (*it);
+         delete (curEnt.first);
          theEntities.erase(it);
       }
       else
@@ -61,16 +80,10 @@ void Scene::ManageEntityLifetimes()
          LOG_WARNING() << "Couldn't find entity to delete, already deleted?";
       }
 
-      theDeletionList.pop_back();
-   }
-
-   while(!theAdditionList.empty())
-   {
-      LOG_DEBUG() << "Adding a new entity to scene";
-      theEntities.push_back(theAdditionList.back());
-      theAdditionList.pop_back();
+      theDelQueue.pop_back();
    }
 }
+
 
 void Scene::SetUpdateRate(int updateHz)
 {
@@ -185,12 +198,14 @@ std::string Scene::GetSceneName()
    return theName;
 }
 
-void Scene::AddEntity(GameEntity * e)
+void Scene::AddEntity(GameEntity * e, int addCode)
 {
-   theAdditionList.push_back(e);
+   LOG_DEBUG() << __FUNCTION__ << ": AddEntity: e=" << (long) e << ", code=" << addCode;
+   theAddQueue.push_back(std::pair<GameEntity*, int>(e,addCode));
 }
 
-void Scene::DeleteEntity(GameEntity * e)
+void Scene::DeleteEntity(GameEntity * e, int delCode)
 {
-   theDeletionList.push_back(e);
+   LOG_DEBUG() << __FUNCTION__ << ": DeleteEntity: e=" << (long) e << ", code=" << delCode;
+   theDelQueue.push_back(std::pair<GameEntity*, int>(e,delCode));
 }

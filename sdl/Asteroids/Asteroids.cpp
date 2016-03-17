@@ -24,6 +24,20 @@
  * Image
  *   AnimatedImage
 
+ Pie in the sky stuff to do:
+ - Create a stop watch telemetry class.
+  - How long does it take to Update?
+  - to render?
+  - to post process (new and deletes)
+  - special events
+  - timing graphs
+ - Debug log receivers
+   - tcp/ip
+   - named pipe
+   - cout
+
+
+
  */
 
 

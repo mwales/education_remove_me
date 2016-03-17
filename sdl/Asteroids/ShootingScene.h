@@ -15,6 +15,7 @@ class FrictionlessGraphic;
 class ShootingScene : public Scene
 {
 public:
+
    ShootingScene(Graphics* g, Mixer* m);
 
    ~ShootingScene();
@@ -25,8 +26,6 @@ public:
 
    virtual void Update() override;
 
-   virtual void ManageEntityLifetimes() override;
-
    void ToggleDebug();
 
 protected:
@@ -34,6 +33,10 @@ protected:
    bool ProcessEvent(SDL_Event const & ev);
 
    void SpawnRock();
+
+   virtual void ProcessAddEntityQueue() override;
+
+   virtual void ProcessDelEntityQueue() override;
 
    GraphicEntity theBackground;
 
@@ -58,6 +61,7 @@ protected:
 
    // Variable that can be toggled to enable special debug functions
    bool theDebugMode;
+
 };
 
 
