@@ -95,10 +95,8 @@ void CollisionManager::ClearCollisions()
 
 void CollisionManager::CheckForCollisions()
 {
-   LOG_DEBUG() << "Enter CheckForCollisions";
-
    // for debugging
-   DumpCollisionManager();
+   //DumpCollisionManager();
 
    switch(theCurrentCollisionMode)
    {
@@ -108,7 +106,6 @@ void CollisionManager::CheckForCollisions()
       case CollisionMode::GRID:
          CheckForCollisionsWithGrid();
    }
-   LOG_DEBUG() << "Exit CheckForCollisions";
 }
 
 void CollisionManager::SetCollisionManagerMode(CollisionMode mode)

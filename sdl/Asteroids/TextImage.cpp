@@ -138,11 +138,10 @@ void TextImage::UnloadAllFonts()
       return;
    }
 
-   std::map<std::string, TTF_Font*>::iterator it;
-   for(it = theFonts.begin(); it != theFonts.end(); it++)
+   for(auto&& curFont : theFonts)
    {
-      LOG_DEBUG() << "Unloading font" << it->first;
-      TTF_CloseFont(it->second);
+      LOG_DEBUG() << "Unloading font" << curFont.first;
+      TTF_CloseFont(curFont.second);
    }
 
    theFonts.clear();

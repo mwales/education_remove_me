@@ -54,7 +54,7 @@ ImageCache::~ImageCache()
       if (it->second.theUserCount == 0)
       {
          LOG_DEBUG() << "Added image to unused image list";
-         //ImageCacheDebugDump();
+         // ImageCacheDebugDump();
 
          // We were the last user, add to the list of unused textures
          theUnusedTextures.push_back(theTexture);
@@ -136,16 +136,12 @@ SDL_Texture* ImageCache::LookupTexture(std::string const & imageFile) const
    std::map<std::string, SDL_Texture*>::const_iterator it;
    it = theTextureLookup.find(imageFile);
 
-   //ImageCacheDebugDump();
-
    if (it != theTextureLookup.end())
    {
-      LOG_DEBUG() << "Texture " << imageFile << " found in cache";
       return it->second;
    }
    else
    {
-      LOG_DEBUG() << "Texture " << imageFile << " not in cache";
       return nullptr;
    }
 }
@@ -196,27 +192,26 @@ void ImageCache::ImageCacheDebugDump()
    LOG_DEBUG() << "*";
 
    LOG_DEBUG() << "* _textureLookup:";
-   std::map<std::string, SDL_Texture*>::const_iterator lookupIt;
-   for(lookupIt = theTextureLookup.begin(); lookupIt != theTextureLookup.end(); lookupIt++)
+   for(auto const & curTexture : theTextureLookup)
    {
-      LOG_DEBUG() << "*   " << lookupIt->first << " -> " << (unsigned long) lookupIt->second;
+      LOG_DEBUG() << "*   " << curTexture.first << " -> " << (unsigned long) curTexture.second;
    }
 
    LOG_DEBUG() << "* _textureData:";
-   std::map<SDL_Texture*, ImageCacheData>::const_iterator dataIt;
-   for(dataIt = theTextureData.begin(); dataIt != theTextureData.end(); dataIt++)
+   for(auto const & curData : theTextureData)
    {
-      LOG_DEBUG() << "*   " << (unsigned long) dataIt->first << " -> ("
-                  << dataIt->second.theFilename << ", "
-                  << dataIt->second.theSize << ", "
-                  << dataIt->second.theUserCount << ")";
+      LOG_DEBUG() << "*   " << (unsigned long) curData.first << " -> ("
+                  << curData.second.theFilename << ", "
+                  << curData.second.theSize << ", "
+                  << curData.second.theUserCount << ")";
    }
 
    LOG_DEBUG() << "* _unusedTextures:";
-   std::vector<SDL_Texture*>::const_iterator unusedIt;
-   for(unusedIt = theUnusedTextures.begin(); unusedIt != theUnusedTextures.end(); unusedIt++)
+   for(auto const & curUnused : theUnusedTextures)
    {
-      LOG_DEBUG() << "*   " << (unsigned long) (*unusedIt);
+      LOG_DEBUG() << "*   " << (unsigned long) curUnused;
    }
+   LOG_DEBUG() << "****************************************";
+
 }
 

@@ -198,13 +198,12 @@ void Mixer::UncacheSound(Mix_Chunk* soundEffect)
 
    theSoundCache.erase(soundEffect);
 
-   std::map<std::string, Mix_Chunk*>::iterator it;
-   for(it = theSoundCatalog.begin(); it != theSoundCatalog.end(); it++)
+   for(auto&& curSound : theSoundCatalog)
    {
-      if (it->second == soundEffect)
+      if (curSound.second == soundEffect)
       {
-         LOG_DEBUG() << "Removing sound (" << it->first << ") from sound catalog";
-         theSoundCatalog.erase(it);
+         LOG_DEBUG() << "Removing sound (" << curSound.first << ") from sound catalog";
+         theSoundCatalog.erase(curSound.first);
 
          Mix_FreeChunk(soundEffect);
 

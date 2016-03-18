@@ -43,11 +43,11 @@ void Scene::Draw()
 
 void Scene::ManageEntityLifetimes()
 {
-   LOG_DEBUG() << "Enter ManageEntityLifetimes";
+   // LOG_DEBUG() << "Enter ManageEntityLifetimes";
    ProcessDelEntityQueue();
 
    ProcessAddEntityQueue();
-   LOG_DEBUG() << "Exit ManageEntityLifetimes";
+   // LOG_DEBUG() << "Exit ManageEntityLifetimes";
 }
 
 void Scene::ProcessAddEntityQueue()
@@ -200,12 +200,12 @@ std::string Scene::GetSceneName()
 
 void Scene::AddEntity(GameEntity * e, int addCode)
 {
-   LOG_DEBUG() << __FUNCTION__ << ": AddEntity: e=" << (long) e << ", code=" << addCode;
+   // LOG_DEBUG() << __FUNCTION__ << ": AddEntity: e=" << (long) e << ", code=" << addCode;
    theAddQueue.push_back(std::pair<GameEntity*, int>(e,addCode));
 }
 
 void Scene::DeleteEntity(GameEntity * e, int delCode)
 {
-   LOG_DEBUG() << __FUNCTION__ << ": DeleteEntity: e=" << (long) e << ", code=" << delCode;
+   // LOG_DEBUG() << __FUNCTION__ << ": DeleteEntity: e=" << (long) e << ", code=" << delCode;
    theDelQueue.push_back(std::pair<GameEntity*, int>(e,delCode));
 }

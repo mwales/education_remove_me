@@ -199,9 +199,6 @@ void ShootingScene::SpawnRock()
       rock->SetRandomLocation(theShip.GetPosition());
       rock->SetUpdateRate(theUpdateRateHz);
 
-//      theBigRocks.push_back(rock);
-//      theEntities.push_back(rock);
-//      theCollisionMgr.AddToA(rock);
       AddEntity(rock, ShootingSceneLifetimeCodes::ADD_CODE_BIG_ROCK);
 
       static int spawnedRockCounter = 1;
@@ -240,17 +237,11 @@ void ShootingScene::Update()
          {
             LOG_DEBUG() << "We found the rock that sploded: (" << (unsigned long) (*it).first << ")";
 
-            //ImageCache::ImageCacheDebugDump();
-
             // We found the rock in our list
             SpaceRock* splodingRock = *rockIt;
             splodingRock->Explode(this);
 
-            //DeleteEntity(splodingRock, ShootingSceneLifetimeCodes::REMOVE_CODE_BIG_ROCK);
             theCollisionMgr.RemoveFromA(splodingRock);
-            //rocksToDelete.insert(splodingRock);
-
-            //ImageCache::ImageCacheDebugDump();
          }
       }
 
@@ -277,48 +268,9 @@ void ShootingScene::Update()
 
    theCollisionMgr.ClearCollisions();
 
-//   for(auto bullet : theNewBullets)
-//   {
-//      theCollisionMgr.AddToB(bullet);
-//      theEntities.push_back(bullet);
-//   }
-
    // Call parent implementation
    Scene::Update();
 }
-
-//void ShootingScene::ManageEntityLifetimes()
-//{
-//   // Add new entities
-//   while(!theNewBullets.empty())
-//   {
-//      LOG_DEBUG() << "Adding a bullet";
-//      theCollisionMgr.AddToB(theNewBullets.back());
-//      theEntities.push_back(theNewBullets.back());
-//      theNewBullets.pop_back();
-//   }
-
-////   for(GameEntity* ge : theDeletionList)
-////   {
-////      theCollisionMgr.RemoveFromB( dynamic_cast<GraphicEntity*>(ge));
-////   }
-
-//   while(!theNewBullets.empty())
-//   {
-//      LOG_DEBUG() << "Deleting a bullet";
-//      theCollisionMgr.RemoveFromB(theDelBullets.back());
-
-//      auto eraseMeIt = std::find(theEntities.begin(), theEntities.end(), theDelBullets.back());
-//      if (eraseMeIt != theEntities.end())
-//      {
-//         theEntities.erase(eraseMeIt);
-//      }
-
-//      theDelBullets.pop_back();
-//   }
-
-//   Scene::ManageEntityLifetimes();
-//}
 
 void ShootingScene::ToggleDebug()
 {
@@ -341,7 +293,7 @@ void ShootingScene::ProcessAddEntityQueue()
       {
          case ShootingSceneLifetimeCodes::ADD_CODE_BULLET:
          {
-            LOG_DEBUG() << "Adding a bullet  ent=" << (long) curEnt.first;
+            // LOG_DEBUG() << "Adding a bullet  ent=" << (long) curEnt.first;
 
             ICollidable* colObj = dynamic_cast<ICollidable*>(curEnt.first);
 
@@ -356,7 +308,7 @@ void ShootingScene::ProcessAddEntityQueue()
          case ADD_CODE_BIG_ROCK:
          case ADD_CODE_SMALL_ROCK:
          {
-            LOG_DEBUG() << "Adding a rock!  ent=" << (long) curEnt.first;
+            // LOG_DEBUG() << "Adding a rock!  ent=" << (long) curEnt.first;
 
             ICollidable* colObj = dynamic_cast<ICollidable*>(curEnt.first);
             if (colObj == nullptr)
@@ -390,13 +342,13 @@ void ShootingScene::ProcessDelEntityQueue()
       switch(curEnt.second)
       {
          case REMOVE_CODE_BULLET:
-            LOG_DEBUG() << "Removing a bullet";
+            // LOG_DEBUG() << "Removing a bullet";
             theCollisionMgr.RemoveFromB( dynamic_cast<ICollidable*>(curEnt.first) );
             break;
 
          case REMOVE_CODE_BIG_ROCK:
          case REMOVE_CODE_SMALL_ROCK:
-            LOG_DEBUG() << "Removing a rock";
+            // LOG_DEBUG() << "Removing a rock";
             theCollisionMgr.RemoveFromA( dynamic_cast<ICollidable*>(curEnt.first) );
 
             auto it = std::find(theBigRocks.begin(), theBigRocks.end(), curEnt.first);

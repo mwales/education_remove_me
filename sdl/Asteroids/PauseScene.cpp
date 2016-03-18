@@ -75,8 +75,8 @@ void PauseScene::Draw()
    // Draw the scene underneath the pause screen
    theBackScene->Draw();
 
-   for(std::vector<GameEntity*>::iterator it = theEntities.begin(); it != theEntities.end(); it++)
+   for(auto&& curEnt : theEntities)
    {
-      (*it)->Draw();
+      curEnt->Draw();
    }
 }
