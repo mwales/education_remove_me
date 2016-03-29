@@ -25,8 +25,8 @@ CollisionManager::CollisionManager(int areaWidth, int areaHeight, int containerS
 }
 
 CollisionManager::CollisionManager(int areaWidth, int areaHeight, int containerSize,
-                 std::vector<ICollidable const *> const & bodiesA,
-                 std::vector<ICollidable const *> const & bodiesB):
+                 std::vector<ICollidable *> const & bodiesA,
+                 std::vector<ICollidable *> const & bodiesB):
    theWidth(areaWidth),
    theHeight(areaHeight),
    theCompartmentSize(containerSize),
@@ -78,12 +78,12 @@ bool CollisionManager::RemoveFromB(ICollidable const * obj)
    return false;
 }
 
-void CollisionManager::AddToA(ICollidable const * obj)
+void CollisionManager::AddToA(ICollidable * obj)
 {
    theBodiesA.push_back(obj);
 }
 
-void CollisionManager::AddToB(ICollidable const * obj)
+void CollisionManager::AddToB(ICollidable * obj)
 {
    theBodiesB.push_back(obj);
 }
@@ -137,8 +137,8 @@ void CollisionManager::CheckForCollisionsExponential()
    }
 }
 
-void CollisionManager::CheckForCollisionsExponentialModern(std::vector<ICollidable const *>* listA,
-                                                           std::vector<ICollidable const *>* listB)
+void CollisionManager::CheckForCollisionsExponentialModern(std::vector<ICollidable *>* listA,
+                                                           std::vector<ICollidable *>* listB)
 {
 
    for(auto curA : *listA)
@@ -156,13 +156,13 @@ void CollisionManager::CheckForCollisionsWithGrid()
 
    // Put the objects into compartments
    int numCompartmentsTotal = theCompartmentCols * theCompartmentRows;
-   std::vector< std::vector<ICollidable const *> > aGrid(numCompartmentsTotal);
-   std::vector< std::vector<ICollidable const *> > bGrid(numCompartmentsTotal);
+   std::vector< std::vector<ICollidable *> > aGrid(numCompartmentsTotal);
+   std::vector< std::vector<ICollidable *> > bGrid(numCompartmentsTotal);
 
    for(int i = 0; i < numCompartmentsTotal; i++)
    {
-      aGrid.push_back(std::vector<ICollidable const *>());
-      bGrid.push_back(std::vector<ICollidable const *>());
+      aGrid.push_back(std::vector<ICollidable *>());
+      bGrid.push_back(std::vector<ICollidable *>());
    }
 
    GridHelper_PutIntoCompartments(&aGrid, &bGrid);
@@ -172,12 +172,12 @@ void CollisionManager::CheckForCollisionsWithGrid()
 
 
 #ifdef MORE_FLOATY_MATH_FOR_COMPARTMENTIZATION
-void CollisionManager::GridHelper_PutIntoCompartments(std::vector<std::vector<ICollidable const *> >* gridA,
-                                                      std::vector<std::vector<ICollidable const *> >* gridB)
+void CollisionManager::GridHelper_PutIntoCompartments(std::vector<std::vector<ICollidable *> >* gridA,
+                                                      std::vector<std::vector<ICollidable *> >* gridB)
 {
    // LOG_DEBUG() << "GRID SIZE: " << _compartmentCols << " x " << _compartmentRows;
 
-   for (ICollidable const * curObj : theBodiesA)
+   for (ICollidable * curObj : theBodiesA)
    {
       XYPair pos = curObj->GetPosition();
       int compX = pos[0] / theCompartmentSize;
@@ -188,7 +188,7 @@ void CollisionManager::GridHelper_PutIntoCompartments(std::vector<std::vector<IC
       (*gridA)[gridPos].push_back(curObj);
    }
 
-   for (ICollidable const * curObj : theBodiesB)
+   for (ICollidable * curObj : theBodiesB)
    {
       XYPair pos = curObj->GetPosition();
       int compX = pos[0] / theCompartmentSize;
@@ -258,8 +258,8 @@ void CollisionManager::GridHelper_PutIntoCompartments(std::vector<std::vector<IC
 }
 #endif
 
-void CollisionManager::GridHelper_CollideCompartments(std::vector<std::vector<ICollidable const *> >* gridA,
-                                                      std::vector<std::vector<ICollidable const *> >* gridB)
+void CollisionManager::GridHelper_CollideCompartments(std::vector<std::vector<ICollidable *> >* gridA,
+                                                      std::vector<std::vector<ICollidable *> >* gridB)
 {
    for (int curRow = 0; curRow < theCompartmentRows; curRow++)
    {
@@ -306,7 +306,7 @@ void CollisionManager::GridHelper_CollideCompartments(std::vector<std::vector<IC
    }
 }
 
-bool CollisionManager::DoObjectsOverlap(ICollidable const * objA, ICollidable const * objB)
+bool CollisionManager::DoObjectsOverlap(ICollidable * objA, ICollidable * objB)
 {
    for (auto boxA : objA->GetCollisionBoxes())
    {

@@ -6,7 +6,7 @@
 #include "ICollidable.h"
 
 
-typedef std::pair<ICollidable const *, ICollidable const *> Collision;
+typedef std::pair<ICollidable *, ICollidable *> Collision;
 
 
 
@@ -27,14 +27,14 @@ public:
    CollisionManager(int areaWidth, int areaHeight, int containerSize);
 
    CollisionManager(int areaWidth, int areaHeight, int containerSize,
-                    std::vector<ICollidable const *> const & bodiesA,
-                    std::vector<ICollidable const *> const & bodiesB);
+                    std::vector<ICollidable *> const & bodiesA,
+                    std::vector<ICollidable *> const & bodiesB);
 
    // These methods are for adding and removing objects from lists
    bool RemoveFromA(ICollidable const * obj);
    bool RemoveFromB(ICollidable const * obj);
-   void AddToA(ICollidable const * obj);
-   void AddToB(ICollidable const * obj);
+   void AddToA(ICollidable * obj);
+   void AddToB(ICollidable * obj);
 
    // These methods are typically called each time collisions are processed
 
@@ -50,8 +50,8 @@ public:
 
    // Real collision managers
    void CheckForCollisionsExponential();
-   void CheckForCollisionsExponentialModern(std::vector<ICollidable const *>* listA,
-                                            std::vector<ICollidable const *>* listB);
+   void CheckForCollisionsExponentialModern(std::vector<ICollidable *>* listA,
+                                            std::vector<ICollidable *>* listB);
    void CheckForCollisionsWithGrid();
 
    /// Set collision model to grid or exponential model (mostly for testing)
@@ -63,12 +63,12 @@ public:
    std::vector<Collision> GetCollisions();
 
    // Grid collision helper methods
-   void GridHelper_PutIntoCompartments(std::vector<std::vector<ICollidable const *> >* gridA,
-                                       std::vector<std::vector<ICollidable const *> >* gridB);
-   void GridHelper_CollideCompartments(std::vector<std::vector<ICollidable const *> >* gridA,
-                                       std::vector<std::vector<ICollidable const *> >* gridB);
+   void GridHelper_PutIntoCompartments(std::vector<std::vector<ICollidable *> >* gridA,
+                                       std::vector<std::vector<ICollidable *> >* gridB);
+   void GridHelper_CollideCompartments(std::vector<std::vector<ICollidable *> >* gridA,
+                                       std::vector<std::vector<ICollidable *> >* gridB);
 
-   bool DoObjectsOverlap(ICollidable const * objA, ICollidable const * objB);
+   bool DoObjectsOverlap(ICollidable * objA, ICollidable * objB);
 
    void DumpCollisionManager();
 
@@ -91,9 +91,9 @@ protected:
 
    int theCompartmentRows;
 
-   std::vector<ICollidable const *> theBodiesA;
+   std::vector<ICollidable *> theBodiesA;
 
-   std::vector<ICollidable const *> theBodiesB;
+   std::vector<ICollidable *> theBodiesB;
 
    std::vector<Collision> theCurrentCollisions;
 
