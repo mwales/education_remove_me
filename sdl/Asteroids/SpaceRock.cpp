@@ -67,6 +67,7 @@ void SpaceRock::Explode(ILifetimeManager* mgr)
 {
    LOG_DEBUG() << "Rock exploding";
    SetImageInfo(theExplosionImage);
+   theExplosionImage->SetSize(theRockImage->GetSize());
    theAnimator = new AnimationDriver(theExplosionImage, false);
    theAnimator->SetAnimationDuration(1, theUpdateRateHz);
 

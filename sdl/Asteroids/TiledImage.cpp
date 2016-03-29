@@ -32,6 +32,7 @@ TiledImage::TiledImage(char const * filename,
       {
          theSize[0] = tileWidth;
          theSize[1] = tileHeight;
+         theTileSize = theSize;
 
          LOG_DEBUG() << "Tileset has" << theFramesWide * theFramesHigh << "frames, tiles are" << theSize;
       }
@@ -59,6 +60,7 @@ TiledImage::TiledImage(char const * filename,
       {
          theSize[0] = singleTileWidth;
          theSize[1] = singleTileHeight;
+         theTileSize = theSize;
 
          LOG_DEBUG() << "Tileset has" << theFramesWide * theFramesHigh << "frames, tiles are" << theSize;
       }
@@ -87,11 +89,11 @@ void TiledImage::SetFrameNumber(int frame)
    {
       theCurrentFrameNumber = frame;
 
-      theSrc.w = theSize[0];
-      theSrc.h = theSize[1];
+      theSrc.w = theTileSize[0];
+      theSrc.h = theTileSize[1];
       int column = theCurrentFrameNumber % theFramesWide;
       int row = theCurrentFrameNumber / theFramesWide;
-      theSrc.x = column * (theSize[0] + theFrameSpacing);
-      theSrc.y = row * (theSize[1] + theFrameSpacing);
+      theSrc.x = column * (theTileSize[0] + theFrameSpacing);
+      theSrc.y = row * (theTileSize[1] + theFrameSpacing);
    }
 }

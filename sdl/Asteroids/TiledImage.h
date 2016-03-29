@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ImageInfo.h"
+#include "GameMath.h"
 
 class TiledImage : public ImageInfo
 {
@@ -33,6 +34,12 @@ protected:
    int theFrameSpacing;
 
    int theCurrentFrameNumber;
+
+   /**
+    * This is not the size of what is rendered, it is the size of the image frame in source.  If
+    * image is scaled, we don't change this property, only the rendered image
+    */
+   XYPair theTileSize;
 
 
 };

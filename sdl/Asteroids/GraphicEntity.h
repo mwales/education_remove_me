@@ -49,6 +49,8 @@ public:
 
    void SetVelocity(XYPair vel);
 
+   XYPair GetVelocity() const;
+
    void SetAcceleration(XYPair acc);
 
    void SetAngularVelocity(float degPerSec);

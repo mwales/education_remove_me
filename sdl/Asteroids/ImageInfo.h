@@ -32,6 +32,8 @@ public:
 
    virtual void DrawFullScreen();
 
+   void SetSize(XYPair s) { theSize = s; }
+
    XYPair GetSize() { return theSize; }
 
    void SetOriginAtCenter(bool enable);

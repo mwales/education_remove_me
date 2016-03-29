@@ -72,6 +72,11 @@ void GraphicEntity::SetVelocity(XYPair vel)
    theVelocity = vel;
 }
 
+XYPair GraphicEntity::GetVelocity() const
+{
+   return theVelocity;
+}
+
 void GraphicEntity::SetAcceleration(XYPair acc)
 {
    theAcceleration = acc;

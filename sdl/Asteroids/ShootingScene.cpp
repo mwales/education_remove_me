@@ -241,6 +241,44 @@ void ShootingScene::Update()
             SpaceRock* splodingRock = *rockIt;
             splodingRock->Explode(this);
 
+            //LOG_DEBUG() << "Size of sploding rock " << splodingRock->GetImageInfo()->GetSize();
+
+            if (splodingRock->GetImageInfo()->GetSize()[0] > 75)
+            {
+               LOG_DEBUG() << "Large rock exploded";
+
+               constexpr int NUM_FRAGMENTS = 3;
+               constexpr double ANGLE_INCREMENT = 360.0 / (double) NUM_FRAGMENTS;
+               constexpr double FRAGMENT_VEL_SCALAR = 100.0;
+
+               XYPair rockVel = splodingRock->GetVelocity();
+               double fragmentAngle = ANGLE_INCREMENT / 2.0 + GameMath::VectorAngleDeg(rockVel);
+
+               for(int i = 0; i < 3; i++)
+               {
+                  // Create new rocks 360/3 degrees apart from each other
+                  XYPair fragmentVelocity = GameMath::GetUnitVector(fragmentAngle);
+                  fragmentVelocity *= FRAGMENT_VEL_SCALAR;
+                  fragmentVelocity += rockVel;
+                  SpaceRock* fragment = new SpaceRock(theGraphics->GetWindowSize(), theRenderer);
+                  fragment->SetVelocity(fragmentVelocity);
+                  fragment->SetPosition(splodingRock->GetPosition());
+                  fragment->SetUpdateRate(theUpdateRateHz);
+
+                  XYPair fragmentSize = splodingRock->GetImageInfo()->GetSize();
+                  fragmentSize *= 0.5;
+                  fragment->GetImageInfo()->SetSize(fragmentSize);
+                  AddEntity(fragment, ShootingSceneLifetimeCodes::ADD_CODE_SMALL_ROCK);
+
+                  fragmentAngle += ANGLE_INCREMENT;
+               }
+
+            }
+            else
+            {
+               LOG_DEBUG() << "Small rock exploded";
+            }
+
             theCollisionMgr.RemoveFromA(splodingRock);
          }
       }
@@ -253,6 +291,16 @@ void ShootingScene::Update()
       else
       {
          LOG_DEBUG() << "Bullet shot a rock";
+
+         GameEntity* bullet = dynamic_cast<GameEntity*>(it->second);
+         if (bullet == nullptr)
+         {
+            LOG_FATAL() << "Can't cast bullet";
+         }
+         else
+         {
+            DeleteEntity(bullet, ShootingSceneLifetimeCodes::REMOVE_CODE_BULLET);
+         }
       }
 
    }
@@ -376,7 +424,9 @@ void ShootingScene::ProcessDelEntityQueue()
          LOG_WARNING() << "Couldn't find the object to delete it";
       }
 
+      // TODO: Need to add code to delete the entity
       theDelQueue.pop_back();
+
    }
 }
 
