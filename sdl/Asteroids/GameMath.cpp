@@ -21,6 +21,22 @@ float GameMath::VectorMagnitude(XYPair v)
    return sqrt(v[0] * v[0] + v[1] * v[1]);
 }
 
+float GameMath::VectorAngleDeg(XYPair v)
+{
+   float angRad = atan(v[1] / v[0]);
+   float angDeg = angRad / M_PI * 180.0;
+
+   if (v[0] < 0)
+   {
+      angDeg += 180.0;
+   }
+   else if (angDeg < 0)
+   {
+      angDeg += 360.0;
+   }
+   return angDeg;
+}
+
 std::string GameMath::VectorToString(XYPair v)
 {
    std::ostringstream oss;
