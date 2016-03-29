@@ -44,9 +44,9 @@ public:
 
    const int COLLISION_AREA_MAX { 1000 };
 
-   std::vector<ICollidable const *> objectAList;
+   std::vector<ICollidable *> objectAList;
 
-   std::vector<ICollidable const *> objectBList;
+   std::vector<ICollidable *> objectBList;
 
    CollisionManager* mgr1 { nullptr };
 
