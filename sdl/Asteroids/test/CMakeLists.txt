@@ -6,6 +6,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 
 set(SOURCE_FILES astest.cpp
                  BuildTest.cpp
+                 MathTest.cpp
                  CollisionManagerTest.cpp
                  ../Logger.cpp
                  ../XYPair.cpp
