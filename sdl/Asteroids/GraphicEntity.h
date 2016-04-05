@@ -61,15 +61,9 @@ public:
 
    void SetRotationalFriction(float scalar);
 
-   // ICollidable interface
-
    virtual XYPair GetPosition() const override;
 
    virtual std::vector<SDL_Rect> GetCollisionBoxes() const override;
-
-   //virtual bool CollisionDetected(std::string collidingObject) const;
-
-   //virtual std::string GetName() const;
 
 
 protected:
@@ -83,8 +77,6 @@ protected:
    float theAngle;
 
    XYPair theMapBounds;
-
-   XYPair theGraphicBounds;
 
    float theUpdateRateScalar;
 

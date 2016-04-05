@@ -49,7 +49,7 @@ bool CollisionManager::RemoveFromA(ICollidable const * obj)
 
    if (it != theBodiesA.end())
    {
-      LOG_DEBUG() << "Erasing object from bodies A list (" << (unsigned long) *it << ")";
+      // LOG_DEBUG() << "Erasing object from bodies A list (" << (unsigned long) *it << ")";
       theBodiesA.erase(it);
 
       return true;
@@ -69,7 +69,7 @@ bool CollisionManager::RemoveFromB(ICollidable const * obj)
 
    if (it != theBodiesB.end())
    {
-      LOG_DEBUG() << "Erasing object from bodies B list";
+      // LOG_DEBUG() << "Erasing object from bodies B list";
       theBodiesB.erase(it);
 
       return true;

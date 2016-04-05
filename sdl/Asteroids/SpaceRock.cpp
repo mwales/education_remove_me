@@ -43,7 +43,7 @@ SpaceRock::SpaceRock(XYPair mapBounds, SDL_Renderer* r):
    theTranslationalFrictionScalar = 0;
    theRotationalFrictionScalar = 0;
 
-   LOG_DEBUG() << "Space Rock constructed at " << (long) this;
+   LOG_DEBUG() << "SpaceRock constructed at " << (long) this;
 }
 
 SpaceRock::~SpaceRock()
@@ -65,7 +65,7 @@ SpaceRock::~SpaceRock()
 
 void SpaceRock::Explode(ILifetimeManager* mgr)
 {
-   LOG_DEBUG() << "Rock exploding";
+   // LOG_DEBUG() << "Rock exploding";
    SetImageInfo(theExplosionImage);
    theExplosionImage->SetSize(theRockImage->GetSize());
    theAnimator = new AnimationDriver(theExplosionImage, false);

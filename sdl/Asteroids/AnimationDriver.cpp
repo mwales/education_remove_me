@@ -30,7 +30,7 @@ AnimationDriver::AnimationDriver(TiledImage* image, bool repeating, int startFra
       theStopFrame = image->GetNumberOfFrames() - 1;
    }
 
-   LOG_DEBUG() << "Animation driver will animate from frame" << theStartFrame << "to" << theStopFrame;
+   // LOG_DEBUG() << "Animation driver will animate from frame" << theStartFrame << "to" << theStopFrame;
    theCurrentFrame = theStartFrame;
 }
 
@@ -95,7 +95,7 @@ void AnimationDriver::SetAnimationDuration(float seconds, int updateRateHz)
       theUpdatePerFrame = (int) (updatesPerFrameMore + 0.1);
    }
 
-   LOG_DEBUG() << "Setting updates per frame to" << theUpdatePerFrame;
+   // LOG_DEBUG() << "Setting updates per frame to" << theUpdatePerFrame;
 }
 
 void AnimationDriver::SetUpdatesPerFrame(int upf)
