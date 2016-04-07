@@ -7,6 +7,8 @@
 #include "PauseScene.h"
 #include "SpaceRock.h"
 #include "ImageCache.h"
+#include "GraphicEntity.h"
+#include "TextImage.h"
 #include <algorithm>
 
 
@@ -20,7 +22,8 @@ ShootingScene::ShootingScene(Graphics* g, Mixer* m):
    thePauseState(false),
    theNextState(nullptr),
    theCollisionMgr(g->GetWindowSize()[0], g->GetWindowSize()[1], g->GetWindowSize()[0] / 15),
-   theDebugMode(false)
+   theDebugMode(false),
+   theScoreDisplay(g->GetWindowSize())
 {
    theName = "Shooting";
 
@@ -49,7 +52,9 @@ ShootingScene::ShootingScene(Graphics* g, Mixer* m):
    g->GetJoystick()->RegisterCommand(&theShip, true);
    g->GetJoystick()->AddButtonDownHandler(7, new PauseCommand(this));
 
-   //ImageCache::ImageCacheDebugDump();
+   theScoreDisplay.SetTextImageInfo("Score: 0", {0xff,0xff,0xff,0xff}, theRenderer);
+   theScoreDisplay.SetPosition(XYPair(g->GetWindowSize()[0] - 200,50));
+   theEntities.push_back(&theScoreDisplay);
 }
 
 ShootingScene::~ShootingScene()
@@ -241,11 +246,12 @@ void ShootingScene::Update()
             SpaceRock* splodingRock = *rockIt;
             splodingRock->Explode(this);
 
-            //LOG_DEBUG() << "Size of sploding rock " << splodingRock->GetImageInfo()->GetSize();
+            // LOG_DEBUG() << "Size of sploding rock " << splodingRock->GetImageInfo()->GetSize();
 
             if (splodingRock->GetImageInfo()->GetSize()[0] > 75)
             {
                LOG_DEBUG() << "Large rock exploded";
+               SetScore(theScore + 1);
 
                constexpr int NUM_FRAGMENTS = 3;
                constexpr double ANGLE_INCREMENT = 360.0 / (double) NUM_FRAGMENTS;
@@ -277,6 +283,7 @@ void ShootingScene::Update()
             else
             {
                LOG_DEBUG() << "Small rock exploded";
+               SetScore(theScore + 3);
             }
 
             theCollisionMgr.RemoveFromA(splodingRock);
@@ -428,6 +435,24 @@ void ShootingScene::ProcessDelEntityQueue()
       theDelQueue.pop_back();
 
    }
+}
+
+void ShootingScene::SetScore(int score)
+{
+   theScore = score;
+
+   std::ostringstream oss;
+   oss << "Score: " << theScore;
+
+   TextImage* ti = dynamic_cast<TextImage*>(theScoreDisplay.GetImageInfo());
+
+   if (ti == nullptr)
+   {
+      LOG_FATAL() << "Score display object not a text image object!";
+      return;
+   }
+
+   ti->SetText(oss.str());
 }
 
 //*****************************************************************************

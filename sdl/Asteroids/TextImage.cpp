@@ -9,7 +9,9 @@ bool TextImage::theRunTtfInitOnce = true;
 std::map<std::string, TTF_Font*> TextImage::theFonts;
 
 TextImage::TextImage(std::string text, SDL_Color color, SDL_Renderer* renderer):
-   ImageInfo(renderer)
+   ImageInfo(renderer),
+   theColor(color),
+   theText(text)
 {
    if (theRunTtfInitOnce)
    {
@@ -28,17 +30,19 @@ TextImage::TextImage(std::string text, SDL_Color color, SDL_Renderer* renderer):
       return;
    }
 
-   TTF_Font* f = theFonts.begin()->second;
+   theCurFont = theFonts.begin()->second;
 
    // Create surface with the text, and then create a texture with it
-   SDL_Surface* surface = TTF_RenderText_Solid(f, text.c_str(), color);
+   SDL_Surface* surface = TTF_RenderText_Solid(theCurFont, text.c_str(), theColor);
    ProcessSurface(surface);
 
    LOG_DEBUG() << "Loaded texture with text (" << text << ") and size is (" << theSize << ")";
 }
 
 TextImage::TextImage(std::string text, SDL_Color color, std::string font, int pt, SDL_Renderer* renderer):
-   ImageInfo(renderer)
+   ImageInfo(renderer),
+   theColor(color),
+   theText(text)
 {
    if (theRunTtfInitOnce)
    {
@@ -51,18 +55,37 @@ TextImage::TextImage(std::string text, SDL_Color color, std::string font, int pt
    }
 
 
-   TTF_Font* f = GetFont(font, pt);
-   if (f == nullptr)
+   theCurFont = GetFont(font, pt);
+   if (theCurFont == nullptr)
    {
       // Fatal error already logged by LoadFont
       return;
    }
 
    // Create surface with the text, and then create a texture with it
-   SDL_Surface* surface = TTF_RenderText_Solid(f, text.c_str(), color);
+   SDL_Surface* surface = TTF_RenderText_Solid(theCurFont, text.c_str(), theColor);
    ProcessSurface(surface);
 
    LOG_DEBUG() << "Loaded texture with text (" << text << ") and size is (" << theSize << ")";
+}
+
+void TextImage::SetText(std::string text)
+{
+   if (text == theText)
+   {
+      // Called SetText with the same text already displayed, do nothing
+      return;
+   }
+
+   if (theTexture != nullptr)
+   {
+      SDL_DestroyTexture(theTexture);
+   }
+
+   // Create surface with the text, and then create a texture with it
+
+   SDL_Surface* surface = TTF_RenderText_Solid(theCurFont, text.c_str(), theColor);
+   ProcessSurface(surface);
 }
 
 void TextImage::ProcessSurface(SDL_Surface* s)
@@ -145,6 +168,7 @@ void TextImage::UnloadAllFonts()
    }
 
    theFonts.clear();
+   theRunTtfInitOnce = true;
 }
 
 TTF_Font* TextImage::GetFont(std::string font, int pt)

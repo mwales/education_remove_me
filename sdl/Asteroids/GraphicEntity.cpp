@@ -1,4 +1,5 @@
 #include <math.h>
+#include <cassert>
 
 #include "GraphicEntity.h"
 #include "ImageInfo.h"
@@ -17,7 +18,7 @@ GraphicEntity::GraphicEntity(XYPair mapBounds):
    theTranslationalFrictionScalar(FRICTION_SCALAR),
    theRotationalFrictionScalar(ROT_FRICTION_SCALAR)
 {
-   thePosition = XYPair(0,0);
+   thePosition = mapBounds * 0.5;
    theAngle = 0.0;
 
    theUpdateRateScalar = 0.0;
@@ -182,6 +183,17 @@ void GraphicEntity::AddAngle(float addDegrees)
 
 void GraphicEntity::SetPosition(XYPair pos)
 {
+   // pos != NaN
+   assert(pos[0] == pos[0]);
+   assert(pos[1] == pos[1]);
+
+   assert(pos[0] > -500.0);
+   assert(pos[1] > -500.0);
+
+   assert(pos[0] < 6000.0);
+   assert(pos[1] < 6000.0);
+
+
    thePosition = pos;
    theFullscreen = false;
 }

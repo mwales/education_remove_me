@@ -38,6 +38,8 @@ protected:
 
    virtual void ProcessDelEntityQueue() override;
 
+   void SetScore(int score);
+
    GraphicEntity theBackground;
 
    std::vector<SpaceRock*> theBigRocks;
@@ -61,6 +63,10 @@ protected:
 
    // Variable that can be toggled to enable special debug functions
    bool theDebugMode;
+
+   int theScore { 0 };
+
+   GraphicEntity theScoreDisplay;
 
 };
 

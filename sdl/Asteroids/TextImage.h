@@ -3,6 +3,7 @@
 #include <map>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <string>
 
 #include "ImageInfo.h"
 
@@ -18,11 +19,17 @@ public:
 
    TextImage(std::string text, SDL_Color color, SDL_Renderer* renderer);
 
+   void SetText(std::string text);
+
    static bool LoadFont(std::string font, int pt);
 
    static void UnloadAllFonts();
 
 protected:
+
+   SDL_Color theColor;
+
+   TTF_Font* theCurFont;
 
    void ProcessSurface(SDL_Surface* surface);
 
@@ -31,5 +38,7 @@ protected:
    static bool theRunTtfInitOnce;
 
    static std::map<std::string, TTF_Font*> theFonts;
+
+   std::string theText;
 };
 
