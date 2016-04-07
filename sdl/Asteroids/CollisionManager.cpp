@@ -181,7 +181,10 @@ void CollisionManager::GridHelper_PutIntoCompartments(std::vector<std::vector<IC
    {
       XYPair pos = curObj->GetPosition();
       int compX = pos[0] / theCompartmentSize;
+      compX = GameMath::Clamp<int>(0, theCompartmentCols-1, compX);
       int compY = pos[1] / theCompartmentSize;
+      compY = GameMath::Clamp<int>(0, theCompartmentRows-1, compY);
+
       int gridPos = compY * theCompartmentCols + compX;
       // LOG_DEBUG() << "Object going into compartment A" << gridPos << " with coord (" << pos[0]
       //             << "," << pos[1] << ")";
@@ -192,7 +195,9 @@ void CollisionManager::GridHelper_PutIntoCompartments(std::vector<std::vector<IC
    {
       XYPair pos = curObj->GetPosition();
       int compX = pos[0] / theCompartmentSize;
+      compX = GameMath::Clamp<int>(0, theCompartmentCols-1, compX);
       int compY = pos[1] / theCompartmentSize;
+      compY = GameMath::Clamp<int>(0, theCompartmentRows-1, compY);
       int gridPos = compY * theCompartmentCols + compX;
       // LOG_DEBUG() << "Object going into compartment B " << gridPos << " with coord (" << pos[0]
       //             << "," << pos[1] << ")";
