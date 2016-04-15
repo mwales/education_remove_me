@@ -24,7 +24,8 @@ set(SOURCE_FILES Asteroids.cpp
                  PauseScene.cpp
                  SpaceRock.cpp
                  AnimationDriver.cpp
-                 CollisionManager.cpp)
+                 CollisionManager.cpp
+                 EventRecorder.cpp)
 
 add_executable(asteroids ${SOURCE_FILES} Asteroids.cpp)
 

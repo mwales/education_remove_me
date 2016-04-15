@@ -60,6 +60,7 @@
 #include "TitleScene.h"
 #include "TextImage.h"
 #include "Scene.h"
+#include "EventRecorder.h"
 
 void sdlScopeMain()
 {
@@ -137,6 +138,9 @@ int main (int argc, char* argv[])
    // Do everything SDL in another scope so that when we want to quit, we
    // know everything SDL related is really finished
    sdlScopeMain();
+
+   // Delete the singleton EventRecorder
+   EventRecorder::DestroyInstance();
 
    TextImage::UnloadAllFonts();
 

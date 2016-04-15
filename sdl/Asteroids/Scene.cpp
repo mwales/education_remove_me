@@ -8,7 +8,6 @@
 #include "Logger.h"
 
 
-
 Scene::Scene(Graphics* g, Mixer* m):
    theGraphics(g),
    theMixer(m),
@@ -16,6 +15,8 @@ Scene::Scene(Graphics* g, Mixer* m):
    theUpdateRateHz(60)
 {
    theRenderer = g->GetRenderer();
+
+   theWaitEventTimeoutFp = EventRecorder::GetInstance()->GetWaitEventFunction();
 }
 
 Scene::~Scene()
@@ -121,7 +122,7 @@ bool Scene::PollInputs(int ticksToWait)
       SDL_Event ev;
       bzero(&ev, sizeof(SDL_Event));
 
-      if (SDL_WaitEventTimeout(&ev, endOfFrameTicks - curTicks))
+      if (theWaitEventTimeoutFp(&ev, endOfFrameTicks - curTicks))
       {
          switch (ev.type)
          {
@@ -155,7 +156,7 @@ bool Scene::PollInputsUntilEmpty()
 {
     SDL_Event ev;
     bzero(&ev, sizeof(SDL_Event));
-    while(SDL_WaitEventTimeout(&ev, 0))
+    while(theWaitEventTimeoutFp(&ev, 0))
     {
         switch (ev.type)
         {

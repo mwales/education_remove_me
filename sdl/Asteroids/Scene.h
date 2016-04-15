@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ILifetimeManager.h"
+#include "EventRecorder.h"
 #include <SDL2/SDL.h>
 #include <vector>
 #include <string>
@@ -84,5 +85,7 @@ protected:
    // hold them until after Update() is complete and they can processed safely
    std::vector< std::pair< GameEntity*, int > > theAddQueue;
    std::vector< std::pair< GameEntity*, int > > theDelQueue;
+
+   WaitEventFuncType theWaitEventTimeoutFp;
 };
 
