@@ -1,5 +1,7 @@
-#ifndef EVENTRECORDER_H
-#define EVENTRECORDER_H
+#pragma once
+
+#include <string>
+#include <fstream>
 
 union SDL_Event;
 
@@ -21,6 +23,12 @@ public:
 
    static void DestroyInstance();
 
+   static EventRecorder* CreateInstance();
+
+   void ParseArguments(int argc, char** argv);
+
+   void SeedRandomNumberGenerator();
+
    void AdvanceFrame();
 
    void StoreEvent(SDL_Event* ev);
@@ -33,11 +41,25 @@ public:
 
 protected:
 
+   enum class RecorderState
+   {
+      IDLE,
+      RECORDING,
+      PLAYBACK
+   };
+
    EventRecorder();
 
    ~EventRecorder();
 
    static EventRecorder* theInstance;
+
+   RecorderState theState;
+
+   std::string theFilename;
+
+   bool theSpeedupFlag;
+
+   std::fstream theDataFile;
 };
 
-#endif // EVENTRECORDER_H

@@ -132,8 +132,12 @@ void sdlScopeMain()
 
 int main (int argc, char* argv[])
 {
+   EventRecorder* er = EventRecorder::CreateInstance();
+
+   er->ParseArguments(argc, argv);
+
    // Initialize the random number generator
-   srand(time(NULL));
+   er->SeedRandomNumberGenerator();
 
    // Do everything SDL in another scope so that when we want to quit, we
    // know everything SDL related is really finished
