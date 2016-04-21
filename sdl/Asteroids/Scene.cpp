@@ -17,6 +17,7 @@ Scene::Scene(Graphics* g, Mixer* m):
    theRenderer = g->GetRenderer();
 
    theWaitEventTimeoutFp = EventRecorder::GetInstance()->GetWaitEventFunction();
+   theGetTicksFp = EventRecorder::GetInstance()->GetTicksFunction();
 }
 
 Scene::~Scene()
@@ -114,7 +115,7 @@ bool Scene::PollInputs(int ticksToWait)
        return PollInputsUntilEmpty();
    }
 
-   int curTicks = SDL_GetTicks();
+   int curTicks = theGetTicksFp();
    int endOfFrameTicks = curTicks + ticksToWait;
 
    do
@@ -145,7 +146,7 @@ bool Scene::PollInputs(int ticksToWait)
       }
 
       // See how much more time is left / process more events
-      curTicks = SDL_GetTicks();
+      curTicks = theGetTicksFp();
 
    } while (curTicks < endOfFrameTicks);
 

@@ -108,7 +108,21 @@ void EventRecorder::ParseArguments(int argc, char** argv)
 
 void EventRecorder::SeedRandomNumberGenerator()
 {
-   srand(time(NULL));
+   unsigned int seed;
+   switch(theState)
+   {
+   case RecorderState::IDLE:
+      seed = time(NULL);
+      break;
+   case RecorderState::PLAYBACK:
+      theDataFile >> seed;
+      break;
+   case RecorderState::RECORDING:
+      seed = time(NULL);
+      theDataFile << seed;
+   }
+
+   srand(seed);
 }
 
 EventRecorder::EventRecorder() :
@@ -121,6 +135,12 @@ EventRecorder::EventRecorder() :
 EventRecorder::~EventRecorder()
 {
    LOG_DEBUG() << "Event Recording complete";
+
+   if (theState != RecorderState::IDLE)
+   {
+      LOG_DEBUG() << "Closing the recording file: " << theFilename;
+      theDataFile.close();
+   }
 }
 
 void EventRecorder::AdvanceFrame()
@@ -135,17 +155,168 @@ void EventRecorder::StoreEvent(SDL_Event* ev)
 
 WaitEventFuncType EventRecorder::GetWaitEventFunction()
 {
-   return EventRecorder::WaitEventTimeoutRecordEvent;
+   switch(theState)
+   {
+      case RecorderState::PLAYBACK:
+         return WaitEventTimeoutReplayEvent;
+      case RecorderState::RECORDING:
+         return WaitEventTimeoutRecordEvent;
+      default:
+         return SDL_WaitEventTimeout;
+   }
 }
 
 int EventRecorder::WaitEventTimeoutRecordEvent(SDL_Event* event, int timeout)
 {
    LOG_DEBUG() << "WaitEventTimeoutRecordEvent event";
-   return SDL_WaitEventTimeout(event, timeout);
+   int retVal = SDL_WaitEventTimeout(event, timeout);
+
+   theInstance->theDataFile << retVal;
+   for(int i = 0; i < 56; i++)
+   {
+      theInstance->theDataFile << event->padding[i];
+   }
+
+   LOG_DEBUG() << "WaitEventTimeoutRecordEvent returned " << EventTypeToString(event);
+   return retVal;
 }
 
 int EventRecorder::WaitEventTimeoutReplayEvent(SDL_Event* event, int timeout)
 {
    LOG_DEBUG() << "WaitEventTimeoutReplayEvent event";
-   return SDL_WaitEventTimeout(event, timeout);
+   int retVal;
+   theInstance->theDataFile >> retVal;
+   for(int i = 0; i < 56; i++)
+   {
+      theInstance->theDataFile >> event->padding[i];
+   }
+
+   LOG_DEBUG() << "WaitEventTimeoutReplayEvent returned " << EventTypeToString(event);
+   return retVal;
+}
+
+
+GetTicksFuncType EventRecorder::GetTicksFunction()
+{
+
+   switch(theState)
+   {
+      case RecorderState::PLAYBACK:
+         return GetTicksAndReplay;
+      case RecorderState::RECORDING:
+         return GetTicksAndRecord;
+      default:
+         return SDL_GetTicks;
+   }
+}
+
+uint32_t EventRecorder::GetTicksAndRecord()
+{
+   uint32_t retVal = SDL_GetTicks();
+   theInstance->theDataFile << retVal;
+
+   LOG_DEBUG() << "GetTicksAndRecord() returning " << retVal;
+   return retVal;
+}
+
+uint32_t EventRecorder::GetTicksAndReplay()
+{
+   uint32_t retVal;
+   theInstance->theDataFile >> retVal;
+
+   LOG_DEBUG() << "GetTicksAndReplay() returning " << retVal;
+   return retVal;
+}
+
+std::string EventRecorder::EventTypeToString(SDL_Event* ev)
+{
+   switch(ev->type)
+   {
+   case SDL_FIRSTEVENT:
+      return "SDL_FIRSTEVENT";
+   case SDL_QUIT:
+      return "SDL_QUIT";
+   case SDL_APP_TERMINATING:
+      return "SDL_APP_TERMINATING";
+   case SDL_APP_LOWMEMORY:
+      return "SDL_APP_LOWMEMORY";
+   case SDL_APP_WILLENTERBACKGROUND:
+      return "SDL_APP_WILLENTERBACKGROUND";
+   case SDL_APP_DIDENTERBACKGROUND:
+      return "SDL_APP_DIDENTERBACKGROUND";
+   case SDL_APP_WILLENTERFOREGROUND:
+      return "SDL_APP_WILLENTERFOREGROUND";
+   case SDL_APP_DIDENTERFOREGROUND:
+      return "SDL_APP_DIDENTERFOREGROUND";
+   case SDL_WINDOWEVENT:
+      return "SDL_WINDOWEVENT";
+   case SDL_SYSWMEVENT:
+      return "SDL_SYSWMEVENT";
+   case SDL_KEYDOWN:
+      return "SDL_KEYDOWN";
+   case SDL_KEYUP:
+      return "SDL_KEYUP";
+   case SDL_TEXTEDITING:
+      return "SDL_TEXTEDITING";
+   case SDL_TEXTINPUT:
+      return "SDL_TEXTINPUT";
+   case SDL_MOUSEMOTION:
+      return "SDL_MOUSEMOTION";
+   case SDL_MOUSEBUTTONDOWN:
+      return "SDL_MOUSEBUTTONDOWN";
+   case SDL_MOUSEBUTTONUP:
+      return "SDL_MOUSEBUTTONUP";
+   case SDL_MOUSEWHEEL:
+      return "SDL_MOUSEWHEEL";
+   case SDL_JOYAXISMOTION:
+      return "SDL_JOYAXISMOTION";
+   case SDL_JOYBALLMOTION:
+      return "SDL_JOYBALLMOTION";
+   case SDL_JOYHATMOTION:
+      return "SDL_JOYHATMOTION";
+   case SDL_JOYBUTTONDOWN:
+      return "SDL_JOYBUTTONDOWN";
+   case SDL_JOYBUTTONUP:
+      return "SDL_JOYBUTTONUP";
+   case SDL_JOYDEVICEADDED:
+      return "SDL_JOYDEVICEADDED";
+   case SDL_JOYDEVICEREMOVED:
+      return "SDL_JOYDEVICEREMOVED";
+   case SDL_CONTROLLERAXISMOTION:
+      return "SDL_CONTROLLERAXISMOTION";
+   case SDL_CONTROLLERBUTTONDOWN:
+      return "SDL_CONTROLLERBUTTONDOWN";
+   case SDL_CONTROLLERBUTTONUP:
+      return "SDL_CONTROLLERBUTTONUP";
+   case SDL_CONTROLLERDEVICEADDED:
+      return "SDL_CONTROLLERDEVICEADDED";
+   case SDL_CONTROLLERDEVICEREMOVED:
+      return "SDL_CONTROLLERDEVICEREMOVED";
+   case SDL_CONTROLLERDEVICEREMAPPED:
+      return "SDL_CONTROLLERDEVICEREMAPPED";
+   case SDL_FINGERDOWN:
+      return "SDL_FINGERDOWN";
+   case SDL_FINGERUP:
+      return "SDL_FINGERUP";
+   case SDL_FINGERMOTION:
+      return "SDL_FINGERMOTION";
+   case SDL_DOLLARGESTURE:
+      return "SDL_DOLLARGESTURE";
+   case SDL_DOLLARRECORD:
+      return "SDL_DOLLARRECORD";
+   case SDL_MULTIGESTURE:
+      return "SDL_MULTIGESTURE";
+   case SDL_CLIPBOARDUPDATE:
+      return "SDL_CLIPBOARDUPDATE";
+   case SDL_DROPFILE:
+      return "SDL_DROPFILE";
+   case SDL_RENDER_TARGETS_RESET:
+      return "SDL_RENDER_TARGETS_RESET";
+   case SDL_USEREVENT:
+      return "SDL_USEREVENT";
+   case SDL_LASTEVENT:
+      return "SDL_LASTEVENT";
+   default:
+      return "*** UNKNOWN EVENT ***";
+   }
 }

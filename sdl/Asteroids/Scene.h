@@ -87,5 +87,7 @@ protected:
    std::vector< std::pair< GameEntity*, int > > theDelQueue;
 
    WaitEventFuncType theWaitEventTimeoutFp;
+
+   GetTicksFuncType theGetTicksFp;
 };
 
