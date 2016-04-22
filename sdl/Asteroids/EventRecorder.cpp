@@ -7,6 +7,18 @@
 
 EventRecorder* EventRecorder::theInstance = nullptr;
 
+#define NOVERIFY_SEQ_NUMBERS
+
+#ifdef VERIFY_SEQ_NUMBERS
+   #define WRITE_SEQ_NUM(operation) theInstance->WriteSequenceNumber(operation)
+   #define READ_SEQ_NUM(operation) theInstance->ReadVerifySequenceNumber(operation)
+#else
+   #define WRITE_SEQ_NUM(operation) do { } while (0)
+   #define READ_SEQ_NUM(operation) do { } while (0)
+#endif
+
+
+
 EventRecorder* EventRecorder::GetInstance()
 {
    if (theInstance == nullptr)
@@ -84,11 +96,11 @@ void EventRecorder::ParseArguments(int argc, char** argv)
    {
       case RecorderState::PLAYBACK:
          LOG_DEBUG() << "Event Playback from " << theFilename << " started.";
-         theDataFile.open(theFilename.c_str(), std::fstream::in);
+         theDataFile.open(theFilename.c_str(), std::fstream::in | std::fstream::binary);
          break;
       case RecorderState::RECORDING:
          LOG_DEBUG() << "Events being recorded to file " << theFilename << ".";
-         theDataFile.open(theFilename.c_str(), std::fstream::out | std::fstream::trunc);
+         theDataFile.open(theFilename.c_str(), std::fstream::out | std::fstream::trunc | std::fstream::binary);
       default:
          LOG_DEBUG() << "Event Recording is not enabled";
          break;
@@ -115,11 +127,17 @@ void EventRecorder::SeedRandomNumberGenerator()
       seed = time(NULL);
       break;
    case RecorderState::PLAYBACK:
-      theDataFile >> seed;
-      break;
+      READ_SEQ_NUM("SeedRand");
+
+      theDataFile.read( (char*) &seed, sizeof(seed));
+
+       break;
    case RecorderState::RECORDING:
       seed = time(NULL);
-      theDataFile << seed;
+
+      WRITE_SEQ_NUM("SeedRand");
+      theDataFile.write( (char*) &seed, sizeof(seed));
+
    }
 
    srand(seed);
@@ -169,29 +187,29 @@ WaitEventFuncType EventRecorder::GetWaitEventFunction()
 int EventRecorder::WaitEventTimeoutRecordEvent(SDL_Event* event, int timeout)
 {
    LOG_DEBUG() << "WaitEventTimeoutRecordEvent event";
+
    int retVal = SDL_WaitEventTimeout(event, timeout);
 
-   theInstance->theDataFile << retVal;
-   for(int i = 0; i < 56; i++)
-   {
-      theInstance->theDataFile << event->padding[i];
-   }
+   WRITE_SEQ_NUM("WaitEvent");
+   theInstance->theDataFile.write( (char*) &retVal, sizeof(retVal));
+   theInstance->theDataFile.write( (char*) event, sizeof(*event));
 
-   LOG_DEBUG() << "WaitEventTimeoutRecordEvent returned " << EventTypeToString(event);
+   LOG_DEBUG() << "WaitEventTimeoutRecordEvent returned " << EventTypeToString(event) << " and "
+               << retVal;
    return retVal;
 }
 
 int EventRecorder::WaitEventTimeoutReplayEvent(SDL_Event* event, int timeout)
 {
    LOG_DEBUG() << "WaitEventTimeoutReplayEvent event";
-   int retVal;
-   theInstance->theDataFile >> retVal;
-   for(int i = 0; i < 56; i++)
-   {
-      theInstance->theDataFile >> event->padding[i];
-   }
+   READ_SEQ_NUM("WaitEvent");
 
-   LOG_DEBUG() << "WaitEventTimeoutReplayEvent returned " << EventTypeToString(event);
+   int retVal;
+   theInstance->theDataFile.read( (char*) &retVal, sizeof(retVal));
+   theInstance->theDataFile.read( (char*) event, sizeof(*event));
+
+   LOG_DEBUG() << "WaitEventTimeoutReplayEvent returned " << EventTypeToString(event) << " and "
+               << retVal;
    return retVal;
 }
 
@@ -212,8 +230,10 @@ GetTicksFuncType EventRecorder::GetTicksFunction()
 
 uint32_t EventRecorder::GetTicksAndRecord()
 {
+   WRITE_SEQ_NUM("GetTicks");
+
    uint32_t retVal = SDL_GetTicks();
-   theInstance->theDataFile << retVal;
+   theInstance->theDataFile.write( (char*) &retVal, sizeof(retVal));
 
    LOG_DEBUG() << "GetTicksAndRecord() returning " << retVal;
    return retVal;
@@ -221,8 +241,11 @@ uint32_t EventRecorder::GetTicksAndRecord()
 
 uint32_t EventRecorder::GetTicksAndReplay()
 {
+   READ_SEQ_NUM("GetTicks");
+
    uint32_t retVal;
-   theInstance->theDataFile >> retVal;
+
+   theInstance->theDataFile.read( (char*) &retVal, sizeof(retVal));
 
    LOG_DEBUG() << "GetTicksAndReplay() returning " << retVal;
    return retVal;
@@ -319,4 +342,27 @@ std::string EventRecorder::EventTypeToString(SDL_Event* ev)
    default:
       return "*** UNKNOWN EVENT ***";
    }
+}
+
+void EventRecorder::ReadVerifySequenceNumber(std::string const & op)
+{
+   int verify;
+   theDataFile.read( (char*) &verify, sizeof(verify));
+
+   if (verify != theSeqNumber)
+   {
+       LOG_FATAL() << "Sequence number " << theSeqNumber << " invalid for " << op;
+   }
+   else
+   {
+      LOG_DEBUG() << "Sequence number " << theSeqNumber << " valid for " << op;
+   }
+
+   theSeqNumber++;
+}
+
+void EventRecorder::WriteSequenceNumber(std::string const & op)
+{
+   theDataFile.write( (char*) &theSeqNumber, sizeof(theSeqNumber));
+   LOG_DEBUG() << "Sequence number " << theSeqNumber++ << " written for " << op;
 }

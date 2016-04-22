@@ -59,6 +59,10 @@ protected:
 
    ~EventRecorder();
 
+   void ReadVerifySequenceNumber(std::string const & op);
+
+   void WriteSequenceNumber(std::string const & op);
+
    static EventRecorder* theInstance;
 
    RecorderState theState;
@@ -68,5 +72,7 @@ protected:
    bool theSpeedupFlag;
 
    std::fstream theDataFile;
+
+   int theSeqNumber { 0 };
 };
 

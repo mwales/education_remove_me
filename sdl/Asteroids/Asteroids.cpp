@@ -78,10 +78,12 @@ void sdlScopeMain()
    Scene* currentScene = new TitleScene(&g,&m);
    currentScene->SetUpdateRate(updateRateHz);
 
+   GetTicksFuncType getTicksFp = EventRecorder::GetInstance()->GetTicksFunction();
+
    bool stopFlag = false;
    while(!stopFlag)
    {
-      int tickCountStart = SDL_GetTicks();
+      int tickCountStart = getTicksFp();
 
       g.Clear();
 
@@ -92,7 +94,7 @@ void sdlScopeMain()
 
       currentScene->ManageEntityLifetimes();
 
-      int tickCountEnd = SDL_GetTicks();
+      int tickCountEnd = getTicksFp();
       int renderTime = tickCountEnd - tickCountStart;
 
       if ( renderTime < updatePeriodMs)
