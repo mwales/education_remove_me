@@ -248,6 +248,28 @@ uint32_t EventRecorder::GetTicksAndReplay()
    theInstance->theDataFile.read( (char*) &retVal, sizeof(retVal));
 
    LOG_DEBUG() << "GetTicksAndReplay() returning " << retVal;
+
+   if (!theInstance->theSpeedupFlag)
+   {
+      // Delay till the real ticks equals the ticks found in the file
+      unsigned int currentRealTicks = SDL_GetTicks();
+
+      while(retVal >= currentRealTicks)
+      {
+         // Short sleep, or regular sleep required
+         const int SLEEP_INTERVAL_MS = 10;
+         if ((retVal - currentRealTicks) > 10000)
+         {
+            SDL_Delay(SLEEP_INTERVAL_MS);
+         }
+         else
+         {
+            SDL_Delay((retVal - currentRealTicks) / 1000);
+         }
+
+         currentRealTicks = SDL_GetTicks();
+      }
+   }
    return retVal;
 }
 
