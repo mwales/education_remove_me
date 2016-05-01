@@ -1,5 +1,9 @@
 #include <iostream>
-
+#include <string>
+#include <sstream>
+#include <map>
+#include <utility>
+#include <vector>
 
 std::string solveCase()
 {
