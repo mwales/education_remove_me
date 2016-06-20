@@ -55,6 +55,88 @@ Return address is on stack @ 0x43fe, points to 0x443c, need to change it to 0x44
 
 ## Reykjavik
 
+So main calls enc(0x2400, 0xf8), we assume enc is for encryption.  I set a break point after this
+function completes, and sure enough we got a bunch of stuff at address 0x2400 that we are going to
+into on the next call statement.  Raw hex dump...
+
+```
+2400:   0b12 0412 0441 2452 3150 e0ff 3b40 2045   .....A$R1P..;@ E
+2410:   073c 1b53 8f11 0f12 0312 b012 6424 2152   .<.S........d$!R
+2420:   6f4b 4f93 f623 3012 0a00 0312 b012 6424   oKO..#0.......d$
+2430:   2152 3012 1f00 3f40 dcff 0f54 0f12 2312   !R0...?@...T..#.
+2440:   b012 6424 3150 0600 b490 210a dcff 0520   ..d$1P....!.... 
+2450:   3012 7f00 b012 6424 2153 3150 2000 3441   0...d$!S1P .4A
+2460:   3b41 3041 1e41 0200 0212 0f4e 8f10 024f   ;A0A.A.....N...O
+2470:   32d0 0080 b012 1000 3241 3041 d21a 189a   2.......2A0A....
+2480:   22dc 45b9 4279 2d55 858e a4a2 67d7 14ae   ".E.By-U....g...
+```
+
+I ran that code through the disassembler built into the CTF (had to strip off the address
+characters in front, and the ASCII at the end of each line.  Got the following:
+I'm going to mark it up myself as I reverse what it is doing.
+
+```
+2400:  0b12           push	r11
+       0412           push	r4
+       0441           mov	sp, r4
+       2452           add	#0x4, r4
+       3150 e0ff      add	#0xffe0, sp         // storage for local vars (probably buf[])
+       3b40 2045      mov	#0x4520, r11
+2410:  073c           jmp	$+0x10
+       1b53           inc	r11
+       8f11           sxt	r15
+       0f12           push	r15
+       0312           push	#0x0                // putchar
+       b012 6424      call	#0x2464 <INT>
+       2152           add	#0x4, sp
+2420:  6f4b           mov.b	@r11, r15
+       4f93           tst.b	r15
+       f623           jnz	$-0x12
+       3012 0a00      push	#0xa
+       0312           push	#0x0                // putchar
+       b012 6424      call	#0x2464 <INT>
+2430:  2152           add	#0x4, sp
+       3012 1f00      push	#0x1f
+       3f40 dcff      mov	#0xffdc, r15
+       0f54           add	r4, r15
+       0f12           push	r15
+       2312           push	#0x2                // gets
+2440:  b012 6424      call	#0x2464 <INT>
+       3150 0600      add	#0x6, sp
+       b490 210a dcff cmp	#0xa21, -0x24(r4)
+       0520           jnz	$+0xc
+2450:  3012 7f00      push	#0x7f               // unlock
+       b012 6424      call	#0x2464l <INT>
+       2153           incd	sp
+       3150 2000      add	#0x20, sp
+       3441           pop	r4
+2460:  3b41           pop	r11
+       3041           ret
+       
+2464: <INT>
+       1e41 0200      mov	0x2(sp), r14
+       0212           push	sr
+       0f4e           mov	r14, r15
+       8f10           swpb	r15
+       024f           mov	r15, sr
+       32d0 0080      bis	#0x8000, sr
+       b012 1000      call	#0x10 <__trap_interrupt>
+       3241           pop	sr
+       3041           ret
+```
+
+I found a bunch of calls to the same address, looking that that address, it was the familiar INT()
+function from previous stages.  I then added comments as to what syscall was being used.  Strangely,
+the external module that validates passwords is not present...
+
+Looks like there is a hardcoded comparison.  Set a breakpoint at the comparison instruction and
+determine where in the password sequence the 0x0a21 needs to appear to change the comparison l
+outcome.  The address in r4 - 0x24 happens to be the start of the user password.
+
+```
+210a
+```
+
 ## Whitehorse
 
 ## Montevideo
