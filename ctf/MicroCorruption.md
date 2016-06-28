@@ -212,7 +212,48 @@ Pad out the rest of the buffer, and then make the return address the start of th
 
 ## Johannesburg
 
+Looks like this application still has the ability for us to overrun the buffer that is read in for
+the password, but it looks like there is also a check later to determine if the password is longer
+then allowed (there is a stack cookie immediately following the buffer).
+
+Lets see if we can get past the stack cookie check...  There is an unlock function that we will
+set as the return instruction at 0x4446
+
+```
+0102030405060708090a0b0c0d0e0f1011f24644
+```
+
 ## Santa Cruz
+
+Contents of stack for login():
+
+```
+uint16_t unknown;
+char username[16];
+uint8_t unknown;
+uint8_t usernameMinLen = 8;
+uint8_t usernameMaxLen = 16;
+char password[16];
+uint8_t unknown;
+uint8_t stackCookie = 0;
+```
+
+Looks like there is a check to verify the username length is less than 16 bytes, but the lenght is
+not a constant, it is on the stack as a local variable that we can also overwrite.
+
+Overwriting the stack cookie looks problematic because the strcpy terminate at that spot, and I
+need to overwrite the function return.
+
+I think I can overwrite the return address using the username input field.  When I enter the
+password, I will then change the stack cookie back to it's expected value.
+
+```
+Username
+0102030405060708090a0b0c0d0e0f10aa087fb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c64a44
+
+Password
+b0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0
+```
 
 ## Jakarta
 
