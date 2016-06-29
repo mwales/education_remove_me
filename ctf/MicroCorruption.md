@@ -257,6 +257,33 @@ b0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0
 
 ## Jakarta
 
+login frame size is 0x22
+char usernameAndPassword[0x21]
+
+The application tries to use a single buffer for the name and password.  The username can be
+0x20 bytes long.  The application then tries to see how much of the buffer is left for the
+password and subtracts 0x1f - strlen(username).  That can be -1 (0xffff), which it
+erroneously masks later to just 0x01ff when reading the password.
+
+```
+Username
+0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20
+```
+
+With the username the required lenght, the call to getsn() to read the password is passed
+an erroneous length of 0x1ff.
+
+After the password is strcpy()-ed onto the stack (we we can overwrite tons of stuff), the
+application does a strlen(), and will halt if the username and password is longer than 0x21.
+The strlen check is a check of a single byte, so we can make the username+password 0x0100
+bytes long, the check will pass with the LSB being 0x0.
+
+Only the 0x4c44 matters (the start of the unlock function), the rest is just padding to
+get the buffer to overflow the strlen check.
+
+```
+111111114c441111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+
 ## Addis Ababa
 
 ## Novosibirsk
