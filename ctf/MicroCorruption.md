@@ -238,7 +238,7 @@ uint8_t unknown;
 uint8_t stackCookie = 0;
 ```
 
-Looks like there is a check to verify the username length is less than 16 bytes, but the lenght is
+Looks like there is a check to verify the username length is less than 16 bytes, but the length is
 not a constant, it is on the stack as a local variable that we can also overwrite.
 
 Overwriting the stack cookie looks problematic because the strcpy terminate at that spot, and I
@@ -270,7 +270,7 @@ Username
 0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20
 ```
 
-With the username the required lenght, the call to getsn() to read the password is passed
+With the username the required length, the call to getsn() to read the password is passed
 an erroneous length of 0x1ff.
 
 After the password is strcpy()-ed onto the stack (we we can overwrite tons of stuff), the
@@ -287,7 +287,44 @@ get the buffer to overflow the strlen check.
 
 ## Addis Ababa
 
+It looks like this level is using printf on a user defined format string.  That will provide an
+opportunity for printf vulnerabilities like %n.
+
+Things this broken printf can handle
+- %%
+- %s
+- %x
+- %c
+- %n
+
+Test password valid will store a flag at the address of the stack pointer (0x345c).  The flag is
+0 for invalid passwords, and non-zero on good password.  We need to set that address to something
+other than 0x0.
+
+[address 0x345c]%x%n should work
+
+- Start the string with the address we are trying to overwrite
+- The first %x prints out the flag we are overwriting (we are just getting printf to skip over
+  that parameter and move to the next one
+- Then %n writes the current position in the output to the memory location passed into it (which
+  we make it is now parsing out of the beginning of our string.
+
+```
+5c342578256e
+```
+
 ## Novosibirsk
+
+Another printf vulnerability.  If we can change the 0x7e system call (that system call will check
+the provided password) to a 0x7f (unconditionally unlock door), the door will unlock for us.
+
+0x7f = 127
+
+Address we need to write 0x007f is 44c8
+
+```
+c8445555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555256e
+```
 
 ## Algiers
 
