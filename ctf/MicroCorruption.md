@@ -328,6 +328,66 @@ c8445555555555555555555555555555555555555555555555555555555555555555555555555555
 
 ## Algiers
 
+r10 = address of username = 0x240e = 0x10 byte heap buffer
+r11 = address of password = 0x2424 = 0x10 byte heap buffer
+
+getsn(0x30) called to get the username and password
+
+Both are free'd, so we should be able to execute an arbitrary memory overwrite attack.
+
+There are 6 byte headers the heap buffers
+- 2 bytes = previous chunk
+- 2 bytes = following chunk
+- 2 bytes = size shifted over ( lower bit is some sort of flag ).  previous chunk free IIRC?
+
+Heap itself has 8 byte header
+
+Some very rough and ugly notes below as I auditted malloc and free trying to determine how to
+exploit them.  I eventually determined that if I overwrote a chunk header, I could use the 
+previous chunk address to point to a memory location (-0x04), and the size field to create an
+arbitrary value to add to a 16-byte memory location.
+
+Free gets passed memory address to free
+sub 6 from pointer to get to the header bytes for the buffer
+Move size/flag to r13
+Mask off the flag (it is now just 2 x size)
+Store the new value back in header (bit must mean the chunk is allocated)
+Gets previous block size/header, tests flag byte (must be trying to combine chunks if both free)
+If it is zero
+
+Bit is not zero
+  Get size/flag of block header of after header
+    If not zero
+      We add the size of the block after us to our block
+      We set the block after us to our own block header (set next to tail of list)s
+    If zero
+
+We free r11 first (password), it's header easily overwritten via a long username.
+
+Return pointer on stack is last call.  I'll overwrite it.
+
+Address = 0x439a, point to unlock() which is address 0x4564
+Return address was initially 0x4440
+
+password header should be like
+ - previous block @ 0x4396
+ - next block @ 0x3424
+ - size is 0x0119 
+
+I had to really experiment a bunch to figure out what size to make my chunk to get the correct value
+written into the return address.
+
+```
+Username
+0102030405060708090a0b0c0d0e0f10964324341901
+
+Password
+01
+```
+
+Depending on what stuff was on the stack, you can take different paths for combining or not
+combining heap chunks.  I had to tweak the si
+
 ## Vladivostok
 
 ## Lagos
