@@ -1,12 +1,15 @@
 ```
 0010 <__trap_interrupt>
 0010:  3041           ret
+
 4400 <__init_stack>
 4400:  3140 0044      mov	#0x4400, sp
+
 4404 <__low_level_init>
 4404:  1542 5c01      mov	&0x015c, r5
 4408:  75f3           and.b	#-0x1, r5
 440a:  35d0 085a      bis	#0x5a08, r5
+
 440e <__do_copy_data>
 440e:  3f40 0000      clr	r15
 4412:  0f93           tst	r15
@@ -15,6 +18,7 @@
 441a:  2f83           decd	r15
 441c:  9f4f 704a 0024 mov	0x4a70(r15), 0x2400(r15)
 4422:  f923           jnz	#0x4416 <__do_copy_data+0x8>
+
 4424 <__do_clear_bss>
 4424:  3f40 3200      mov	#0x32, r15
 4428:  0f93           tst	r15
@@ -23,6 +27,7 @@
 4430:  1f83           dec	r15
 4432:  cf43 0024      mov.b	#0x0, 0x2400(r15)
 4436:  fa23           jnz	#0x442c <__do_clear_bss+0x8>
+
 4438 <main>
 4438:  b012 1c4a      call	#0x4a1c <rand>
 443c:  0b4f           mov	r15, r11
@@ -62,7 +67,7 @@
 4498:  1e53           inc	r14
 449a:  3e90 0010      cmp	#0x1000, r14
 449e:  fa23           jne	#0x4494 <_aslr_main+0x12>
-44a0:  f240 5500 0224 mov.b	#0x55, &0x2402
+44a0:  f240 5500 0224 mov.b	#0x55, &0x2402 // Setting up string Username (8 char max)
 44a6:  f240 7300 0324 mov.b	#0x73, &0x2403
 44ac:  f240 6500 0424 mov.b	#0x65, &0x2404
 44b2:  f240 7200 0524 mov.b	#0x72, &0x2405
@@ -92,45 +97,45 @@
 4536:  1e53           inc	r14
 4538:  8d11           sxt	r13
 453a:  0b12           push	r11
-453c:  0d12           push	r13
+453c:  0d12           push	r13 // The parameter that is going to sys call
 453e:  0b12           push	r11
 4540:  0012           push	pc
 4542:  0212           push	sr
-4544:  0f4b           mov	r11, r15
+4544:  0f4b           mov	r11, r15 // The syscall is from r11, cleared earlier.  0 = puts
 4546:  8f10           swpb	r15
 4548:  024f           mov	r15, sr
 454a:  32d0 0080      bis	#0x8000, sr
 454e:  b012 1000      call	#0x10
 4552:  3241           pop	sr
 4554:  3152           add	#0x8, sp
-4556:  6d4e           mov.b	@r14, r13
-4558:  4d93           tst.b	r13
+4556:  6d4e           mov.b	@r14, r13 // Put a char from the string in r13
+4558:  4d93           tst.b	r13       // Stop at null byte
 455a:  ed23           jnz	#0x4536 <_aslr_main+0xb4>
 455c:  0e43           clr	r14
-455e:  3d40 0a00      mov	#0xa, r13
+455e:  3d40 0a00      mov	#0xa, r13 // Newline
 4562:  0e12           push	r14
-4564:  0d12           push	r13
-4566:  0e12           push	r14
+4564:  0d12           push	r13 // arg = newline
+4566:  0e12           push	r14 // syscall
 4568:  0012           push	pc
 456a:  0212           push	sr
 456c:  0f4e           mov	r14, r15
 456e:  8f10           swpb	r15
 4570:  024f           mov	r15, sr
 4572:  32d0 0080      bis	#0x8000, sr
-4576:  b012 1000      call	#0x10
+4576:  b012 1000      call	#0x10     // puts again
 457a:  3241           pop	sr
 457c:  3152           add	#0x8, sp
-457e:  3d50 3400      add	#0x34, r13
+457e:  3d50 3400      add	#0x34, r13 // 0xa + 0x34 = 0x3e = ">"
 4582:  0e12           push	r14
-4584:  0d12           push	r13
-4586:  0e12           push	r14
+4584:  0d12           push	r13 // ">"
+4586:  0e12           push	r14 // syscall puts...
 4588:  0012           push	pc
 458a:  0212           push	sr
 458c:  0f4e           mov	r14, r15
 458e:  8f10           swpb	r15
 4590:  024f           mov	r15, sr
 4592:  32d0 0080      bis	#0x8000, sr
-4596:  b012 1000      call	#0x10
+4596:  b012 1000      call	#0x10 // still puts
 459a:  3241           pop	sr
 459c:  3152           add	#0x8, sp
 459e:  0e12           push	r14
@@ -142,15 +147,15 @@
 45aa:  8f10           swpb	r15
 45ac:  024f           mov	r15, sr
 45ae:  32d0 0080      bis	#0x8000, sr
-45b2:  b012 1000      call	#0x10
+45b2:  b012 1000      call	#0x10 // puts for the second ">"
 45b6:  3241           pop	sr
 45b8:  3152           add	#0x8, sp
 45ba:  3a42           mov	#0x8, r10
 45bc:  3b40 2624      mov	#0x2426, r11
-45c0:  2d43           mov	#0x2, r13
-45c2:  0a12           push	r10
-45c4:  0b12           push	r11
-45c6:  0d12           push	r13
+45c0:  2d43           mov	#0x2, r13 // syscall 0x2 = gets
+45c2:  0a12           push	r10 // read 8 bytes
+45c4:  0b12           push	r11 // where to read the data 0x2426
+45c6:  0d12           push	r13 // syscall
 45c8:  0012           push	pc
 45ca:  0212           push	sr
 45cc:  0f4d           mov	r13, r15
@@ -159,10 +164,12 @@
 45d2:  32d0 0080      bis	#0x8000, sr
 45d6:  b012 1000      call	#0x10
 45da:  3241           pop	sr
-45dc:  3152           add	#0x8, sp
-45de:  c24e 2e24      mov.b	r14, &0x242e
-45e2:  0b12           push	r11
-45e4:  8c12           call	r12
+45dc:  3152           add	#0x8, sp // end of gets() call
+
+45de:  c24e 2e24      mov.b	r14, &0x242e // ???????
+45e2:  0b12           push	r11 // Address for the username that was read in
+45e4:  8c12           call	r12 // call printf.  we can see this address at runtime too. wee!!!
+
 45e6:  2153           incd	sp
 45e8:  0f4b           mov	r11, r15
 45ea:  033c           jmp	#0x45f2 <_aslr_main+0x170>
@@ -170,7 +177,7 @@
 45f0:  1f53           inc	r15
 45f2:  3f90 3224      cmp	#0x2432, r15
 45f6:  fa23           jne	#0x45ec <_aslr_main+0x16a>
-45f8:  f240 0a00 0224 mov.b	#0xa, &0x2402
+45f8:  f240 0a00 0224 mov.b	#0xa, &0x2402   "\nPassword:"
 45fe:  f240 5000 0324 mov.b	#0x50, &0x2403
 4604:  f240 6100 0424 mov.b	#0x61, &0x2404
 460a:  f240 7300 0524 mov.b	#0x73, &0x2405
@@ -195,12 +202,13 @@
 4650:  8f10           swpb	r15
 4652:  024f           mov	r15, sr
 4654:  32d0 0080      bis	#0x8000, sr
-4658:  b012 1000      call	#0x10
+4658:  b012 1000      call	#0x10 // puts, print out Password prompt
 465c:  3241           pop	sr
 465e:  3152           add	#0x8, sp
 4660:  6d4e           mov.b	@r14, r13
 4662:  4d93           tst.b	r13
 4664:  ed23           jnz	#0x4640 <_aslr_main+0x1be>
+
 4666:  0e43           clr	r14
 4668:  3d40 0a00      mov	#0xa, r13
 466c:  0e12           push	r14
@@ -212,13 +220,14 @@
 4678:  8f10           swpb	r15
 467a:  024f           mov	r15, sr
 467c:  32d0 0080      bis	#0x8000, sr
-4680:  b012 1000      call	#0x10
+4680:  b012 1000      call	#0x10 // print newline...
 4684:  3241           pop	sr
 4686:  3152           add	#0x8, sp
+
 4688:  0b41           mov	sp, r11
-468a:  2b52           add	#0x4, r11
-468c:  3c40 1400      mov	#0x14, r12
-4690:  2d43           mov	#0x2, r13
+468a:  2b52           add	#0x4, r11 // I have no idea where this buffer is....
+468c:  3c40 1400      mov	#0x14, r12 // read 20 bytes
+4690:  2d43           mov	#0x2, r13 // syscall 0x2, gets()
 4692:  0c12           push	r12
 4694:  0b12           push	r11
 4696:  0d12           push	r13
@@ -228,14 +237,15 @@
 469e:  8f10           swpb	r15
 46a0:  024f           mov	r15, sr
 46a2:  32d0 0080      bis	#0x8000, sr
-46a6:  b012 1000      call	#0x10
+46a6:  b012 1000      call	#0x10 // Read 20 bytes onto stack buffer?
 46aa:  3241           pop	sr
 46ac:  3152           add	#0x8, sp
+
 46ae:  3d50 7c00      add	#0x7c, r13
 46b2:  0c41           mov	sp, r12
 46b4:  0c12           push	r12
-46b6:  0b12           push	r11
-46b8:  0d12           push	r13
+46b6:  0b12           push	r11 // crazy buffer we have no idea about...
+46b8:  0d12           push	r13 // syscall 0x7c
 46ba:  0012           push	pc
 46bc:  0212           push	sr
 46be:  0f4d           mov	r13, r15
@@ -245,7 +255,8 @@
 46c8:  b012 1000      call	#0x10
 46cc:  3241           pop	sr
 46ce:  3152           add	#0x8, sp
-46d0:  f240 5700 0224 mov.b	#0x57, &0x2402
+
+46d0:  f240 5700 0224 mov.b	#0x57, &0x2402 // "Wrong!"
 46d6:  f240 7200 0324 mov.b	#0x72, &0x2403
 46dc:  f240 6f00 0424 mov.b	#0x6f, &0x2404
 46e2:  f240 6e00 0524 mov.b	#0x6e, &0x2405
@@ -266,7 +277,7 @@
 4714:  8f10           swpb	r15
 4716:  024f           mov	r15, sr
 4718:  32d0 0080      bis	#0x8000, sr
-471c:  b012 1000      call	#0x10
+471c:  b012 1000      call	#0x10 // looks like it always writes 
 4720:  3241           pop	sr
 4722:  3152           add	#0x8, sp
 4724:  6c4d           mov.b	@r13, r12
@@ -283,7 +294,7 @@
 473c:  8f10           swpb	r15
 473e:  024f           mov	r15, sr
 4740:  32d0 0080      bis	#0x8000, sr
-4744:  b012 1000      call	#0x10
+4744:  b012 1000      call	#0x10 // puts newline
 4748:  3241           pop	sr
 474a:  3152           add	#0x8, sp
 474c:  0e41           mov	sp, r14
@@ -470,7 +481,7 @@
 48e6:  3a41           pop	r10
 48e8:  3b41           pop	r11
 48ea:  3041           ret
-48ec <_INT>
+48ec <_INT> // call syscall provided on stack.  may be even better idea!!!
 48ec:  1e41 0200      mov	0x2(sp), r14
 48f0:  0212           push	sr
 48f2:  0f4e           mov	r14, r15
@@ -480,34 +491,34 @@
 48fc:  b012 1000      call	#0x10
 4900:  3241           pop	sr
 4902:  3041           ret
-4904 <INT>
+4904 <INT> // set r15 to syscall number
 4904:  0c4f           mov	r15, r12
-4906:  0d12           push	r13
-4908:  0e12           push	r14
-490a:  0c12           push	r12
+4906:  0d12           push	r13 // second arg i guess
+4908:  0e12           push	r14 // first arg i guess
+490a:  0c12           push	r12 // syscall
 490c:  0012           push	pc
 490e:  0212           push	sr
 4910:  0f4c           mov	r12, r15
 4912:  8f10           swpb	r15
 4914:  024f           mov	r15, sr
 4916:  32d0 0080      bis	#0x8000, sr
-491a:  b012 1000      call	#0x10
+491a:  b012 1000      call	#0x10 // caller provided sys-call.  maybe useful for us!
 491e:  3241           pop	sr
 4920:  3152           add	#0x8, sp
 4922:  3041           ret
 4924 <putchar>
 4924:  0e4f           mov	r15, r14
-4926:  0d43           clr	r13
-4928:  0d12           push	r13
-492a:  0e12           push	r14
-492c:  0d12           push	r13
+4926:  0d43           clr	r13 // syscall 0
+4928:  0d12           push	r13 // zero
+492a:  0e12           push	r14 // arg1 = funcarg 1
+492c:  0d12           push	r13 // syscall
 492e:  0012           push	pc
 4930:  0212           push	sr
 4932:  0f4d           mov	r13, r15
 4934:  8f10           swpb	r15
 4936:  024f           mov	r15, sr
 4938:  32d0 0080      bis	#0x8000, sr
-493c:  b012 1000      call	#0x10
+493c:  b012 1000      call	#0x10 // putchar
 4940:  3241           pop	sr
 4942:  3152           add	#0x8, sp
 4944:  0f4e           mov	r14, r15
@@ -515,18 +526,18 @@
 4948 <getchar>
 4948:  2183           decd	sp
 494a:  0d43           clr	r13
-494c:  1e43           mov	#0x1, r14
+494c:  1e43           mov	#0x1, r14 // syscall
 494e:  0c41           mov	sp, r12
-4950:  0d12           push	r13
-4952:  0c12           push	r12
-4954:  0e12           push	r14
+4950:  0d12           push	r13 // zero
+4952:  0c12           push	r12 // arg / stack pointer? wtf?
+4954:  0e12           push	r14 // syscall
 4956:  0012           push	pc
 4958:  0212           push	sr
 495a:  0f4e           mov	r14, r15
 495c:  8f10           swpb	r15
 495e:  024f           mov	r15, sr
 4960:  32d0 0080      bis	#0x8000, sr
-4964:  b012 1000      call	#0x10
+4964:  b012 1000      call	#0x10 // getchar
 4968:  3241           pop	sr
 496a:  3152           add	#0x8, sp
 496c:  6f41           mov.b	@sp, r15
@@ -535,36 +546,36 @@
 4972:  3041           ret
 4974 <getsn>
 4974:  0d4f           mov	r15, r13
-4976:  2c43           mov	#0x2, r12
-4978:  0e12           push	r14
-497a:  0d12           push	r13
-497c:  0c12           push	r12
+4976:  2c43           mov	#0x2, r12 // syscall number 0x2 for gets
+4978:  0e12           push	r14 // arg2?  function args?
+497a:  0d12           push	r13 // arg1?  function args?
+497c:  0c12           push	r12 // syscall
 497e:  0012           push	pc
 4980:  0212           push	sr
 4982:  0f4c           mov	r12, r15
 4984:  8f10           swpb	r15
 4986:  024f           mov	r15, sr
 4988:  32d0 0080      bis	#0x8000, sr
-498c:  b012 1000      call	#0x10
+498c:  b012 1000      call	#0x10 // gets
 4990:  3241           pop	sr
 4992:  3152           add	#0x8, sp
 4994:  3041           ret
 4996 <puts>
 4996:  0e4f           mov	r15, r14
-4998:  0c43           clr	r12
+4998:  0c43           clr	r12       // syscall number 0x0 for puts
 499a:  103c           jmp	#0x49bc <puts+0x26>
 499c:  1e53           inc	r14
 499e:  8d11           sxt	r13
-49a0:  0c12           push	r12
-49a2:  0d12           push	r13
-49a4:  0c12           push	r12
-49a6:  0012           push	pc
-49a8:  0212           push	sr
+49a0:  0c12           push	r12 // zero or syscall?
+49a2:  0d12           push	r13 // arg1
+49a4:  0c12           push	r12 // syscall
+49a6:  0012           push	pc // always pc
+49a8:  0212           push	sr // always sr
 49aa:  0f4c           mov	r12, r15
 49ac:  8f10           swpb	r15
 49ae:  024f           mov	r15, sr
 49b0:  32d0 0080      bis	#0x8000, sr
-49b4:  b012 1000      call	#0x10
+49b4:  b012 1000      call	#0x10 puts
 49b8:  3241           pop	sr
 49ba:  3152           add	#0x8, sp
 49bc:  6d4e           mov.b	@r14, r13
@@ -572,9 +583,9 @@
 49c0:  ed23           jnz	#0x499c <puts+0x6>
 49c2:  0e43           clr	r14
 49c4:  3d40 0a00      mov	#0xa, r13
-49c8:  0e12           push	r14
-49ca:  0d12           push	r13
-49cc:  0e12           push	r14
+49c8:  0e12           push	r14 // zero or syscall
+49ca:  0d12           push	r13 // arg1 == newline
+49cc:  0e12           push	r14 // syscall
 49ce:  0012           push	pc
 49d0:  0212           push	sr
 49d2:  0f4e           mov	r14, r15
@@ -609,38 +620,38 @@
 4a16:  0d9e           cmp	r14, r13
 4a18:  f923           jne	#0x4a0c <_bzero+0x4>
 4a1a:  3041           ret
-4a1c <rand>
+4a1c <rand> // No argument syscall...
 4a1c:  0e43           clr	r14
-4a1e:  3d40 2000      mov	#0x20, r13
-4a22:  0e12           push	r14
-4a24:  0e12           push	r14
-4a26:  0d12           push	r13
+4a1e:  3d40 2000      mov	#0x20, r13 // syscall 0x20 for rand
+4a22:  0e12           push	r14 // arg2? == 0
+4a24:  0e12           push	r14 // arg1 == 0
+4a26:  0d12           push	r13 // syscall
 4a28:  0012           push	pc
 4a2a:  0212           push	sr
 4a2c:  0f4d           mov	r13, r15
 4a2e:  8f10           swpb	r15
 4a30:  024f           mov	r15, sr
 4a32:  32d0 0080      bis	#0x8000, sr
-4a36:  b012 1000      call	#0x10
+4a36:  b012 1000      call	#0x10 // rand
 4a3a:  3241           pop	sr
 4a3c:  3152           add	#0x8, sp
-4a3e:  0f4f           mov	r15, r15
+4a3e:  0f4f           mov	r15, r15 // r15 was the return val i guess?
 4a40:  3041           ret
 4a42 <conditional_unlock_door>
 4a42:  2183           decd	sp
 4a44:  0e4f           mov	r15, r14
-4a46:  3d40 7e00      mov	#0x7e, r13
+4a46:  3d40 7e00      mov	#0x7e, r13 // check password and unlock door syscall
 4a4a:  0c41           mov	sp, r12
-4a4c:  0c12           push	r12
-4a4e:  0e12           push	r14
-4a50:  0d12           push	r13
+4a4c:  0c12           push	r12 // stack pointer?  wtf?  idk
+4a4e:  0e12           push	r14 // arg1 = function arg1
+4a50:  0d12           push	r13 // syscall
 4a52:  0012           push	pc
 4a54:  0212           push	sr
 4a56:  0f4d           mov	r13, r15
 4a58:  8f10           swpb	r15
 4a5a:  024f           mov	r15, sr
 4a5c:  32d0 0080      bis	#0x8000, sr
-4a60:  b012 1000      call	#0x10
+4a60:  b012 1000      call	#0x10 // conditional unlock
 4a64:  3241           pop	sr
 4a66:  3152           add	#0x8, sp
 4a68:  0f43           clr	r15

