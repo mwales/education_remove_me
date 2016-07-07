@@ -502,11 +502,11 @@ Password:
 
 Looks like this level has data execution prevention.  
 
-Paqe 0x00 = executable (interrupt return)
-Page 0x01-0x43 = writeable
-Page 0x44-0xff = executable (application code)
+* Paqe 0x00 = executable (interrupt return)
+* Page 0x01-0x43 = writeable
+* Page 0x44-0xff = executable (application code)
 
-We have a buffer of 0x16 bytes, getsn will allow us to blast away 0x30 bytes of crap.  I assume
+We have a buffer of 0x10 bytes, getsn will allow us to blast away 0x30 bytes of crap.  I assume
 this will probably require a ROP exploit.
 
 Not totally sure how ROP works, this is my first ROP rodeo.
@@ -517,7 +517,7 @@ executable, and then return into shell code the unlocks door?
 
 Address of mark_page_executable that is after stack is loaded is 0x44ba
 
-So I'll try to load the buffer up with nop's for now (we can replace later with shellcode), and
+So I'll try to load the buffer up with NOP's for now (we can replace later with shellcode), and
 see if we can jump into mark_page_executable and make it look like it's marking page 0x3f (the stack)
 as executable, and then return from there to the beginning of the stack!
 
@@ -525,10 +525,8 @@ as executable, and then return from there to the beginning of the stack!
 03430343034303430343034303430343ba443f000000ee3f
 ```
 
-That worked, I started executing my NOPs.  I'll go to earlier excercise to find shellcode to
+That worked, I started executing my NOPs.  I'll go to earlier exercise to find shellcode to
 unconditionally unlock door.
-
-I think this code will unlock door:
 
 ```
 bis #0xff00, sr
