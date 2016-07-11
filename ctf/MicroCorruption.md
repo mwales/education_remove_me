@@ -552,9 +552,9 @@ This next challenge has some code that validates the input text is 0-9, a-z, or 
 
 Just for reference:
 
-0x30 - 0x39 = Numbers
-0x41 - 0x5A = Uppercase
-0x61 - 0x7a = lowercase
+* 0x30 - 0x39 = Numbers
+* 0x41 - 0x5A = Uppercase
+* 0x61 - 0x7a = lowercase
 
 My shell code that I used on previous problem is mostly invalid, yeah...
 
@@ -563,16 +563,16 @@ return start us there.
 
 What can we do?
 
-mov of constants to r0-r9.
-mov data between register r0-r9
-add small numbers to r0-r9? (strange, maybe it becomes shift?)
-decrement r0-r9
-addc.b
-mov.b	@r4, r7 # for any registers pretty much
-pop into r5-9
-ret
-add.b r5,r14
-some jump instructions, must experiment a lot in disassembler
+* mov of constants to r0-r9.
+* mov data between register r0-r9
+* add small numbers to r0-r9? (strange, maybe it becomes shift?)
+* decrement r0-r9
+* addc.b
+* mov.b	@r4, r7 # for any registers pretty much
+* pop into r5-9
+* ret
+* add.b r5,r14
+* some jump instructions, must experiment a lot in disassembler
 
 The return instruction is great if I can get the address I want on the stack somehow, but I did
 not come up with a reasonable way to do that.
@@ -621,7 +621,9 @@ This gets 7f in r14
 
 Testing some jump instructions
 
+```
 3031323334353637383941424344454647304430313233343536373839414243444546303132333435363738394142434445463031323334353637383941424344454679503636795049494e494634
+```
 
 I can only jump 0xee from the current PC.  I need a relative jump of about 0x1c6.  I can just
 overwrite more stack till I get closer?  Not sure but I'm about to clobber the current conditional
