@@ -1,0 +1,55 @@
+How to Add States:
+- Go to Transition properties editting window by clicking on "Edit
+  Transitions..." on the Edit menu.
+- Select "Add a New State..." from the States menu.
+- Enter a name for the state and click OK.
+- Locate a valid image file to represent the state.  Valid image files are
+  20 x 20 images in .jpg, .gif, .bmp, and .tif formats.
+
+Editting Transition Rules:
+- Always have a set of rules that will insure that there are never any cells
+  that are empty.
+- You cannot delete the last state on the list.
+
+Transition Rules:
+- Movement:  Will cause cells to move in different directions each clock
+  cycle.  The direction is any multiple of 90 degrees.  0 degrees is for
+  movement right.  Set trails to 1 if you want moving cells to leave a trail
+  behind them.  Set trails to 0 if you do not want a trail.
+- Random:  This causes a state to randomly appear anywhere on the map.  The
+  percentage should be from 0-100, and corresponds to the percent chance that
+  any given cell will transition to this state.  Set trails to 1 if you do
+  not want the states to disappear, and 0 if they should disappear on the
+  next clock cycle.
+- Evolution:  Allows a state to check it's neighbors for a certain state and
+  react (evolve) based on that.  It checks the surrounding four neighbors for
+  the state number given in the parameter.  If it finds atleast x amount of
+  those states around it (or other states like itself), the cell will
+  transition to the state that the rule belongs to.
+- Game of Life:  Allows the user to simulate John Conway's game of life.
+  Both states in the game must have this rule selected.  The state number
+  for each parameter in both rules should be the same.  The state number is 0
+  for the top state in the list, and increases as you go down the list.
+- Firelike:  Used to simulate fire.  The burnout rate is the percent chance
+  any cell of fire will happen to burn out (0-100).  The lowest state to burn
+  is the state number of the state that is lowest on the list and is still
+  combustible.  Anything between fire and that state on the list can burn.
+
+How to Edit Initial States:
+- First, you must have created atleast one state for the simulation.
+- Select New on the file menu of the main simulation window.
+- Input a map size and click OK.  Maximum map size is 45 x 35.
+- When blank map loads, simply click the button of the state you would like
+  to place and click which areas you want filled by that state.
+
+How to Load and Save Simulations:
+- To save a simulation, click "Save..." from the file menu.  You must have
+  some states created and a map in the simulation to save the simulation.
+- To load a simulation, click "Load..." from the file menu.  Simulations
+  stored can only be loaded by the program when it is running in that save
+  version of the JRE.  You cannot save a simulation in JRE 1.2.2 and load it
+  in JRE 1.3.
+
+To run simulations:
+- Simply click on Play on the main screen.  Press stop anytime to reset the
+  counter and stop the simulation.
