@@ -58,19 +58,26 @@ void example4(int varA)
   int* aPtr = &varA;
   int B = 0;
 
-  __asm__ __volatile__ ("movq (%1), %%eax;"
-                        "and 0x1, %%eax;"
-                        "inc %1;"
-                        "movq %1, %0;"
+  __asm__ __volatile__ ("mov %1, %%rax;\n"
+                        "mov (%%rax), %%ecx;\n"
+                        "and $1, %%ecx;\n"
+                        "jnz skip_increment;\n"
+                        "incq (%%rax);\n"
+                        "skip_increment:\n"
+                        "mov %%ecx, %0;\n"
                         : "=r" (B)
                         : "r" (aPtr)
-                        : "%eax", "memory" );
+                        : "%eax", "%ecx", "memory", "cc" );
 
   printf("  After, A = %d, and B = %d\n", varA, B);
 }
 
 int main(int argc, char** argv)
 {
+
+
+  printf("Size of int = %lu\n", sizeof(int));
+  printf("Size of int* = %lu\n", sizeof(int*));
 
   example1();
  
@@ -80,24 +87,6 @@ int main(int argc, char** argv)
 
   example4(9);
   example4(14);
-
-  printf("Now some other scratch\n");
-
-  int a = 10;
-  int b = 5;
-  int c = 4;
-
-  std::cout << "Hello everyone, a of " << a << " + b of " << b << " = " << a+b << std::endl;
-
-  __asm__("mov %2, %%eax ;\n"
-          "mov %1, %%ebx ;\n"
-          "add %%eax, %%ebx;\n"
-          "mov %%ebx, %0 ;\n"
-          :"=r"(c)
-          :"r"(a), "r"(b)
-          :"%eax", "%ebx");
-
-  std::cout << "Via assembly, a of " << a << " + b of " << b << " = " << c << std::endl;
 
   return 0;
 }

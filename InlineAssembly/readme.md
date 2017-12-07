@@ -135,16 +135,46 @@ void example3()
 ### Clobbering
 
 If the assembly code clobbers other registers, you need to tell the compiler which ones are
-clobbered.  You also have to indicate if the the condition registers "cc" get clobbered, or
+clobbered.  You also have to indicate if the the flags registers "cc" get clobbered, or
 memory "memory" was written to.
 
-@todo Memory clobbering example
-@todo Flags?  Or is this already covered
-@todo Branching / labels in the assembly
-@todo Keyword volatile
+This example is passed a pointer.  It determines if the value being pointed to was odd or even.
+It returns a 1 if the value being pointed to is odd.  If the value being pointed to is not odd,
+it will add 1 to it to make it odd.
+
+This example also shows you that you can have branches within your inline assembly.
+
+
+```
+void example4(int varA)
+{
+  printf("Example 4, A before = %d\n", varA);
+
+  int* aPtr = &varA;
+  int B = 0;
+
+  __asm__ __volatile__ ("mov %1, %%rax;\n"
+                        "mov (%%rax), %%ecx;\n"
+                        "and $1, %%ecx;\n"
+                        "jnz skip_increment;\n"
+                        "incq (%%rax);\n"
+                        "skip_increment:\n"
+                        "mov %%ecx, %0;\n"
+                        : "=r" (B)
+                        : "r" (aPtr)
+                        : "%eax", "%ecx", "memory", "cc" );
+
+  printf("  After, A = %d, and B = %d\n", varA, B);
+}
+```
+
+The last thing that this example introduced was the keyword __volatile__, this tells GCC that even
+if it thinks your inline assembly does not do anything, that the compiler is not allowed to optimize
+it out of the compiled product.  Probably should always use this.
 
 ## References
 
+* http://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html
 * http://www.delorie.com/djgpp/doc/brennan/brennan_att_inline_djgpp.html
 * http://www.ic.unicamp.br/~celio/mc404-s2-2015/docs/ARM-GCC-Inline-Assembler-Cookbook.pdf
 * http://locklessinc.com/articles/gcc_asm/
