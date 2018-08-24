@@ -1,16 +1,29 @@
-#include <iostream>
+#include <stdio.h>
 #include <stdint.h>
+
+/**
+ * This is an example of a union that has an 8-bit form you use to move all 8 flag bits at once
+ * or bitfields to manipulate single bits 1 at a time
+ */
+union SecondByteUnion
+{
+		uint8_t secondByteWhole;
+		struct
+		{
+			uint8_t secondByteA:1; // Bit 0 aka 0x01
+			uint8_t secondByteB:3;
+			uint8_t secondByteC:2;
+			uint8_t secondByteD:1;
+			uint8_t secondByteE:1; // Bit 7 aka 0x80
+		};
+} __attribute__((packed));
 
 struct testStruct
 {
 	uint8_t firstByte;   // Due to endian-ness, when you print this as a 32-bit, this is the ......XX bytes
-	
-	uint8_t secondByteA:1; // Bit 0 aka 0x01
-	uint8_t secondByteB:3;
-	uint8_t secondByteC:2;
-	uint8_t secondByteD:1;
-	uint8_t secondByteE:1; // Bit 7 aka 0x80
-	
+
+	union SecondByteUnion secondByte;
+
 	uint16_t threeFourByteA:7; // This does not get 16-bit endian swapped
 	uint16_t threeFourByteB:4;
 	uint16_t threeFourByteC:5;
@@ -22,30 +35,32 @@ int main(int argc, char** argv)
 
 	x.firstByte = 0x16;
 	
-	x.secondByteA = 1;
-	x.secondByteB = 7;
-	x.secondByteC = 1;
-	x.secondByteD = 1;
-	x.secondByteE = 0;
+	x.secondByte.secondByteA = 1;
+	x.secondByte.secondByteB = 7;
+	x.secondByte.secondByteC = 1;
+	x.secondByte.secondByteD = 1;
+	x.secondByte.secondByteE = 0;
 
 	x.threeFourByteA = 0x41;
 	x.threeFourByteB = 0x09;
 	x.threeFourByteC = 0x15;
 
-	std::cout << "x.firstByte = " <<   (int) x.firstByte << std::endl;
-	std::cout << "x.secondByteA = " << (int) x.secondByteA << std::endl;
-	std::cout << "x.secondByteB = " << (int) x.secondByteB << std::endl;
-	std::cout << "x.secondByteC = " << (int) x.secondByteC << std::endl;
-	std::cout << "x.secondByteD = " << (int) x.secondByteD << std::endl;
-	std::cout << "x.secondByteE = " << (int) x.secondByteE << std::endl;
+	printf("x.firstByte = 0x%x\n", x.firstByte);
 
-	std::cout << "x.threeFourByteA = " << x.threeFourByteA << std::endl;
-	std::cout << "x.threeFourByteB = " << x.threeFourByteB << std::endl;
-	std::cout << "x.threeFourByteC = " << x.threeFourByteC << std::endl;
+	printf("x.secondByteA = 0x%x\n", x.secondByte.secondByteA);
+	printf("x.secondByteB = 0x%x\n", x.secondByte.secondByteB);
+	printf("x.secondByteC = 0x%x\n", x.secondByte.secondByteC);
+	printf("x.secondByteD = 0x%x\n", x.secondByte.secondByteD);
+	printf("x.secondByteE = 0x%x\n", x.secondByte.secondByteE);
+	printf("x.secondByteWhole = 0x%x\n", x.secondByte.secondByteWhole);
+
+	printf("x.threeFourByteA = 0x%x\n", x.threeFourByteA);
+	printf("x.threeFourByteB = 0x%x\n", x.threeFourByteB);
+	printf("x.threeFourByteC = 0x%x\n", x.threeFourByteC);
 
 	uint32_t* compareMe = (uint32_t*) &x;
 
-	std::cout << "Compare Me = " << std::hex << *compareMe << std::endl;
+	printf("Compare Me = 0x%x\n", *compareMe);
 	return 0;
 }
 
