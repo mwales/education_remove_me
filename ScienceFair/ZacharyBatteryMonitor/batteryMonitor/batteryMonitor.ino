@@ -3,7 +3,7 @@
 // VREF for Arduino Nano measured at 4.5V
 // 10-bit DAC measures voltages in 1024 steps, from 0 to VREF volts
 
-float scalarValue = 4.53 / 1024.0 * 100.0;
+float scalarValue = 4.53 / 1024.0; // * 100.0;
 
 void setup()
 {
@@ -14,7 +14,7 @@ void setup()
 void loop()
 {
    int sensorRaw; // Stores the value read from the sensor (should be 0 - 1024)
-   int voltage;   // Stores the voltage value we need to print for user
+   float voltage;   // Stores the voltage value we need to print for user
 
    // Analog pin 0 = Small load
    // Analog pin 1 = High load
@@ -29,12 +29,10 @@ void loop()
 
 
    Serial.print("Small Load = ");
-   Serial.print(voltage);
-   Serial.print(" V = ");
-   Serial.print(sensorRaw);
-   Serial.println(" raw units");
+   Serial.print(voltage, 2);
+   Serial.println(" V");
 
-   delay(1000);
+   //delay(1000);
 
    // We do the same steps as before, using different sensor for high load
    sensorRaw = analogRead(1);
@@ -43,10 +41,8 @@ void loop()
    voltage = (float) sensorRaw * scalarValue;
 
    Serial.print("Large Load = ");
-   Serial.print(voltage);
-   Serial.print(" V = ");
-   Serial.print(sensorRaw);
-   Serial.println(" raw units");
+   Serial.print(voltage, 2);
+   Serial.println(" V");
    
 
    // Now we will wait 60s (one minute) before repeating measurement
