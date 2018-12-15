@@ -38,7 +38,7 @@ def main():
         mapCollection.append(readFileIntoMap(dataFile))
 
     startTime = datetime.datetime(18, 11, 23, 14, 52)
-    endTime = datetime.datetime(18, 12,4,0,0)
+    endTime = datetime.datetime(18, 12,10,0,0)
 
     #print(startTime)
     addMin = datetime.timedelta(minutes=1)
