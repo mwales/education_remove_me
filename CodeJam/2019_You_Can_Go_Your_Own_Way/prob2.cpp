@@ -6,6 +6,12 @@
 #include <vector>
 
 /**
+ * g++ --std=c++11 prob2.cpp
+ *
+ * cat simple_input.txt | ./a.out
+ */
+
+/**
 Problem
 You have just entered the world's easiest maze. You start in the northwest cell of an N by N grid of unit cells, and you must reach the southeast cell. You have only two types of moves available: a unit move to the east, and a unit move to the south. You can move into any cell, but you may not make a move that would cause you to leave the grid.
 

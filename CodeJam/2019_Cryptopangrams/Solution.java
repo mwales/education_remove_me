@@ -8,7 +8,7 @@ import java.util.TreeSet;
 import java.util.Iterator;
 import java.util.TreeMap;
 
-/**
+/*
  * My code successfully would solve the sample problem, but Google said it
  * failed to find correct solution when I tried to submit it during the
  * Code Jam.
@@ -20,7 +20,7 @@ import java.util.TreeMap;
  * cat sample_input.java | java Solution
  */
 
-/**
+/*
 Problem
 On the Code Jam team, we enjoy sending each other pangrams, which are phrases that use each letter of the English alphabet at least once. One common example of a pangram is "the quick brown fox jumps over the lazy dog". Sometimes our pangrams contain confidential information — for example, CJ QUIZ: KNOW BEVY OF DP FLUX ALGORITHMS — so we need to keep them secure.
 
