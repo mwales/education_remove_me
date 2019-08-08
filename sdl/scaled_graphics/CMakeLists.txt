@@ -1,24 +1,14 @@
 cmake_minimum_required (VERSION 2.6)
 project (sg)
 
-
 set(TEST_FILES scaled_graphic.cpp)
-
-
-#PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
-
-# PKG_SEARCH_MODULE(SDL2NET REQUIRED SDL2_net>=2.0.0)
 
 add_executable(sg ${TEST_FILES} ${EMULAT_FILES} )
 INCLUDE(FindPkgConfig)
 
 # Include SDL
-find_package(SDL2 REQUIRED)
-
-set(SDL2_net_LIBRARIES "-lSDL2_net")
-
-target_compile_definitions(sg PRIVATE SDL_INCLUDED)
-
+find_package(sdl2 REQUIRED)
+target_include_directories(sg PUBLIC ${SDL2_INCLUDE_DIRS})
 target_link_libraries(sg ${SDL2_LIBRARIES})
 
 # Modern C++ support

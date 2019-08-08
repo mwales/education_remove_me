@@ -1,4 +1,4 @@
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <iostream>
 
 #define SDL_CHECK(var) if (var) { std::cout << "Error on line" << __LINE__ << ":" << SDL_GetError(); }
