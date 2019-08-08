@@ -71,6 +71,7 @@ int main(int argc, char** argv)
    //[ 502/src/Display.cpp: 243]: SDL_RenderClear(pointer)
 
 
+   return 0;
 }
 
 
