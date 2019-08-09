@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include <iostream>
+#include <string.h>
 
 #define SDL_CHECK(var) if (var) { std::cout << "Error on line" << __LINE__ << ":" << SDL_GetError(); }
 
