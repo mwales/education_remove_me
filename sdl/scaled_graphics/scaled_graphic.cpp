@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include <iostream>
+#include <string.h>
 
 #define SDL_CHECK(var) if (var) { std::cout << "Error on line" << __LINE__ << ":" << SDL_GetError(); }
 
@@ -71,6 +72,7 @@ int main(int argc, char** argv)
    //[ 502/src/Display.cpp: 243]: SDL_RenderClear(pointer)
 
 
+   return 0;
 }
 
 
