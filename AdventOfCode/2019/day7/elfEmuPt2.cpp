@@ -498,6 +498,7 @@ int main(int argc, char** argv)
    for(auto entryIt = vals.begin(); entryIt != vals.end(); entryIt++)
    {
 
+
       std::cout << "Amp configuration: ";
       printIntList(programData);
 
@@ -508,22 +509,20 @@ int main(int argc, char** argv)
       ElfComputer ampE(programData, "AmpE");
 
       std::vector<int> inputA;
-      inputA.push_back(entryIt->at(0));
+      inputA.push_back(entryIt->at(0)+5);
       inputA.push_back(0);    // amplifier initial value
 
       std::vector<int> inputB;
-      inputB.push_back(entryIt->at(1));
+      inputB.push_back(entryIt->at(1)+5);
 
       std::vector<int> inputC;
-      inputC.push_back(entryIt->at(2));
+      inputC.push_back(entryIt->at(2)+5);
 
       std::vector<int> inputD;
-      inputD.push_back(entryIt->at(3));
+      inputD.push_back(entryIt->at(3)+5);
 
       std::vector<int> inputE;
-      inputE.push_back(entryIt->at(4));
-
-      std::vector<int> outputQ;
+      inputE.push_back(entryIt->at(4)+5);
 
       // Plumb all the amps together
       ampA.setInputDataQ(&inputA);
@@ -539,7 +538,7 @@ int main(int argc, char** argv)
       ampD.setOutputDataQ(&inputE);
 
       ampE.setInputDataQ(&inputE);
-      ampE.setOutputDataQ(&outputQ);
+      ampE.setOutputDataQ(&inputA);
 
       bool totalHaltFlag = false;
       while(!totalHaltFlag)
@@ -555,18 +554,18 @@ int main(int argc, char** argv)
       }
 
       std::cout << "Output: ";
-      printIntList(outputQ);
+      printIntList(inputA);
       std::cout << std::endl << std::endl;
 
-      if (outputQ.size() == 0)
+      if (inputA.size() == 0)
       {
          std::cerr << "No output to be found" << std::endl;
          break;
       }
 
-      if (maxThrust < outputQ[0])
+      if (maxThrust < inputA[0])
       {
-         maxThrust = outputQ[0];
+         maxThrust = inputA[0];
          maxThrustInputs = *entryIt;
 
          std::cout << "Thrust " << maxThrust << " generated from ";
