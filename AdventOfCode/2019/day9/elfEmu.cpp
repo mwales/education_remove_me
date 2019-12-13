@@ -1,6 +1,14 @@
 #include <iostream>
 #include <vector>
 
+// #define DEBUGGING
+
+#ifdef DEBUGGING
+   #define DEBUGOUT std::cout
+#else
+   #define DEBUGOUT if(0) std::cout
+#endif
+
 std::vector<std::string> split(std::string data, std::string delimeter)
 {
 	std::vector<std::string> retVal;
@@ -27,12 +35,12 @@ std::vector<std::string> split(std::string data, std::string delimeter)
 
 }
 
-std::vector<int> strListToInt(std::vector<std::string> const & data)
+std::vector<int64_t> strListToInt(std::vector<std::string> const & data)
 {
-	std::vector<int> retVal;
+   std::vector<int64_t> retVal;
 	for(auto di = data.begin(); di != data.end(); di++)
 	{
-		int val = atoi(di->c_str());
+      int64_t val = atol(di->c_str());
 		// std::cerr << "Converting item " << *di << " to " << val << std::endl;
 		retVal.push_back(val);
 	}
@@ -40,7 +48,7 @@ std::vector<int> strListToInt(std::vector<std::string> const & data)
 	return retVal;
 }
 
-void printIntList(std::vector<int> const & data)
+void printIntList(std::vector<int64_t> const & data)
 {
 	if (data.size() == 0)
 	{
@@ -70,37 +78,47 @@ class ElfComputer
 {
 public:
 
-   ElfComputer(std::vector<int> const & pd, std::string const & name);
+   ElfComputer(std::vector<int64_t> const & pd, std::string const & name);
 
-   void addInputData(int singleItem);
+   void addInputData(int64_t singleItem);
 
-   void addInputData(std::vector<int> multiItems);
+   void addInputData(std::vector<int64_t> multiItems);
 
    void runIteration();
 
-   void setInputDataQ(std::vector<int>* inQ);
+   void setInputDataQ(std::vector<int64_t>* inQ);
 
-   void setOutputDataQ(std::vector<int>* outQ);
+   void setOutputDataQ(std::vector<int64_t>* outQ);
 
-   bool getOutputDataItem(int* item);
+   bool getOutputDataItem(int64_t* item);
 
    bool isHalted() { return theHaltFlag; };
 
+
+
 protected:
 
-   int getOperand(int operandMode, int operandRawVal) const;
+   int64_t getOperand(int64_t operandMode, int64_t operandRawVal);
 
-   int readDataAtAddress(int addr) const;
+   void writeOperand(int64_t operandMode, int64_t operandRawVal, int64_t writeVal);
 
-   void writeDataAtAddress(int addr, int value);
+   int64_t readDataAtAddress(int addr);
 
-   std::vector<int> theProgramData;
+   void writeDataAtAddress(int addr, int64_t value);
 
-   std::vector<int>* theInputDataQ;
+   void expandMemory(int size);
 
-   std::vector<int>* theOutputDataQ;
+   void printEmulatorState();
+
+   std::vector<int64_t> theProgramData;
+
+   std::vector<int64_t>* theInputDataQ;
+
+   std::vector<int64_t>* theOutputDataQ;
 
    int thePc;
+
+   int theBase;
 
    std::string theName;
 
@@ -108,8 +126,9 @@ protected:
 
 };
 
-ElfComputer::ElfComputer(std::vector<int> const & pd, std::string const & name):
+ElfComputer::ElfComputer(std::vector<int64_t> const & pd, std::string const & name):
    thePc(0),
+   theBase(0),
    theInputDataQ(nullptr),
    theOutputDataQ(nullptr),
    theName(name),
@@ -118,7 +137,7 @@ ElfComputer::ElfComputer(std::vector<int> const & pd, std::string const & name):
    theProgramData = pd;
 }
 
-void ElfComputer::addInputData(int singleItem)
+void ElfComputer::addInputData(int64_t singleItem)
 {
    if (theInputDataQ == nullptr)
    {
@@ -129,7 +148,7 @@ void ElfComputer::addInputData(int singleItem)
    theInputDataQ->push_back(singleItem);
 }
 
-void ElfComputer::addInputData(std::vector<int> multiItems)
+void ElfComputer::addInputData(std::vector<int64_t> multiItems)
 {
    if (theInputDataQ == nullptr)
    {
@@ -143,17 +162,17 @@ void ElfComputer::addInputData(std::vector<int> multiItems)
    }
 }
 
-void ElfComputer::setInputDataQ(std::vector<int>* inQ)
+void ElfComputer::setInputDataQ(std::vector<int64_t>* inQ)
 {
    theInputDataQ = inQ;
 }
 
-void ElfComputer::setOutputDataQ(std::vector<int>* outQ)
+void ElfComputer::setOutputDataQ(std::vector<int64_t>* outQ)
 {
    theOutputDataQ = outQ;
 }
 
-int ElfComputer::getOperand(int operandMode, int operandRawVal) const
+int64_t ElfComputer::getOperand(int64_t operandMode, int64_t operandRawVal)
 {
    if (operandMode == 0)
    {
@@ -161,49 +180,109 @@ int ElfComputer::getOperand(int operandMode, int operandRawVal) const
       if ( theProgramData.size() < operandRawVal)
       {
          // Positional parameter with value out-of-range
-         std::cerr << "ERROR! Position param " << operandRawVal << " out of range";
-         return -1;
+         expandMemory(operandRawVal);
       }
 
-      return theProgramData[operandRawVal];
+      return readDataAtAddress(operandRawVal);
    }
-   else
+   else if (operandMode == 1)
    {
       // Immediate mode
       return operandRawVal;
    }
-}
-
-int ElfComputer::readDataAtAddress(int addr) const
-{
-   if (addr > theProgramData.size())
+   else
    {
-      // We have to add memory to program storage!
-      std::cerr << "Address " << addr << " is out of range of program data (read)" << std::endl;
-      exit(1);
+      // Relative (to base) parameter
+      int index = theBase + operandRawVal;
+      DEBUGOUT << "Base + op = " << theBase << " + " << operandRawVal << " = " << index << std::endl;
+
+      if(index < 0)
+      {
+         std::cerr << "ERROR! Relative param created negative index " << index << " " << theName << std::endl;
+         return -1;
+      }
+
+      return readDataAtAddress(index);
    }
 
+}
+
+void ElfComputer::writeOperand(int64_t operandMode, int64_t operandRawVal, int64_t writeVal)
+{
+   // Writes can't be immediate mode, only positional or relative
+   int64_t writeLocation = operandRawVal;
+   if (operandMode == 2)
+   {
+      // Relative mode
+      writeLocation += theBase;
+   }
+
+   writeDataAtAddress(writeLocation, writeVal);
+}
+
+int64_t ElfComputer::readDataAtAddress(int addr)
+{
+   DEBUGOUT << "readDataAtAddress(" << addr << ")" << std::endl;
+   if (addr >= theProgramData.size())
+   {
+      // We have to add memory to program storage!
+      DEBUGOUT << "Address " << addr << " is out of range of program data (read)" << std::endl;
+      expandMemory(addr);
+   }
+
+   DEBUGOUT << "readDataAtAddress(" << addr << ") = " << theProgramData[addr] << std::endl;
    return theProgramData[addr];
 }
 
-void ElfComputer::writeDataAtAddress(int addr, int value)
+void ElfComputer::writeDataAtAddress(int addr, int64_t value)
 {
-   if (addr > theProgramData.size())
+   DEBUGOUT << "writeDataAtAddress(" << addr << ", " << value << ")" << std::endl;
+
+   if (addr >= theProgramData.size())
    {
       // Address out of range
-      std::cerr << "Address " << addr << " is out of range of program data (write)" << std::endl;
-      exit(1);
+      DEBUGOUT << "Address " << addr << " is out of range of program data (write)" << std::endl;
+      expandMemory(addr);
    }
 
    theProgramData[addr] = value;
 }
 
+void ElfComputer::expandMemory(int size)
+{
+   DEBUGOUT << "Expanding memory to " << size << std::endl;
+   while(theProgramData.size() < size + 1)
+   {
+      theProgramData.push_back(0);
+   }
+}
 
+void ElfComputer::printEmulatorState()
+{
+   std::cout << std::endl << std::endl << "PC = " << thePc << "\tBase = " << theBase << std::endl;
+   for(int i = 0; i < theProgramData.size(); i++)
+   {
+      if ( (i % 10) == 0)
+      {
+         std::cout << i << ")\t\t";
+      }
+
+      std::cout << theProgramData[i] << "\t";
+
+      if ( (i % 10) == 9)
+      {
+         std::cout << std::endl;
+      }
+   }
+
+   std::cout << std::endl << std::endl;
+}
 
 void ElfComputer::runIteration()
 {
-   // std::cout << "State: ";
-   // printIntList(theProgramData);
+#ifdef DEBUGGING
+   printEmulatorState();
+#endif
 
    if( (thePc < 0) || (thePc >= theProgramData.size()) )
    {
@@ -222,14 +301,14 @@ void ElfComputer::runIteration()
                                      omitted due to being a leading zero
    */
 
-   int opCode = theProgramData[thePc];
+   int64_t opCode = theProgramData[thePc];
 
-   int instructionDE = opCode %100;
-   int operandCMode = (opCode / 100) % 10;
-   int operandBMode = (opCode / 1000) % 10;
-   int operandAMode = (opCode / 10000) % 10;
+   int64_t instructionDE = opCode %100;
+   int64_t operandCMode = (opCode / 100) % 10;
+   int64_t operandBMode = (opCode / 1000) % 10;
+   int64_t operandAMode = (opCode / 10000) % 10;
 
-   std::cout << theName << " PC=" << thePc << " opCode=" << opCode << " OpModeC=" << operandCMode
+   DEBUGOUT << theName << " PC=" << thePc << " opCode=" << opCode << " OpModeC=" << operandCMode
              << ", OpModeB=" << operandBMode << ", OpModeA=" << operandAMode << std::endl;
 
    switch(instructionDE)
@@ -237,28 +316,27 @@ void ElfComputer::runIteration()
       case 1:  // addition
       case 2:  // multiply
       {
-         std::cout << "Op Code is " << instructionDE << ( instructionDE == 1 ? " (additon)" : " (multiply)") << std::endl;
+         DEBUGOUT << "Op Code is " << instructionDE << ( instructionDE == 1 ? " (additon)" : " (multiply)") << std::endl;
 
-         int op1 = getOperand(operandCMode, readDataAtAddress(thePc+1));
-         int op2 = getOperand(operandBMode, readDataAtAddress(thePc+2));
+         int64_t op1 = getOperand(operandCMode, readDataAtAddress(thePc+1));
+         int64_t op2 = getOperand(operandBMode, readDataAtAddress(thePc+2));
+         int64_t op3 = getOperand(operandAMode, readDataAtAddress(thePc+3));
 
-         std::cout << "Op 1 = " << op1 << " and Op 2 = " << op2 << std::endl;
+         DEBUGOUT << "Op 1 = " << op1 << " and Op 2 = " << op2 << std::endl;
 
-         int resultVal;
+         int64_t resultVal;
          if (instructionDE == 1)
          {
             resultVal = op1 + op2;
-            std::cout << "Addition result " << resultVal << std::endl;
+            DEBUGOUT << "Addition result " << resultVal << std::endl;
          }
          else
          {
             resultVal = op1 * op2;
-            std::cout << "Multiply result " << resultVal << std::endl;
+            DEBUGOUT << "Multiply result " << resultVal << std::endl;
          }
 
-         // Last parameter must be positional
-         int resultPos = readDataAtAddress(thePc+3);
-         writeDataAtAddress(resultPos, resultVal);
+         writeOperand(operandAMode, readDataAtAddress(thePc+3), resultVal);
 
          thePc += 4;
          break;
@@ -267,7 +345,7 @@ void ElfComputer::runIteration()
       case 3: // input
       {
          // Verify program data has arg data
-         std::cout << "Opcode " << opCode << " is input" << std::endl;
+         DEBUGOUT << "Opcode " << opCode << " is input" << std::endl;
 
          if (theInputDataQ == nullptr)
          {
@@ -276,21 +354,20 @@ void ElfComputer::runIteration()
             return;
          }
 
-         int writeLocation = readDataAtAddress(thePc + 1);
 
          if (theInputDataQ->size() > 0)
          {
-            int value = theInputDataQ->at(0);
+            int64_t value = theInputDataQ->at(0);
             theInputDataQ->erase(theInputDataQ->begin());
 
-            std::cout << "Read input value " << value << " for " << theName << std::endl;
-            writeDataAtAddress(writeLocation, value);
+            DEBUGOUT << "Read input value " << value << " for " << theName << std::endl;
+            writeOperand(operandCMode, readDataAtAddress(thePc+1), value);
 
             thePc += 2;
          }
          else
          {
-            std::cout << "Input instruction, but no data ready for " << theName << std::endl;
+            DEBUGOUT << "Input instruction, but no data ready for " << theName << std::endl;
          }
 
          break;
@@ -299,7 +376,7 @@ void ElfComputer::runIteration()
       case 4: // output
       {
          // Verify program data has arg data
-         std::cout << "Opcode " << opCode << " is output" << std::endl;
+         DEBUGOUT << "Opcode " << opCode << " is output" << std::endl;
 
          if (theOutputDataQ == nullptr)
          {
@@ -315,8 +392,8 @@ void ElfComputer::runIteration()
             return;
          }
 
-         int outputData = getOperand(operandCMode, theProgramData[thePc+1]);
-         std::cout << "OUTPUT: " << outputData << std::endl;
+         int64_t outputData = getOperand(operandCMode, readDataAtAddress(thePc+1));
+         DEBUGOUT << "OUTPUT: " << outputData << std::endl;
          theOutputDataQ->push_back(outputData);
          thePc += 2;
          break;
@@ -325,27 +402,21 @@ void ElfComputer::runIteration()
       case 5: // jump-if-true
       {
          // Verify program data has arg data
-         std::cout << "Opcode " << opCode << " is jump-if-true" << std::endl;
-         if (theProgramData.size() < thePc + 2)
-         {
-            std::cout << "Program data not long enough to store operands " << theName << std::endl;
-            theHaltFlag = true;
-            return;
-         }
+         DEBUGOUT << "Opcode " << opCode << " is jump-if-true" << std::endl;
 
-         int op1 = getOperand(operandCMode, theProgramData[thePc + 1]);
-         int op2 = getOperand(operandBMode, theProgramData[thePc + 2]);
+         int64_t op1 = getOperand(operandCMode, readDataAtAddress(thePc+1));
+         int64_t op2 = getOperand(operandBMode, readDataAtAddress(thePc+2));
 
-         std::cout << "Op 1 = " << op1 << " and Op 2 = " << op2 << std::endl;
+         DEBUGOUT << "Op 1 = " << op1 << " and Op 2 = " << op2 << std::endl;
 
          if (op1)
          {
-            std::cout << "We are jumping to " << thePc << "!" << std::endl;
+            DEBUGOUT << "We are jumping to " << thePc << "!" << std::endl;
             thePc = op2;
          }
          else
          {
-            std::cout << "We are not jumping!" << std::endl;
+            DEBUGOUT << "We are not jumping!" << std::endl;
             thePc += 3;
          }
          break;
@@ -354,27 +425,21 @@ void ElfComputer::runIteration()
       case 6: // jump-if-false
       {
          // Verify program data has arg data
-         std::cout << "Opcode " << opCode << " is jump-if-false" << std::endl;
-         if (theProgramData.size() < thePc + 2)
-         {
-            std::cout << "Program data not long enough to store operands " << theName << std::endl;
-            theHaltFlag = true;
-            return;
-         }
+         DEBUGOUT << "Opcode " << opCode << " is jump-if-false" << std::endl;
 
-         int op1 = getOperand(operandCMode, theProgramData[thePc + 1]);
-         int op2 = getOperand(operandBMode, theProgramData[thePc + 2]);
+         int64_t op1 = getOperand(operandCMode, readDataAtAddress(thePc+1));
+         int64_t op2 = getOperand(operandBMode, readDataAtAddress(thePc+2));
 
-         std::cout << "Op 1 = " << op1 << " and Op 2 = " << op2 << std::endl;
+         DEBUGOUT << "Op 1 = " << op1 << " and Op 2 = " << op2 << std::endl;
 
          if (!op1)
          {
-            std::cout << theName << " jumping to " << thePc << "!" << std::endl;
-            thePc = op2;
+           thePc = op2;
+           DEBUGOUT << theName << " jumping to " << thePc << "!" << std::endl;
          }
          else
          {
-            std::cout << theName << " not jumping!" << std::endl;
+            DEBUGOUT << theName << " not jumping!" << std::endl;
             thePc += 3;
          }
          break;
@@ -383,30 +448,24 @@ void ElfComputer::runIteration()
       case 7: // less-than
       {
          // Verify program data has arg data
-         std::cout << "Opcode " << opCode << " is less-than" << std::endl;
-         if (theProgramData.size() < thePc + 3)
-         {
-            std::cout << "Program data not long enough to store operands " << theName << std::endl;
-            theHaltFlag = true;
-            return;
-         }
+         DEBUGOUT << "Opcode " << opCode << " is less-than" << std::endl;
 
-         int op1 = getOperand(operandCMode, theProgramData[thePc + 1]);
-         int op2 = getOperand(operandBMode, theProgramData[thePc + 2]);
-         int op3 = theProgramData[thePc + 3];
+         int64_t op1 = getOperand(operandCMode, readDataAtAddress(thePc+1));
+         int64_t op2 = getOperand(operandBMode, readDataAtAddress(thePc+2));
 
-         std::cout << "Op 1 = " << op1 << " and Op 2 = " << op2 << " and Op 3 = "
-                   << op3 << std::endl;
+         DEBUGOUT << "Op 1 = " << op1 << " and Op 2 = " << op2 << std::endl;
 
          if (op1 < op2)
          {
-            std::cout << "op1<op2, storing 1 in op3 " << theName << std::endl;
-            writeDataAtAddress(op3, 1);
+            DEBUGOUT << "op1<op2, storing 1 in op3 " << theName << std::endl;
+            writeOperand(operandAMode, readDataAtAddress(thePc+3), 1);
          }
          else
          {
-            writeDataAtAddress(op3, 0);
+            DEBUGOUT << "op1>=op2, storing 1 in op3 " << theName << std::endl;
+            writeOperand(operandAMode, readDataAtAddress(thePc+3), 0);
          }
+
          thePc += 4;
          break;
       }
@@ -414,7 +473,7 @@ void ElfComputer::runIteration()
       case 8: // equal-to
       {
          // Verify program data has arg data
-         std::cout << "Opcode " << opCode << " is equal-to" << std::endl;
+         DEBUGOUT << "Opcode " << opCode << " is equal-to" << std::endl;
          if (theProgramData.size() < thePc + 3)
          {
             std::cout << "Program data not long enough to store operands" << std::endl;
@@ -422,29 +481,44 @@ void ElfComputer::runIteration()
             return;
          }
 
-         int op1 = getOperand(operandCMode, theProgramData[thePc + 1]);
-         int op2 = getOperand(operandBMode, theProgramData[thePc + 2]);
-         int op3 = theProgramData[thePc + 3];
+         int64_t op1 = getOperand(operandCMode, readDataAtAddress(thePc+1));
+         int64_t op2 = getOperand(operandBMode, readDataAtAddress(thePc+2));
 
-         std::cout << "Op 1 = " << op1 << " and Op 2 = " << op2 << " and Op 3 = "
-                   << op3 << std::endl;
+
+         DEBUGOUT << "Op 1 = " << op1 << " and Op 2 = " << op2 << std::endl;
 
          if (op1 == op2)
          {
-            std::cout << "op1==op2, storing 1 in op3 " << theName << std::endl;
-            writeDataAtAddress(op3, 1);
+            DEBUGOUT << "op1==op2, storing 1 in op3 " << theName << std::endl;
+            writeOperand(operandAMode, readDataAtAddress(thePc+3), 1);
          }
          else
          {
-            writeDataAtAddress(op3, 0);
+            DEBUGOUT << "op1!=op2, storing 0 in op3 " << theName << std::endl;
+            writeOperand(operandAMode, readDataAtAddress(thePc+3), 0);
          }
 
          thePc += 4;
          break;
       }
 
+      case 9:
+      {
+         DEBUGOUT << "Opcode " << opCode << " is set base register" << std::endl;
+
+         int64_t op1 = getOperand(operandCMode, readDataAtAddress(thePc+1));
+
+         DEBUGOUT << "Op 1 = " << op1 << std::endl;
+
+         DEBUGOUT << "Base register set to " << op1 << std::endl;
+         theBase += op1;
+
+         thePc += 2;
+         break;
+      }
+
       case 99:
-         std::cout << "Op Code is 99, end program" << std::endl;
+         DEBUGOUT << "Op Code is 99, end program" << std::endl;
          theHaltFlag = true;
          return;
 
@@ -455,131 +529,30 @@ void ElfComputer::runIteration()
    }
 }
 
-std::vector<std::vector<int> > getAllCombos(int num)
-{
-   std::vector<std::vector<int> > retVal;
-   std::vector<int> singleEntry;
-
-   if (num == 1)
-   {
-      singleEntry.push_back(0);
-      retVal.push_back(singleEntry);
-      return retVal;
-   }
-
-   std::vector<std::vector<int> > recursiveEntries = getAllCombos(num - 1);
-   for(int i = 0; i < num; i++)
-   {
-      for(auto entryIt = recursiveEntries.begin(); entryIt != recursiveEntries.end(); entryIt++)
-      {
-         // For every entry, insert our number in every position from beginning to end
-         singleEntry = *entryIt;
-         singleEntry.insert(singleEntry.begin() + i, num - 1);
-         retVal.push_back(singleEntry);
-      }
-   }
-
-   return retVal;
-}
 
 
 int main(int argc, char** argv)
 {
-   std::vector<std::vector<int> > vals = getAllCombos(5);
+   std::string programString, stdInString;
 
-   std::string programString;
+   std::cin >> stdInString;
    std::cin >> programString;
-   std::vector<std::string> tokens = split(programString, ",");
-   std::vector<int> programData = strListToInt(tokens);
 
-   int maxThrust = 0;
-   std::vector<int> maxThrustInputs;
+   std::vector<int64_t> programData = strListToInt(split(programString, ","));
 
-   for(auto entryIt = vals.begin(); entryIt != vals.end(); entryIt++)
+   std::vector<int64_t> inputData = strListToInt(split(stdInString, ","));
+   std::vector<int64_t> outputData;
+
+   ElfComputer e(programData, "emu");
+   e.setInputDataQ(&inputData);
+   e.setOutputDataQ(&outputData);
+
+   while(!e.isHalted())
    {
-
-      std::cout << "Amp configuration: ";
-      printIntList(programData);
-
-      ElfComputer ampA(programData, "AmpA");
-      ElfComputer ampB(programData, "AmpB");
-      ElfComputer ampC(programData, "AmpC");
-      ElfComputer ampD(programData, "AmpD");
-      ElfComputer ampE(programData, "AmpE");
-
-      std::vector<int> inputA;
-      inputA.push_back(entryIt->at(0));
-      inputA.push_back(0);    // amplifier initial value
-
-      std::vector<int> inputB;
-      inputB.push_back(entryIt->at(1));
-
-      std::vector<int> inputC;
-      inputC.push_back(entryIt->at(2));
-
-      std::vector<int> inputD;
-      inputD.push_back(entryIt->at(3));
-
-      std::vector<int> inputE;
-      inputE.push_back(entryIt->at(4));
-
-      std::vector<int> outputQ;
-
-      // Plumb all the amps together
-      ampA.setInputDataQ(&inputA);
-      ampA.setOutputDataQ(&inputB);
-
-      ampB.setInputDataQ(&inputB);
-      ampB.setOutputDataQ(&inputC);
-
-      ampC.setInputDataQ(&inputC);
-      ampC.setOutputDataQ(&inputD);
-
-      ampD.setInputDataQ(&inputD);
-      ampD.setOutputDataQ(&inputE);
-
-      ampE.setInputDataQ(&inputE);
-      ampE.setOutputDataQ(&outputQ);
-
-      bool totalHaltFlag = false;
-      while(!totalHaltFlag)
-      {
-         ampA.runIteration();
-         ampB.runIteration();
-         ampC.runIteration();
-         ampD.runIteration();
-         ampE.runIteration();
-
-         totalHaltFlag = ampA.isHalted() && ampB.isHalted() && ampC.isHalted() &&
-                         ampD.isHalted() && ampE.isHalted();
-      }
-
-      std::cout << "Output: ";
-      printIntList(outputQ);
-      std::cout << std::endl << std::endl;
-
-      if (outputQ.size() == 0)
-      {
-         std::cerr << "No output to be found" << std::endl;
-         break;
-      }
-
-      if (maxThrust < outputQ[0])
-      {
-         maxThrust = outputQ[0];
-         maxThrustInputs = *entryIt;
-
-         std::cout << "Thrust " << maxThrust << " generated from ";
-         printIntList(maxThrustInputs);
-      }
+      e.runIteration();
    }
 
-
-   std::cout << "Thrust " << maxThrust << " generated from ";
-   printIntList(maxThrustInputs);
-
-
-
+   printIntList(outputData);
 
 	return 0;
 }
