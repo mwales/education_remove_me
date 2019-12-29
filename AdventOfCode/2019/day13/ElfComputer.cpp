@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <ncurses.h>
+
 #include "ElfComputer.h"
 
 std::vector<std::string> split(std::string data, std::string delimeter)
@@ -74,7 +76,8 @@ ElfComputer::ElfComputer(std::vector<int64_t> const & pd, std::string const & na
    theInputDataQ(nullptr),
    theOutputDataQ(nullptr),
    theName(name),
-   theHaltFlag(false)
+   theHaltFlag(false),
+   theNumIterations(0)
 {
    theProgramData = pd;
 }
@@ -201,7 +204,8 @@ void ElfComputer::expandMemory(int size)
 
 void ElfComputer::printEmulatorState()
 {
-   std::cout << std::endl << std::endl << "PC = " << thePc << "\tBase = " << theBase << std::endl;
+   std::cout << std::endl << std::endl << "PC = " << thePc << "\tBase = " << theBase
+             << "\tIter = " << theNumIterations << std::endl;
    for(int i = 0; i < theProgramData.size(); i++)
    {
       if ( (i % 10) == 0)
@@ -220,11 +224,116 @@ void ElfComputer::printEmulatorState()
    std::cout << std::endl << std::endl;
 }
 
+std::string ElfComputer::disassemble(int address)
+{
+   int64_t op1 = readDataAtAddress(address);
+
+   int instructionType = op1 % 100;
+
+   std::string retVal;
+   retVal += std::to_string(address);
+   retVal += ": \t\t";
+
+   switch(instructionType)
+   {
+   case 1: // addition
+   case 2: // multiply
+      retVal += disassembleOperand(address, 1);
+      retVal += (instructionType == 1 ? " + " : " * ");
+      retVal += disassembleOperand(address, 2);
+      retVal += " => ";
+      retVal += disassembleOperand(address, 3);
+      return retVal;
+
+   case 3: // input
+      retVal += "INPUT => ";
+      retVal += disassembleOperand(address, 1);
+      return retVal;
+
+   case 4: // output
+      retVal += disassembleOperand(address, 1);
+      retVal += " => OUTPUT";
+      return retVal;
+
+   case 5: // jump if true: if [x] the jump [y]
+   case 6: // jump if false
+      retVal += "if ";
+      if (instructionType == 6)
+      {
+         retVal += "! ";
+      }
+      retVal += disassembleOperand(address, 1);
+      retVal += " then ";
+      retVal += disassembleOperand(address, 2);
+      retVal += " => PC";
+      return retVal;
+
+
+   case 7: // less than
+   case 8: // equal to
+      retVal += "(";
+      retVal += disassembleOperand(address, 1);
+      retVal += (instructionType == 7 ? " < " : " == ");
+      retVal += disassembleOperand(address, 2);
+      retVal += ") => ";
+      retVal += disassembleOperand(address, 3);
+      return retVal;
+
+   case 9: // set base addr
+      retVal += disassembleOperand(address, 1);
+      retVal += " => BASE";
+      return retVal;
+
+   case 99:
+      retVal += "HALT";
+      return retVal;
+   }
+}
+
+std::string ElfComputer::disassembleOperand(int address, int operand)
+{
+   if ( (operand < 1) || (operand > 3) )
+   {
+      std::cerr << "Operand invalid: disassembleOperand(" << address << ", " << operand << ")"
+                << std::endl;
+      exit(1);
+   }
+
+   int operandDivisor = operand * 10;
+   int addressingMode = ( readDataAtAddress(address) / operandDivisor ) % 10;
+   int operandValue = readDataAtAddress(address + operand);
+
+   std::string retVal;
+   switch(addressingMode)
+   {
+   case 0:  // position mode
+      retVal += "[";
+      retVal += std::to_string(operandValue);
+      retVal += "]";
+      return retVal;
+
+   case 1:  // immediate mode
+      retVal += "#";
+      retVal += std::to_string(operandValue);
+      return retVal;
+
+   case 2:
+      retVal += "[base +";
+      retVal += std::to_string(operandValue);;
+      return retVal;
+   }
+
+}
+
 void ElfComputer::runIteration()
 {
-#ifdef DEBUGGING
-   printEmulatorState();
-#endif
+// #ifdef DEBUGGING
+   //printEmulatorState();
+   mvprintw(25,0,"DISASS: %s                                ", disassemble(thePc).c_str());
+   refresh();
+// #endif
+
+   theNumIterations++;
 
    if( (thePc < 0) || (thePc >= theProgramData.size()) )
    {

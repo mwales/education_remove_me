@@ -1,7 +1,10 @@
+#ifndef ELF_COMPUTER_H
+#define ELF_COMPUTER_H
+
 #include <iostream>
 #include <vector>
 
-// #define DEBUGGING
+//#define DEBUGGING
 
 #ifdef DEBUGGING
    #define DEBUGOUT std::cout
@@ -37,13 +40,15 @@ public:
 
    bool isHalted() { return theHaltFlag; };
 
-
+   std::string disassemble(int address);
 
 protected:
 
    int64_t getOperand(int64_t operandMode, int64_t operandRawVal);
 
    void writeOperand(int64_t operandMode, int64_t operandRawVal, int64_t writeVal);
+
+   std::string disassembleOperand(int address, int operand);
 
    int64_t readDataAtAddress(int addr);
 
@@ -67,4 +72,8 @@ protected:
 
    bool theHaltFlag;
 
+   int theNumIterations;
+
 };
+
+#endif // ELF_COMPUTER_H
