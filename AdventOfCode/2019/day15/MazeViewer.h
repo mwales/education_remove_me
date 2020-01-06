@@ -10,19 +10,6 @@
 // View is going to be 20x20 box
 // Debug text and position underneath the screen
 
-class Coord : public std::pair<int, int>
-{
-public:
-
-   Coord(int x, int y);
-
-   std::string toString() const;
-
-   int x() const { return first; }
-   int y() const { return second; }
-
-};
-
 class MazeViewer
 {
 
@@ -39,14 +26,21 @@ public:
    MazeViewer();
    ~MazeViewer();
 
-
    void printScreen();
+
+   void closeViewer();
 
    void addPoint(int x, int y, enum MazeData);
 
    void setDroidPosition(int x, int y);
 
    void onScreenDebug(std::string text);
+
+   void setDebugFlag(bool);
+
+   void printWholeMap();
+
+   void getMapLimits(Coord & topLeft, Coord & bottomRight);
 
 protected:
 
@@ -61,6 +55,10 @@ protected:
    int theScreenHeight;
 
    std::vector<std::string> theDebugMessages;
+
+   bool theNcursesViewOpen;
+
+   bool theDebugEnabled;
 };
 
 #endif

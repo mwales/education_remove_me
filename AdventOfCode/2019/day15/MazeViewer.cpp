@@ -3,32 +3,17 @@
 #include <ncurses.h>
 #include <unistd.h>
 
-
+#include "MazeCommon.h"
 #include "ElfComputer.h"
 #include "MazeViewer.h"
 
 const int VIEW_WIDTH = 20;
 const int VIEW_HEIGHT = 20;
 
-Coord::Coord(int x, int y)
-{
-   first = x;
-   second = y;
-}
-
-std::string Coord::toString() const
-{
-   std::string retVal;
-   retVal += "(";
-   retVal += std::to_string(x());
-   retVal += ",";
-   retVal += std::to_string(y());
-   retVal += ")";
-   return retVal;
-}
-
 MazeViewer::MazeViewer():
-   theDroidPosition(0,0)
+   theDroidPosition(0,0),
+   theNcursesViewOpen(true),
+   theDebugEnabled(true)
 {
    // nothing
    initscr();
@@ -58,19 +43,26 @@ MazeViewer::MazeViewer():
 MazeViewer::~MazeViewer()
 {
    endwin();
+   theNcursesViewOpen = false;
 
    std::cout << "Maze Viewer done" << std::endl;
 
-   for(auto it = theMazeData.begin(); it != theMazeData.end(); it++)
-   {
-      std::cout << it->first.toString() << " = " << it->second << std::endl;
-   }
+   // for(auto it = theMazeData.begin(); it != theMazeData.end(); it++)
+   // {
+   //    std::cout << it->first.toString() << " = " << it->second << std::endl;
+   // }
 }
 
 
 
 void MazeViewer::printScreen()
 {
+   if (!theNcursesViewOpen)
+   {
+      // Don't do anything here if the view already closed
+      return;
+   }
+
    int startXView = theDroidPosition.x() - VIEW_WIDTH / 2;
    int endXView = startXView + VIEW_WIDTH;
    int startYView = theDroidPosition.y() - VIEW_HEIGHT / 2;
@@ -91,10 +83,21 @@ void MazeViewer::printScreen()
 
    refresh();
 
+   usleep(10000);
+
+}
+
+void MazeViewer::closeViewer()
+{
+   theNcursesViewOpen = false;
+   endwin();
 }
 
 void MazeViewer::addPoint(int x, int y, enum MazeData md)
 {
+   // std::cerr << "MazeViewer::addPoint(" << x << "," << y << ","
+   //           << md << ")" << std::endl;
+
    Coord c(x, y);
    theMazeData[c] = md;
 }
@@ -104,11 +107,19 @@ void MazeViewer::setDroidPosition(int x, int y)
    Coord c(x, y);
    theDroidPosition = c;
 
-   mvprintw(VIEW_HEIGHT + 2, 0, "Droid @ %d, %d        ", x, y);
+   if (theNcursesViewOpen)
+   {
+      mvprintw(VIEW_HEIGHT + 2, 0, "Droid @ %d, %d        ", x, y);
+   }
 }
 
 void MazeViewer::onScreenDebug(std::string text)
 {
+   if (!theDebugEnabled)
+   {
+       return;
+   }
+
    if (theDebugMessages.size() >= 10)
    {
       theDebugMessages.pop_back();
@@ -126,6 +137,59 @@ void MazeViewer::onScreenDebug(std::string text)
           spaceNum < (theScreenWidth - 1); spaceNum++)
       {
          mvprintw(VIEW_HEIGHT + 4 + i, spaceNum, " ");
+      }
+   }
+}
+
+void MazeViewer::setDebugFlag(bool debugEnable)
+{
+   theDebugEnabled = debugEnable;
+}
+
+void MazeViewer::printWholeMap()
+{
+   Coord topLeft, bottomRight;
+   getMapLimits(topLeft, bottomRight);
+
+   for(int y = topLeft.y(); y >= bottomRight.y(); y--)
+   {
+      for(int x = topLeft.x(); x <= bottomRight.x(); x++)
+      {
+         char curChar = getMazeView(x,y);
+         std::cout << curChar;
+      }
+
+      std::cout << std::endl;
+   }
+}
+
+void MazeViewer::getMapLimits(Coord & topLeft, Coord & bottomRight)
+{
+   topLeft.setX(0);
+   topLeft.setY(0);
+   bottomRight.setX(0);
+   bottomRight.setY(0);
+
+   for(auto it = theMazeData.begin(); it != theMazeData.end(); it++)
+   {
+      if (it->first.x() < topLeft.x())
+      {
+         topLeft.setX(it->first.x());
+      }
+
+      if (it->first.x() > bottomRight.x())
+      {
+         bottomRight.setX(it->first.x());
+      }
+
+      if (it->first.y() > topLeft.y())
+      {
+         topLeft.setY(it->first.y());
+      }
+
+      if (it->first.y() < bottomRight.y())
+      {
+         bottomRight.setY(it->first.y());
       }
    }
 }

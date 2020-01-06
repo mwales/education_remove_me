@@ -6,7 +6,9 @@
 #include <ncurses.h>
 
 #include "ElfComputer.h"
+#include "MazeCommon.h"
 #include "MazeViewer.h"
+#include "MazeSolver.h"
 
 std::string readFile(std::string filename)
 {
@@ -38,19 +40,19 @@ int getNextInput(MazeViewer & v)
    {
    case 'j':
       v.onScreenDebug("Moving down!");
-      return 2; // south
+      return MAZE_SOUTH;
 
    case 'k':
       v.onScreenDebug("Moving up!");
-      return 1; // north
+      return MAZE_NORTH;
 
    case 'h':
       v.onScreenDebug("Moving left!");
-      return 3; // west
+      return MAZE_WEST;
 
    case 'l':
       v.onScreenDebug("Moving right!");
-      return 4; // east
+      return MAZE_EAST;
 
    case 'q':
       v.onScreenDebug("Quitting...");
@@ -89,19 +91,19 @@ void runInteractiveMode(ElfCode pd)
       int newY = posY;
       switch(moveDirection)
       {
-      case 1: // north
+      case MAZE_NORTH:
          newY = posY + 1;
          break;
 
-      case 2: // south
+      case MAZE_SOUTH:
          newY = posY - 1;
          break;
 
-      case 3: // west
+      case MAZE_WEST:
          newX = posX - 1;
          break;
 
-      case 4: // east
+      case MAZE_EAST:
          newX = posX + 1;
          break;
       }
@@ -124,12 +126,12 @@ void runInteractiveMode(ElfCode pd)
 
       switch(moveResult)
       {
-      case 0: // Droid hit wall
+      case MAZE_WALL: // Droid hit wall
          v.onScreenDebug("Hit wall");
          v.addPoint(newX, newY, MazeViewer::WALL);
          break;
 
-      case 1: // Droid move success
+      case MAZE_EMPTY: // Droid move success
          v.onScreenDebug("Move success");
          v.addPoint(newX, newY, MazeViewer::EMPTY);
          v.setDroidPosition(newX, newY);
@@ -137,7 +139,7 @@ void runInteractiveMode(ElfCode pd)
          posY = newY;
          break;
 
-      case 2: // Droid move success + goal found
+      case MAZE_GOAL: // Droid move success + goal found
          v.onScreenDebug("Goal Found!");
          v.addPoint(newX, newY, MazeViewer::GOAL);
          v.setDroidPosition(newX, newY);
@@ -163,6 +165,8 @@ int main(int argc, char** argv)
    if (argc < 2)
    {
       std::cout << "You need to provide the filename of the maze code" << std::endl;
+      std::cout << "For interactive mode: " << argv[0] << " mazecode.txt interactive"
+                << std::endl;
       return 1;
    }
 
@@ -175,40 +179,30 @@ int main(int argc, char** argv)
    if ( (argc == 3) && (strcmp(argv[2], "interactive") == 0))
    {
       runInteractiveMode(pd);
+      return 0;
    }
 
-//   ElfComputer e(pd, "maze");
+   std::vector<int> finalPath;
+   int longestPath;
+   Coord topLeft, bottomRight;
+   {
+      MazeSolver solver(pd);
+      finalPath = solver.findPathToExit(true);
 
-//   ElfCode outputQ;
-//   e.setInputDataQ(&inputQ);
-//   e.setOutputDataQ(&outputQ);
+      solver.reset();
+      sleep(5);
 
-//   while(!e.isHalted())
-//   {
-//      e.runIteration();
-//   }
-   
-//   int numBlocks = 0;
+      solver.findPathToExit(false);
+      longestPath = solver.longestPath();
+      solver.getMapLimits(topLeft, bottomRight);
+      solver.printMap();
+   }
 
-//   {
-//      ArcadeScreen screen;
-//      screen.detectScreenSize(outputQ);
-//      screen.processScreenData(outputQ);
-//      screen.printScreen();
+   std::cout << "Pt 1: Number of steps " << finalPath.size() << std::endl;
+   std::cout << "Pt 2: Longest path " << longestPath << std::endl;
 
-//      // part 1, count the blocks
-//      for(int x = 0; x < screen.getWidth(); x++)
-//      {
-//         for(int y = 0; y < screen.getHeight(); y++)
-//         {
-//            if (screen.getPixel(x, y) == 2)
-//            {
-//               numBlocks++;
-//            }
-//         }
-//      }
-//   }
-//   std::cout << "Num blocks = " << numBlocks << std::endl;
+   // std::cout << "Top Left: " << topLeft.toString() << std::endl;
+   // std::cout << "Bottom Right: " << bottomRight.toString() << std::endl;
 
    return 0;
 }
