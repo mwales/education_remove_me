@@ -148,6 +148,8 @@ void MazeViewer::setDebugFlag(bool debugEnable)
 
 void MazeViewer::printWholeMap()
 {
+   closeViewer();
+
    Coord topLeft, bottomRight;
    getMapLimits(topLeft, bottomRight);
 
