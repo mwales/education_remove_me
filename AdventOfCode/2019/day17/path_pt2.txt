@@ -1,0 +1,24 @@
+The path to get touch all the scaffolding is:
+
+L,8,R,12,R,12,R,10,R,10,R,12,R,10,L,8,R,12,R,12,R,10,R,10,R,12,R,10,L,10,R,10,
+L,6,L,10,R,10,L,6,R,10,R,12,R,10,L,8,R,12,R,12,R,10,R,10,R,12,R,10,L,10,R,10,L,6
+
+Figuring that the start and end the of the path would have to be functions,
+basically just did some manual trial-and-error guesses as to functions that
+would be common enough to make the program work.
+
+L,8,R,12,R,12,R,10,
+R,10,R,12,R,10,
+L,8,R,12,R,12,R,10,
+R,10,R,12,R,10,
+L,10,R,10,L,6,
+L,10,R,10,L,6,
+R,10,R,12,R,10,
+L,8,R,12,R,12,R,10,
+R,10,R,12,R,10,
+L,10,R,10,L,6
+
+Is the path divided into separate functions, which would make the main program:
+
+A,B,A,B,C,C,B,A,B,C
+
