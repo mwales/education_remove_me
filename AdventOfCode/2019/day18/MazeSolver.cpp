@@ -10,8 +10,8 @@
 #endif
 
 int MazeSolver::theNumSolversCreated = 0;
-
 int MazeSolver::theNumSolversFinished = 0;
+int MazeSolver::theNumSolversAborted = 0;
 
 MazeSolver::MazeSolver(Maze* m, int x, int y, int numSteps):
    theMaze(m),
@@ -35,7 +35,7 @@ void MazeSolver::setKeys(std::vector<char> keys)
    MSDEBUG << "Number of keys: " << theKeys.size() << std::endl;
 }
 
-int MazeSolver::numStepsToSolution()
+int MazeSolver::numStepsToSolution(int bestSolutionFound)
 {
    // Do we have the keys already?
    if (theMaze->getNumKeys() == theKeys.size())
@@ -53,6 +53,13 @@ int MazeSolver::numStepsToSolution()
       return theNumSteps;
    }
 
+   // Should we abort this before even starting?
+   if ( (bestSolutionFound != -1) && (theNumSteps >= bestSolutionFound) )
+   {
+      // Abort!
+      theNumSolversAborted++;
+      return -1;
+   }
 
    // Make sure the current position is already visited
    addPointVisited(thePosX, thePosY);
@@ -114,6 +121,12 @@ int MazeSolver::numStepsToSolution()
 
       // Remove a single point from the toVisit list
       thePointsToVisit.erase(thePointsToVisit.begin());
+
+      if ( (bestSolutionFound != -1) && (theNumSteps >= bestSolutionFound) )
+      {
+         // Don't bother processing anymore if better solutions exist
+         break;
+      }
    }
 
    MSDEBUG << "No more points to visit" << std::endl;
@@ -122,16 +135,17 @@ int MazeSolver::numStepsToSolution()
 
    if (nextSolvers.size() <= 0)
    {
-      std::cerr << "We got to a point where we filled maze and have no way to solve..." << std::endl;
+      MSDEBUG << "We bailed before finding good solutuions" << std::endl;
+      theNumSolversAborted++;
       return -1;
    }
 
-   int retVal;
+   int retVal = -1;
    bool firstVal = true;
 
    for(auto it = nextSolvers.begin(); it != nextSolvers.end(); it++)
    {
-      int curSolSteps = it->numStepsToSolution();
+      int curSolSteps = it->numStepsToSolution(retVal);
       MSDEBUG << "Cur Solver Num Steps " << curSolSteps << std::endl;
 
       if (firstVal)
@@ -141,7 +155,7 @@ int MazeSolver::numStepsToSolution()
       }
       else
       {
-         if (retVal > curSolSteps)
+         if ( (curSolSteps != -1) && (retVal > curSolSteps) )
          {
             retVal = curSolSteps;
          }
@@ -300,6 +314,6 @@ bool MazeSolver::doWeHaveKey(char x)
 
 void MazeSolver::printSolverStats()
 {
-   std::cout << "The num solvers created = " << theNumSolversCreated << " and solved = "
-             << theNumSolversFinished << std::endl;
+   std::cout << "The num solvers created = " << theNumSolversCreated << ", aborted = "
+             << theNumSolversAborted << ", and solved = " << theNumSolversFinished << std::endl;
 }

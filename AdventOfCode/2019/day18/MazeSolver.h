@@ -15,7 +15,7 @@ public:
 
    void setKeys(std::vector<char> keys);
 
-   int numStepsToSolution();
+   int numStepsToSolution(int bestSolutionFound = -1);
 
    void addNeighbors(int x, int y);
 
@@ -54,6 +54,8 @@ protected:
    static int theNumSolversCreated;
 
    static int theNumSolversFinished;
+
+   static int theNumSolversAborted;
 };
 
 
