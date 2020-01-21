@@ -317,3 +317,5 @@ void MazeSolver::printSolverStats()
    std::cout << "The num solvers created = " << theNumSolversCreated << ", aborted = "
              << theNumSolversAborted << ", and solved = " << theNumSolversFinished << std::endl;
 }
+
+

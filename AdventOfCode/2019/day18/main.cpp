@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "Maze.h"
-#include "MazeSolver.h"
+#include "MazeSolver2.h"
 
 int main(int argc, char** argv)
 {
@@ -25,15 +25,35 @@ int main(int argc, char** argv)
 
    int x = 0;
    int y = 0;
-   m.findStartPoint(x,y);
+   m.printState();
 
-   MazeSolver solver(&m, x, y, 0);
+   MazeSolver2 ms2(&m);
+   std::set<char> keysToGet = m.getPossibleKeys2();
+   std::vector<char> keysHave;
+   std::vector<MazePath> res = ms2.distToGetFollowingKeys(keysToGet, keysHave, '@');
 
-   int pt1 = solver.numStepsToSolution();
 
-   solver.printSolverStats();
+   bool first = true;
+   MazePath best;
+   for(auto it = res.begin(); it != res.end(); it++)
+   {
+      std::cout << "Path: " << mazePathToString(*it) << std::endl;
 
-   std::cout << "pt1 = " << pt1 << std::endl;
+      if (first)
+      {
+         first = false;
+         best = *it;
+      }
+      else
+      {
+         if (best.theLength > it->theLength)
+         {
+            best = *it;
+         }
+      }
+   }
+
+   std::cout << "\n\nBest Path!\n" << mazePathToString(best) << std::endl;
 
    return 0;
 }

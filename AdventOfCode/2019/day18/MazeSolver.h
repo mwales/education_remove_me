@@ -27,11 +27,11 @@ public:
 
    bool isPointBlocked(int x, int y);
 
-
-
    bool doWeHaveKey(char x);
 
    void printSolverStats();
+
+
 
 protected:
 

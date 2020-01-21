@@ -1,4 +1,4 @@
 #!/bin/bash
 
-clang++ MazeSolver.cpp Maze.cpp main.cpp -o pt1
+clang++ -g MazeSolver.cpp MazeSolver2.cpp Maze.cpp main.cpp -o pt1
 
