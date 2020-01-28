@@ -25,7 +25,18 @@ public:
                                  std::vector<char> keysHave,
                                  char keyAtCurrentLoc);
 
+   std::vector<char> appendKeyPath(std::vector<char> const & original,
+                                   std::vector<char> const & append);
+
 private:
+
+   bool isKeyInList(char needle, std::vector<char> const & keyList);
+
+   std::set<char> updateKeysToGet(std::set<char> const & oldKeysToGet,
+                                  std::vector<char> const & autoFoundKeys);
+
+   std::vector<char> updateKeysHave(std::vector<char> const & oldKeyList,
+                                    std::vector<char> const & autoFoundKeys);
 
    Maze* theMaze;
 };

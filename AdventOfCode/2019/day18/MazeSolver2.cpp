@@ -77,29 +77,148 @@ std::vector<MazePath> MazeSolver2::distToGetFollowingKeys(std::set<char> keysToG
          continue;
       }
 
-      // Recurisvely call self  with one less keyToGet and one extra keyHave
-      std::set<char> nextKeysToGet = keysToGet;
-      std::vector<char> nextKeysHave = keysHave;
+      // On the way to the key, we may pick up extra keys
+      std::vector<char> keysWePickupOnWay = theMaze->getAutomaticKeys(*ktgIt);
 
-      nextKeysToGet.erase(nextKeysToGet.find(*ktgIt));
-      nextKeysHave.push_back(*ktgIt);
+      // Recurisvely call self  with one less keyToGet and one extra keyHave
+      std::set<char> nextKeysToGet = updateKeysToGet(keysToGet, keysWePickupOnWay);
+      std::vector<char> nextKeysHave = updateKeysHave(keysHave, keysWePickupOnWay);
+
+      MAZEDEBUG << "  Keys we had before: " << theMaze->charListToString(keysHave) << std::endl;
+      MAZEDEBUG << "  Keys we picked up: " << theMaze->charListToString(keysWePickupOnWay) << std::endl;
+      MAZEDEBUG << "  Keys we have now: " << theMaze->charListToString(nextKeysHave) << std::endl;
+
+      MAZEDEBUG << "  Keys we were searching for: " << theMaze->charListToString(keysToGet) << std::endl;
+      MAZEDEBUG << "  Keys we are now searching for: " << theMaze->charListToString(nextKeysToGet) << std::endl;
+
+
 
       std::vector<MazePath> pathsAfterCurKey;
       pathsAfterCurKey = distToGetFollowingKeys(nextKeysToGet, nextKeysHave, *ktgIt);
       int curDist = theMaze->getKeyDistances(keyAtCurrentLoc)[*ktgIt];
 
       // Add the paths after the current key to retVal
+      bool first = true;
+      MazePath best;
       for(auto it = pathsAfterCurKey.begin(); it != pathsAfterCurKey.end(); it++)
       {
          MAZEDEBUG << "CurKey=" << *ktgIt << ", curDist=" << curDist << ":  " << mazePathToString(*it) << std::endl;
          it->theLength += curDist;
-         it->thePath.insert(it->thePath.begin(), *ktgIt);
+         //it->thePath.insert(it->thePath.begin(), nextKeysHave.begin(), nextKeysHave.end());
+         it->thePath = appendKeyPath(it->thePath, nextKeysHave);
+         //it ->thePath = nextKeysHave;
 
-         MAZEDEBUG << "  to " << mazePathToString(*it) << std::endl;;
+         MAZEDEBUG << "  to " << mazePathToString(*it) << std::endl;
+
+         if (it->theLength == 0)
+         {
+            // Invalid result, ignore
+            assert(false);
+            continue;
+         }
+
+         if (first)
+         {
+            first = false;
+            best = *it;
+            retVal.push_back(*it);
+         }
+         else
+         {
+            if (it->theLength < best.theLength)
+            {
+               best = *it;
+               retVal.clear();
+               retVal.push_back(*it);
+            }
+         }
 
          retVal.push_back(*it);
       }
 
+   }
+
+   return retVal;
+}
+
+std::vector<char> MazeSolver2::appendKeyPath(std::vector<char> const & original,
+                                             std::vector<char> const & append)
+{
+   std::vector<char> retVal;
+   for(auto it = original.begin(); it != original.end(); it++)
+   {
+      if (isKeyInList(*it, retVal))
+      {
+         continue;
+      }
+
+      retVal.push_back(*it);
+   }
+
+   for(auto it = append.begin(); it != append.end(); it++)
+   {
+      if (isKeyInList(*it, retVal))
+      {
+         continue;
+      }
+
+      retVal.push_back(*it);
+   }
+
+   return retVal;
+}
+
+bool MazeSolver2::isKeyInList(char needle, std::vector<char> const & keyList)
+{
+   for(auto it = keyList.begin(); it != keyList.end(); it++)
+   {
+      if (needle == *it)
+      {
+         return true;
+      }
+   }
+
+   return false;
+}
+
+std::set<char> MazeSolver2::updateKeysToGet(std::set<char> const & oldKeysToGet,
+                                            std::vector<char> const & autoFoundKeys)
+{
+   std::set<char> retVal;
+   for(auto it = oldKeysToGet.begin(); it != oldKeysToGet.end(); it++)
+   {
+      if (!isKeyInList(*it, autoFoundKeys))
+      {
+         // We didn't find this key, keep searching for it
+         retVal.insert(*it);
+      }
+   }
+
+   return retVal;
+}
+
+std::vector<char> MazeSolver2::updateKeysHave(std::vector<char> const & oldKeyList,
+                                              std::vector<char> const & autoFoundKeys)
+{
+   std::vector<char> retVal;
+
+   // Make sure list only has one of each key
+   for(auto it = oldKeyList.begin(); it != oldKeyList.end(); it++)
+   {
+      if (!isKeyInList(*it, retVal))
+      {
+         // This is a new key that we found
+         retVal.push_back(*it);
+      }
+   }
+
+   for(auto it = autoFoundKeys.begin(); it != autoFoundKeys.end(); it++)
+   {
+      if (!isKeyInList(*it, retVal))
+      {
+         // This is a new key that we found
+         retVal.push_back(*it);
+      }
    }
 
    return retVal;

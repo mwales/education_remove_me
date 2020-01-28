@@ -1,7 +1,7 @@
 #include "Maze.h"
 #include <assert.h>
 
-#define MAZE_DEBUG
+//#define MAZE_DEBUG
 #ifdef MAZE_DEBUG
    #define MAZEDEBUG std::cerr
 #else
@@ -345,7 +345,16 @@ std::set<Coord> Maze::mapNeighbors(Coord coord)
       retVal.insert(neighborCoord);
       Path neighPath = curPath;
       neighPath.push_back(neighborCoord);
-      thePathToEachPoint[neighborCoord] = neighPath;
+
+      if (thePathToEachPoint.find(neighborCoord) == thePathToEachPoint.end())
+      {
+         thePathToEachPoint[neighborCoord] = neighPath;
+         MAZEDEBUG << "mapNeighors(" << Maze::coordToString(coord)
+                   << "), adding neighbor @ " << Maze::coordToString(neighborCoord)
+                   << " with path: " << Maze::pathToString(neighPath) << std::endl;
+      }
+
+
    }
 
    // South
@@ -355,7 +364,14 @@ std::set<Coord> Maze::mapNeighbors(Coord coord)
       retVal.insert(neighborCoord);
       Path neighPath = curPath;
       neighPath.push_back(neighborCoord);
-      thePathToEachPoint[neighborCoord] = neighPath;
+
+      if (thePathToEachPoint.find(neighborCoord) == thePathToEachPoint.end())
+      {
+         thePathToEachPoint[neighborCoord] = neighPath;
+         MAZEDEBUG << "mapNeighors(" << Maze::coordToString(coord)
+                   << "), adding neighbor @ " << Maze::coordToString(neighborCoord)
+                   << " with path: " << Maze::pathToString(neighPath) << std::endl;
+      }
    }
 
    // East
@@ -365,7 +381,14 @@ std::set<Coord> Maze::mapNeighbors(Coord coord)
       retVal.insert(neighborCoord);
       Path neighPath = curPath;
       neighPath.push_back(neighborCoord);
-      thePathToEachPoint[neighborCoord] = neighPath;
+
+      if (thePathToEachPoint.find(neighborCoord) == thePathToEachPoint.end())
+      {
+         thePathToEachPoint[neighborCoord] = neighPath;
+         MAZEDEBUG << "mapNeighors(" << Maze::coordToString(coord)
+                   << "), adding neighbor @ " << Maze::coordToString(neighborCoord)
+                   << " with path: " << Maze::pathToString(neighPath) << std::endl;
+      }
    }
 
    // West
@@ -375,7 +398,14 @@ std::set<Coord> Maze::mapNeighbors(Coord coord)
       retVal.insert(neighborCoord);
       Path neighPath = curPath;
       neighPath.push_back(neighborCoord);
-      thePathToEachPoint[neighborCoord] = neighPath;
+
+      if (thePathToEachPoint.find(neighborCoord) == thePathToEachPoint.end())
+      {
+         thePathToEachPoint[neighborCoord] = neighPath;
+         MAZEDEBUG << "mapNeighors(" << Maze::coordToString(coord)
+                   << "), adding neighbor @ " << Maze::coordToString(neighborCoord)
+                   << " with path: " << Maze::pathToString(neighPath) << std::endl;
+      }
    }
 
    return retVal;
@@ -389,6 +419,11 @@ bool Maze::isPointOnMap(int x, int y)
    }
 
    if ( (y < 0) || (y >= theHeight) )
+   {
+      return false;
+   }
+
+   if (getPoint(x, y) == '#')
    {
       return false;
    }
@@ -421,8 +456,13 @@ void Maze::computeAllKeyDependencies()
       Coord curKeyCoord = getLocationOfKey(*curKeyIt);
 
       Path keyPath = getPath(curKeyCoord.first, curKeyCoord.second);
+
+      MAZEDEBUG << "Computing depends for key " << *curKeyIt << " @ "
+                << Maze::coordToString(curKeyCoord) << ", path: "
+                << Maze::pathToString(keyPath) << std::endl;
+
       std::set<char> keysReqd;
-      std::set<char> keysFound;
+      std::vector<char> keysFound;
 
       for(auto it = keyPath.begin(); it != keyPath.end(); it++)
       {
@@ -438,7 +478,7 @@ void Maze::computeAllKeyDependencies()
          if ( (curPoint >= 'a') && (curPoint <= 'z') )
          {
             // We found a door on the way to the key
-            keysFound.insert(curPoint);
+            keysFound.push_back(curPoint);
          }
       }
 
@@ -544,4 +584,43 @@ bool Maze::canIGetKey(char key, std::vector<char> keysVec)
 
    // We had all the reqd keys
    return true;
+}
+
+
+std::vector<char> Maze::getAutomaticKeys(char key)
+{
+   return theKeysAutomatic[key];
+}
+
+std::string Maze::pathToString(Path p)
+{
+   std::string retVal = "<";
+
+   bool first = true;
+   for(auto it = p.begin(); it != p.end(); it++)
+   {
+      if (first)
+      {
+         first = false;
+      }
+      else
+      {
+         retVal += ",";
+      }
+
+      retVal += coordToString(*it);\
+   }
+
+   retVal += ">";
+   return retVal;
+}
+
+std::string Maze::coordToString(Coord x)
+{
+   std::string retVal = "(";
+   retVal += std::to_string(x.first);
+   retVal += ",";
+   retVal += std::to_string(x.second);
+   retVal += ")";
+   return retVal;
 }

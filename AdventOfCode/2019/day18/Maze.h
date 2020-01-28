@@ -51,6 +51,12 @@ public:
 
    bool canIGetKey(char key, std::vector<char> keysPossessed);
 
+   std::vector<char> getAutomaticKeys(char key);
+
+   static std::string pathToString(Path x);
+
+   static std::string coordToString(Coord x);
+
 private:
 
    // Adds all the points surrounding the passed in point to thePathToEachPoint
@@ -76,7 +82,8 @@ private:
 
    std::map<char, std::set<char> > theKeyDependencies;
 
-   std::map<char, std::set<char> > theKeysAutomatic;
+   // The vector is in the order they will be picked up
+   std::map<char, std::vector<char> > theKeysAutomatic;
 };
 
 #endif // MAZE_H
