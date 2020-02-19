@@ -1,7 +1,7 @@
 #include "Maze.h"
 #include <assert.h>
 
-#define MAZE_DEBUG
+// #define MAZE_DEBUG
 #ifdef MAZE_DEBUG
     #define MDBG std::cout
 #else
@@ -71,7 +71,7 @@ Maze::Maze(std::vector<std::string> inputData)
     int numEntrancesOuter = theOuterPortals.count(entranceString);
     int numEntrancesInner = theInnerPortals.count(entranceString);
 
-    assert( (numEntrancesOuter == 1) || (numEntrancesOuter == 1) );
+    assert( (numEntrancesOuter == 1) || (numEntrancesInner == 1) );
 
     if (numEntrancesOuter)
     {
@@ -154,6 +154,7 @@ void Maze::dump()
 
 std::vector<Coord> Maze::getAdjacentCoords(Coord c)
 {
+    MDBG << "getAdjacentCoords(" << coordToString(c) << ")" << std::endl;
     assert (theMazeData[c] == '.');
 
     std::vector<Coord> retVal;
@@ -172,12 +173,14 @@ std::vector<Coord> Maze::getAdjacentCoords(Coord c)
         // The other portal is "adjacent"
         if (isPortal == 1)
         {
+            MDBG << "Found an inner portal!" << std::endl;
             // we are on inner portal, return the outer portal
             assert(theOuterPortals.find(portalName) != theOuterPortals.end());
             retVal.push_back(theOuterPortals[portalName]);
         }
         else
         {
+            MDBG << "Found an outer portal" << std::endl;
             // we are on outer portal, return the inner portal
             assert(theInnerPortals.find(portalName) != theInnerPortals.end());
             retVal.push_back(theInnerPortals[portalName]);
@@ -200,12 +203,10 @@ std::vector<Coord> Maze::getAdjacentCoords(Coord c)
         }
 
         // Is it a wall?
-        if (theMazeData[*it] == '#')
+        if (theMazeData[*it] == '.')
         {
-            continue;
+            retVal.push_back(*it);
         }
-
-        retVal.push_back(*it);
     }
 
     return retVal;
@@ -269,12 +270,14 @@ void Maze::findPortals(std::vector<std::string> const & stringData)
     // Find the outer portals
     for(int x = 0; x < theWidth; x++)
     {
+        MDBG << "findPortals outer top @ (" << x << ",0)" << std::endl;
         std::string ps = getPortalString(stringData, x, 0, false);
         if (ps != "  ")
         {
             theOuterPortals[ps] = std::make_pair(x,0);
         }
 
+        MDBG << "findPortals outer bottom @ (" << x << "," << theHeight - 1 << ")" << std::endl;
         ps = getPortalString(stringData, x, theHeight - 1, false);
         if (ps != "  ")
         {
@@ -284,12 +287,14 @@ void Maze::findPortals(std::vector<std::string> const & stringData)
 
     for(int y = 0; y < theHeight; y++)
     {
+        MDBG << "findPortals outer left @ (" << 0 << "," << y << ")" << std::endl;
         std::string ps = getPortalString(stringData, 0, y, true);
         if (ps != "  ")
         {
             theOuterPortals[ps] = std::make_pair(0, y);
         }
 
+        MDBG << "findPortals outer right @ (" << theWidth - 1 << "," << y << ")" << std::endl;
         ps = getPortalString(stringData, theWidth-1, y, true);
         if (ps != "  ")
         {
@@ -298,14 +303,16 @@ void Maze::findPortals(std::vector<std::string> const & stringData)
     }
 
     // Find the inner portals
-    for(int x = theHoleLocation.first; x < theHoleLocation.first + theHoleWidth; x++)
+    for(int x = theHoleLocation.first; x < theHoleLocation.first + theHoleWidth - 1; x++)
     {
-        std::string ps = getPortalString(stringData, x, theHoleLocation.second, false);
+        MDBG << "findPortals inner top @ (" << x << "," << theHoleLocation.second - 1 << ")" << std::endl;
+        std::string ps = getPortalString(stringData, x, theHoleLocation.second - 1, false);
         if ( (ps[0] != ' ') && (ps[1] != ' ') )
         {
-            theInnerPortals[ps] = std::make_pair(x, theHoleLocation.second);
+            theInnerPortals[ps] = std::make_pair(x, theHoleLocation.second - 1);
         }
 
+        MDBG << "findPortals inner bottom @ (" << x << "," << theHoleLocation.second + theHoleHeight << ")" << std::endl;
         ps = getPortalString(stringData, x, theHoleLocation.second + theHoleHeight, false);
         if ( (ps[0] != ' ') && (ps[1] != ' ') )
         {
@@ -315,12 +322,14 @@ void Maze::findPortals(std::vector<std::string> const & stringData)
 
     for(int y = theHoleLocation.second; y < theHoleLocation.second + theHoleHeight; y++)
     {
-        std::string ps = getPortalString(stringData, theHoleLocation.first, y, true);
+        MDBG << "findPortals inner left @ (" << theHoleLocation.first-1 << "," << y << ")" << std::endl;
+        std::string ps = getPortalString(stringData, theHoleLocation.first-1, y, true);
         if ( (ps[0] != ' ') && (ps[1] != ' ') )
         {
-            theInnerPortals[ps] = std::make_pair(theHoleLocation.first, y);
+            theInnerPortals[ps] = std::make_pair(theHoleLocation.first-1, y);
         }
 
+        MDBG << "findPortals inner right @ (" << theHoleLocation.first + theHoleWidth << "," << y << ")" << std::endl;
         ps = getPortalString(stringData, theHoleLocation.first + theHoleWidth, y, true);
         if ( (ps[0] != ' ') && (ps[1] != ' ') )
         {
@@ -341,7 +350,7 @@ std::string Maze::getPortalString(std::vector<std::string> const & stringData, i
 
     if (isHorizontal)
     {
-        assert( (x==0) || (x == theWidth - 1) || (x == theHoleLocation.first) || (x == theHoleLocation.first + theHoleWidth) );
+        assert( (x==0) || (x == theWidth - 1) || (x == theHoleLocation.first-1) || (x == theHoleLocation.first + theHoleWidth) );
 
         y += 2;
 
@@ -352,10 +361,10 @@ std::string Maze::getPortalString(std::vector<std::string> const & stringData, i
             MDBG << "  outer-left retVal = " << retVal << std::endl;
             return retVal;
         }
-        if (x == theHoleLocation.first)
+        if (x == theHoleLocation.first-1)
         {
             // Is it in the inner-left
-            std::string retVal = stringData[y].substr(x+2, 2);
+            std::string retVal = stringData[y].substr(x+3, 2);
             MDBG << "  inner-left retVal = " << retVal << std::endl;
             return retVal;
         }
@@ -373,7 +382,7 @@ std::string Maze::getPortalString(std::vector<std::string> const & stringData, i
         return retVal;
     }
 
-    assert( (y==0) || (y == theHeight - 1) || (y == theHoleLocation.second) || (y == theHoleLocation.second + theHoleHeight) );
+    assert( (y==0) || (y == theHeight - 1) || (y == theHoleLocation.second - 1) || (y == theHoleLocation.second + theHoleHeight) );
 
     x += 2;
 
@@ -395,12 +404,12 @@ std::string Maze::getPortalString(std::vector<std::string> const & stringData, i
         MDBG << "  outer-bottom retVal = " << retVal << std::endl;
         return retVal;
     }
-    if (y == theHoleLocation.second)
+    if (y == theHoleLocation.second-1)
     {
         // Is the inner top
         std::string retVal;
-        retVal += stringData[y+2][x];
         retVal += stringData[y+3][x];
+        retVal += stringData[y+4][x];
         MDBG << "  inner-top retVal = " << retVal << std::endl;
         return retVal;
     }

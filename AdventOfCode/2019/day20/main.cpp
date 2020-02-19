@@ -1,6 +1,7 @@
 #include<iostream>
 #include<vector>
 #include<fstream>
+#include<set>
 
 #include "Maze.h"
 
@@ -38,7 +39,7 @@ std::vector<std::string> splitString(std::string const & longString, char delim)
         numChars++;
         if (*it == delim)
         {
-            std::cout << "Found delimiter with curString: " << curString << std::endl;
+            // std::cout << "Found delimiter with curString: " << curString << std::endl;
 
             if (curString.size() > 0)
             {
@@ -53,9 +54,9 @@ std::vector<std::string> splitString(std::string const & longString, char delim)
         }
     }
 
-    std::cout << "CurString at end: " << curString << std::endl;
+    // std::cout << "CurString at end: " << curString << std::endl;
 
-    std::cout << "Processed " << numChars << " chars" << std::endl;
+    // std::cout << "Processed " << numChars << " chars" << std::endl;
 
     return retVal;
 }
@@ -90,13 +91,56 @@ int main(int argc, char** argv)
 
     m.dump();
 
-    // 7,1
-    // 16,6
-    std::vector<Coord> a = m.getAdjacentCoords(std::make_pair(7,1));
-    std::cout << "(7,1) = " << coordListToString(a) << std::endl;
+    std::set<Coord> placesVisited;
 
-    std::vector<Coord> b = m.getAdjacentCoords(std::make_pair(0,11));
-    std::cout << "(0,11) = " << coordListToString(b) << std::endl;
+    std::set<Coord> placesToVisitThisTurn;
+    std::set<Coord> placesVisitedLastTurn;
 
+    placesVisited.insert(m.getEntrance());
+    placesVisitedLastTurn.insert(m.getEntrance());
 
+    int numRounds = 0;
+
+    while(true)
+    {
+        // A turn of visiting stuff
+        numRounds++;
+
+        // Find all the places we should visit
+        placesToVisitThisTurn.clear();
+        for(auto it = placesVisitedLastTurn.begin(); it != placesVisitedLastTurn.end(); it++)
+        {
+            std::vector<Coord> neighbors = m.getAdjacentCoords(*it);
+
+            // Before adding to places to visit this turn, make sure we haven't already visited
+            for(auto nIt = neighbors.begin(); nIt != neighbors.end(); nIt++)
+            {
+                if (placesVisited.find(*nIt) == placesVisited.end())
+                {
+                    // This is a new place to visit
+                    placesToVisitThisTurn.insert(*nIt);
+                }
+            }
+        }
+
+        placesVisitedLastTurn.clear();
+
+        // Visit all the places that we are supposed to on this turn
+        for(auto vIt = placesToVisitThisTurn.begin(); vIt != placesToVisitThisTurn.end(); vIt++)
+        {
+            // Is this coord the exit?
+            if (*vIt == m.getExit())
+            {
+                goto DONE_SEARCH;
+            }
+
+            placesVisited.insert(*vIt);
+            placesVisitedLastTurn.insert(*vIt);
+        }
+
+    }
+
+    DONE_SEARCH:
+
+    std::cout << "Done searching after " << numRounds << " steps" << std::endl;
 }
