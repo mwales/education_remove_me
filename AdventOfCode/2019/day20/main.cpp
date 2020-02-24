@@ -69,28 +69,8 @@ void printStringList(std::vector<std::string> const & data)
     }
 }
 
-int main(int argc, char** argv)
+void solveMaze(Maze m)
 {
-    if (argc != 2)
-    {
-        std::cout << "Usage: " << argv[0] << " mazefile" << std::endl;
-        return 1;
-    }
-
-    std::string fileData = readFile(argv[1]);
-
-    std::cout << "Length of file = " << fileData.size() << std::endl;
-
-    std::vector<std::string> mazeData = splitString(fileData, '\n');
-
-    std::cout << "Rows of maze data " << mazeData.size() << std::endl;
-
-    printStringList(mazeData);
-
-    Maze m(mazeData);
-
-    m.dump();
-
     std::set<Coord> placesVisited;
 
     std::set<Coord> placesToVisitThisTurn;
@@ -105,6 +85,12 @@ int main(int argc, char** argv)
     {
         // A turn of visiting stuff
         numRounds++;
+
+        if(placesVisitedLastTurn.size() == 0)
+        {
+            std::cout << "Nothing more to visit" << std::endl;
+            return;
+        }
 
         // Find all the places we should visit
         placesToVisitThisTurn.clear();
@@ -143,4 +129,34 @@ int main(int argc, char** argv)
     DONE_SEARCH:
 
     std::cout << "Done searching after " << numRounds << " steps" << std::endl;
+}
+
+int main(int argc, char** argv)
+{
+    if (argc != 2)
+    {
+        std::cout << "Usage: " << argv[0] << " mazefile" << std::endl;
+        return 1;
+    }
+
+    std::string fileData = readFile(argv[1]);
+
+    std::cout << "Length of file = " << fileData.size() << std::endl;
+
+    std::vector<std::string> mazeData = splitString(fileData, '\n');
+
+    std::cout << "Rows of maze data " << mazeData.size() << std::endl;
+
+    printStringList(mazeData);
+
+    Maze m(mazeData);
+
+    m.dump();
+
+    solveMaze(m);
+
+    std::cout << "\n\n\nSolve Recursion Mode:" << std::endl;
+    m.setRecursionMode(true);
+
+    solveMaze(m);
 }

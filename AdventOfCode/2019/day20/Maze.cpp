@@ -1,12 +1,77 @@
 #include "Maze.h"
 #include <assert.h>
 
-// #define MAZE_DEBUG
+//#define MAZE_DEBUG
 #ifdef MAZE_DEBUG
     #define MDBG std::cout
 #else
     #define MDBG if(0) std::cout
 #endif
+
+Coord makeCoord(int x, int y, int ringLevel)
+{
+    Coord retVal;
+    retVal.first = x;
+    retVal.second = y;
+    retVal.ring = ringLevel;
+    return retVal;
+}
+
+
+bool operator==(Coord const & lhs, Coord const & rhs)
+{
+    return (lhs.first == rhs.first) &&
+           (lhs.second == rhs.second) &&
+           (lhs.ring == rhs.ring);
+}
+
+bool operator!=(Coord const & lhs, Coord const & rhs)
+{
+    return !(lhs == rhs);
+}
+
+bool operator<(Coord const & lhs, Coord const & rhs)
+{
+    if (lhs == rhs)
+        return false;
+
+    if (lhs.ring < rhs.ring)
+        return true;
+
+    if (lhs.ring > rhs.ring)
+        return false;
+
+    if (lhs.first < rhs.first)
+        return true;
+
+    if (lhs.first > rhs.first)
+        return false;
+
+    return (lhs.second < rhs.second);
+}
+
+bool operator>(Coord const & lhs, Coord const & rhs)
+{
+    if (lhs == rhs)
+        return false;
+
+    return !(lhs < rhs);
+}
+
+bool operator<=(Coord const & lhs, Coord const & rhs)
+{
+    if (lhs == rhs)
+        return true;
+
+    return (lhs < rhs);
+}
+bool operator>=(Coord const & lhs, Coord const & rhs)
+{
+    if (lhs == rhs)
+        return true;
+
+    return (lhs > rhs);
+}
 
 std::string coordToString(Coord c)
 {
@@ -14,6 +79,8 @@ std::string coordToString(Coord c)
     retVal += std::to_string(c.first);
     retVal += ",";
     retVal += std::to_string(c.second);
+    retVal += ",ring=";
+    retVal += std::to_string(c.ring);
     retVal += ")";
     return retVal;
 }
@@ -51,7 +118,7 @@ Maze::Maze(std::vector<std::string> inputData)
     {
         for(int x = 0; x < theWidth; x++)
         {
-            Coord curCoord = std::make_pair(x,y);
+            Coord curCoord = makeCoord(x,y);
             char curData = dataFromStringList(curCoord, inputData);
 
             if ( (curData == '.') || (curData == '#') )
@@ -108,6 +175,11 @@ Maze::Maze(std::vector<std::string> inputData)
     }
 }
 
+void Maze::setRecursionMode(bool val)
+{
+    theRecursionMode = val;
+}
+
 void Maze::dump()
 {
     std::cout << "Maze " << theWidth << " x " << theHeight << std::endl;
@@ -116,7 +188,7 @@ void Maze::dump()
     {
         for(int x = 0; x < theWidth; x++)
         {
-            Coord cur = std::make_pair(x,y);
+            Coord cur = makeCoord(x,y);
             if (isPointInMaze(cur))
             {
                 std::cout << theMazeData[cur];
@@ -131,6 +203,8 @@ void Maze::dump()
     }
 
     std::cout << "\nStats:" << std::endl;
+
+    std::cout << "Recursion = " << (theRecursionMode ? "Recursive" : "Not Recursive") << std::endl;
 
     std::cout << "Hole @ " << coordToString(theHoleLocation) << "  " << theHoleWidth
               << "x" << theHoleHeight << std::endl;
@@ -155,15 +229,19 @@ void Maze::dump()
 std::vector<Coord> Maze::getAdjacentCoords(Coord c)
 {
     MDBG << "getAdjacentCoords(" << coordToString(c) << ")" << std::endl;
+
+    int originalRing = c.ring;
+    c.ring = 0;
+
     assert (theMazeData[c] == '.');
 
     std::vector<Coord> retVal;
 
     std::vector<Coord> potentialPoints;
-    potentialPoints.push_back(std::make_pair(c.first+1, c.second));
-    potentialPoints.push_back(std::make_pair(c.first-1, c.second));
-    potentialPoints.push_back(std::make_pair(c.first, c.second+1));
-    potentialPoints.push_back(std::make_pair(c.first, c.second-1));
+    potentialPoints.push_back(makeCoord(c.first+1, c.second, originalRing));
+    potentialPoints.push_back(makeCoord(c.first-1, c.second, originalRing));
+    potentialPoints.push_back(makeCoord(c.first, c.second+1, originalRing));
+    potentialPoints.push_back(makeCoord(c.first, c.second-1, originalRing));
 
     // Is this coordinate a portal?
     std::string portalName;
@@ -176,14 +254,28 @@ std::vector<Coord> Maze::getAdjacentCoords(Coord c)
             MDBG << "Found an inner portal!" << std::endl;
             // we are on inner portal, return the outer portal
             assert(theOuterPortals.find(portalName) != theOuterPortals.end());
-            retVal.push_back(theOuterPortals[portalName]);
+
+            Coord otherSide = theOuterPortals[portalName];
+
+            if (theRecursionMode)
+            {
+                otherSide.ring = originalRing + 1;
+            }
+            retVal.push_back(otherSide);
         }
         else
         {
             MDBG << "Found an outer portal" << std::endl;
             // we are on outer portal, return the inner portal
             assert(theInnerPortals.find(portalName) != theInnerPortals.end());
-            retVal.push_back(theInnerPortals[portalName]);
+
+            Coord otherSide = theInnerPortals[portalName];
+            if (theRecursionMode)
+            {
+                otherSide.ring = originalRing - 1;
+            }
+
+            retVal.push_back(otherSide);
         }
     }
 
@@ -203,12 +295,13 @@ std::vector<Coord> Maze::getAdjacentCoords(Coord c)
         }
 
         // Is it a wall?
-        if (theMazeData[*it] == '.')
+        if (!isLocationWall(*it))
         {
             retVal.push_back(*it);
         }
     }
 
+    // std::cout << "   retVal = " << coordListToString(retVal) << std::endl;
     return retVal;
 }
 
@@ -222,6 +315,7 @@ int Maze::isLocationPortal(Coord c, std::string* portalVal)
         if (it->second == c)
         {
             *portalVal = it->first;
+            MDBG << "isLocationPortal(" << coordToString(c) << ") = 1" << std::endl;
             return 1;
         }
     }
@@ -231,12 +325,79 @@ int Maze::isLocationPortal(Coord c, std::string* portalVal)
         if (it->second == c)
         {
             *portalVal = it->first;
+            MDBG << "isLocationPortal(" << coordToString(c) << ") = 2" << std::endl;
             return 2;
         }
     }
 
     // Must not have been a portal
+    MDBG << "isLocationPortal(" << coordToString(c) << ") = 0" << std::endl;
     return 0;
+}
+
+bool Maze::isLocationWall(Coord c)
+{
+    MDBG << "entered isLocationWall(" << coordToString(c) << ")" << std::endl;
+
+    int originalRing = c.ring;
+
+    // Change ring to 0 for lookups and stuff
+    c.ring = 0;
+
+    // MDBG << "e" << std::endl;
+
+    // Is this in the hole?
+    if (theMazeData.find(c) == theMazeData.end())
+    {
+        MDBG << "isLocationWall(" << coordToString(c) << ") = true - hole" << std::endl;
+        return true;
+    }
+
+    if (theMazeData[c] == '#')
+    {
+        MDBG << "isLocationWall(" << coordToString(c) << ") = true - wall" << std::endl;
+        return true;
+    }
+
+    MDBG << "Need to check for recursion mode" << std::endl;
+
+    if (!theRecursionMode)
+    {
+        // If not recursion mode, then this is not a wall
+        MDBG << "isLocationWall(" << coordToString(c) << ") = false - simple tests prove not a wall" << std::endl;
+        return false;
+    }
+
+    // So we are in recursion mode, things more compilicated
+    // Entrance and exit are only valid on ring 0
+    // Outer portals are walls on ring 0
+
+    if (originalRing == 0)
+    {
+        // Ring 0 rules apply
+        // Outer portals are walls
+        for(auto it = theOuterPortals.begin(); it != theOuterPortals.end(); it++)
+        {
+            if (it->second == c)
+            {
+                MDBG << "isLocationWall(" << coordToString(c) << ") = true - ring 0 doesnt have outer portals" << std::endl;
+                return true;
+            }
+        }
+
+        MDBG << "isLocationWall(" << coordToString(c) << ") = false - ring 0 recursive mode" << std::endl;
+        return false;
+    }
+    else
+    {
+        // Ring 1+ rules apply
+        // Entrance and exit are walls
+        bool retVal =( (theEntrance == c) || (theExit == c) );
+        MDBG << "isLocationWall(" << coordToString(c) << ") = "
+             << (retVal ? "true" : "false") << " recursive ring 1+ " << std::endl;
+        return retVal;
+    }
+
 }
 
 char Maze::dataFromStringList(Coord c, std::vector<std::string> const & stringData)
@@ -274,14 +435,14 @@ void Maze::findPortals(std::vector<std::string> const & stringData)
         std::string ps = getPortalString(stringData, x, 0, false);
         if (ps != "  ")
         {
-            theOuterPortals[ps] = std::make_pair(x,0);
+            theOuterPortals[ps] = makeCoord(x,0);
         }
 
         MDBG << "findPortals outer bottom @ (" << x << "," << theHeight - 1 << ")" << std::endl;
         ps = getPortalString(stringData, x, theHeight - 1, false);
         if (ps != "  ")
         {
-            theOuterPortals[ps] = std::make_pair(x,theHeight - 1);
+            theOuterPortals[ps] = makeCoord(x,theHeight - 1);
         }
     }
 
@@ -291,14 +452,14 @@ void Maze::findPortals(std::vector<std::string> const & stringData)
         std::string ps = getPortalString(stringData, 0, y, true);
         if (ps != "  ")
         {
-            theOuterPortals[ps] = std::make_pair(0, y);
+            theOuterPortals[ps] = makeCoord(0, y);
         }
 
         MDBG << "findPortals outer right @ (" << theWidth - 1 << "," << y << ")" << std::endl;
         ps = getPortalString(stringData, theWidth-1, y, true);
         if (ps != "  ")
         {
-            theOuterPortals[ps] = std::make_pair(theWidth-1, y);
+            theOuterPortals[ps] = makeCoord(theWidth-1, y);
         }
     }
 
@@ -309,14 +470,14 @@ void Maze::findPortals(std::vector<std::string> const & stringData)
         std::string ps = getPortalString(stringData, x, theHoleLocation.second - 1, false);
         if ( (ps[0] != ' ') && (ps[1] != ' ') )
         {
-            theInnerPortals[ps] = std::make_pair(x, theHoleLocation.second - 1);
+            theInnerPortals[ps] = makeCoord(x, theHoleLocation.second - 1);
         }
 
         MDBG << "findPortals inner bottom @ (" << x << "," << theHoleLocation.second + theHoleHeight << ")" << std::endl;
         ps = getPortalString(stringData, x, theHoleLocation.second + theHoleHeight, false);
         if ( (ps[0] != ' ') && (ps[1] != ' ') )
         {
-            theInnerPortals[ps] = std::make_pair(x, theHoleLocation.second + theHoleHeight);
+            theInnerPortals[ps] = makeCoord(x, theHoleLocation.second + theHoleHeight);
         }
     }
 
@@ -326,14 +487,14 @@ void Maze::findPortals(std::vector<std::string> const & stringData)
         std::string ps = getPortalString(stringData, theHoleLocation.first-1, y, true);
         if ( (ps[0] != ' ') && (ps[1] != ' ') )
         {
-            theInnerPortals[ps] = std::make_pair(theHoleLocation.first-1, y);
+            theInnerPortals[ps] = makeCoord(theHoleLocation.first-1, y);
         }
 
         MDBG << "findPortals inner right @ (" << theHoleLocation.first + theHoleWidth << "," << y << ")" << std::endl;
         ps = getPortalString(stringData, theHoleLocation.first + theHoleWidth, y, true);
         if ( (ps[0] != ' ') && (ps[1] != ' ') )
         {
-            theInnerPortals[ps] = std::make_pair(theHoleLocation.first + theHoleWidth, y);
+            theInnerPortals[ps] = makeCoord(theHoleLocation.first + theHoleWidth, y);
         }
     }
 
@@ -432,11 +593,11 @@ void Maze::findHole()
     theHoleWidth = 0;
     for(int x = 0; x < theWidth; x++)
     {
-        Coord curCoord = std::make_pair(x, halfY);
+        Coord curCoord = makeCoord(x, halfY);
 
         if (!isPointInMaze(curCoord))
         {
-            // Is it the first point not in the maze, that would be hole location!
+            // Is it the first point not in the m2aze, that would be hole location!
             if (xLoc == -1)
             {
                 xLoc = x;
@@ -451,7 +612,7 @@ void Maze::findHole()
     theHoleHeight = 0;
     for(int y = 0; y < theHeight; y++)
     {
-        Coord curCoord = std::make_pair(halfX, y);
+        Coord curCoord = makeCoord(halfX, y);
 
         if (!isPointInMaze(curCoord))
         {
@@ -465,7 +626,7 @@ void Maze::findHole()
         }
     }
 
-    theHoleLocation = std::make_pair(xLoc, yLoc);
+    theHoleLocation = makeCoord(xLoc, yLoc);
 }
 
 
