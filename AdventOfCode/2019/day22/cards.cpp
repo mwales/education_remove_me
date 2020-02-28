@@ -190,7 +190,14 @@ int main(int argc, char** argv)
 
     if (deck.size() > 2019)
     {
-        std::cout << "Card 2019: " << deck[2019] << std::endl;
+	// printDeck(deck);
+	for(int i = 0; i < deck.size(); i++)
+	{
+		if (deck[i] == 2019)
+		{
+			std::cout << "Card 2019 is at position " << i << std::endl;
+		}
+	}
     }
     else
     {
