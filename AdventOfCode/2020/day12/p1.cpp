@@ -17,13 +17,6 @@
 // Rotation angle is always positve polar angle in degrees
 void rotate2(int & wpx, int & wpy, int angle)
 {
-	if (angle == 180)
-	{
-		wpx = -wpx;
-		wpy = -wpy;
-		return;
-	}
-
 	// Somehow remembered that atan2 gives you the real angle of a coordinate
 	double originalAng = atan2(wpy, wpx);
 
@@ -33,47 +26,10 @@ void rotate2(int & wpx, int & wpy, int angle)
 	// Find dist of point from 0,0
 	double dist = pow(wpx * wpx + wpy * wpy, .5);
 
-	if (modifiedAng > 3.14159)
-	{
-		modifiedAng -= 2 * 3.14159;
-	}
-
 	// I was really worried about rounding errors after this calculation, hoping nearbyint
 	// does the trick for me (seemed to work)
 	wpx = nearbyint(cos(modifiedAng) * dist);
 	wpy = nearbyint(sin(modifiedAng) * dist);
-
-	DEBUG << "rotate2(" << angle << ") orig ang = " << originalAng << ", mod = " << modifiedAng << std::endl;
-
-	// Not sure if sin/cos will give me the correct quadrant, so i double checked it here
-	
-	if (modifiedAng < (-3.14159 / 2.0) )
-	{
-		// Quadrant 3
-		wpx = -1 * abs(wpx);
-		wpy = -1 * abs(wpy);
-		return;
-	}
-
-	if (modifiedAng < 0.0)
-	{
-		// Quadrant 4
-		wpx = abs(wpx);
-		wpy = -1 * abs(wpy);
-		return;
-	}
-
-	if (modifiedAng > (3.14159 / 2))
-	{
-		// quadrant 2
-		wpx = -1 * abs(wpx);
-		wpy = abs(wpy);
-		return;
-	}
-
-	// quadrant 1
-	wpx = abs(wpx);
-	wpy = abs(wpy);
 
 }
 
