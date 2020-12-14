@@ -7,7 +7,6 @@
 
 #include "../customstuff.h"
 
-#define AOC_DEBUG 1
 #ifdef AOC_DEBUG
 	#define DEBUG std::cout
 #else
