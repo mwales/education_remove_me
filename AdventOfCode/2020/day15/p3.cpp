@@ -24,35 +24,6 @@
 	#define DEBUG if(0) std::cout
 #endif
 
-int findLastOccurence(std::vector<int> const & numberList, int needle)
-{
-	int numTimesFound = 0;
-	int firstTimeFound, secondTimeFound;
-	for(int i = numberList.size() - 1; i >= 0; i--)
-	{
-		if (needle == numberList[i])
-		{
-			numTimesFound++;
-			if (numTimesFound == 1)
-			{
-				firstTimeFound = i+1;
-			}
-			else
-			{
-				secondTimeFound = i+1;
-				int retVal = firstTimeFound - secondTimeFound;
-				DEBUG << needle << " found " << firstTimeFound << " - " << secondTimeFound << " = "
-				      << retVal << std::endl;
-				return retVal;
-			}
-		}
-
-
-	}
-
-	return -1;
-
-}
 
 uint64_t addNextNumber(int* numberList, uint64_t lastNumberAdded, uint64_t & index)
 {
@@ -111,14 +82,12 @@ check_for_eof:
 		debugPrintVector(startNumStrs);
 		DEBUG << std::endl;
 
-		//std::map<uint64_t, uint64_t> numberList;
 		int* numberList = (int*) malloc(endingNumber * sizeof(int));
 		for(int i = 0; i < endingNumber; i++)
 		{
 			numberList[i] = -1;
 		}
 
-		//memset(numberList, 0, endingNumber * sizeof(int));
 
 		uint64_t index = 0;
 		for(index = 0; index < startNumStrs.size() - 1; index++)
@@ -127,22 +96,11 @@ check_for_eof:
 
 		}
 
-		//DEBUG << "START: ";
-		//debugPrintMap(numberList);
-		//DEBUG << std::endl;
-
-
-
 
 		uint64_t lastNumberAdded = atoi(startNumStrs.rbegin()->c_str());
 		while(index < endingNumber-1)
 		{
 			lastNumberAdded = addNextNumber(numberList, lastNumberAdded, index);
-
-			//DEBUG << "List Now: ";
-			//debugPrintMap(numberList);
-			//DEBUG << std::endl;
-
 		}
 
 		std::cout << endingNumber << "th number = " << lastNumberAdded << std::endl;

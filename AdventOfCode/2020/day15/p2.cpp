@@ -30,35 +30,7 @@
 	#define DEBUG if(0) std::cout
 #endif
 
-int findLastOccurence(std::vector<int> const & numberList, int needle)
-{
-	int numTimesFound = 0;
-	int firstTimeFound, secondTimeFound;
-	for(int i = numberList.size() - 1; i >= 0; i--)
-	{
-		if (needle == numberList[i])
-		{
-			numTimesFound++;
-			if (numTimesFound == 1)
-			{
-				firstTimeFound = i+1;
-			}
-			else
-			{
-				secondTimeFound = i+1;
-				int retVal = firstTimeFound - secondTimeFound;
-				DEBUG << needle << " found " << firstTimeFound << " - " << secondTimeFound << " = "
-				      << retVal << std::endl;
-				return retVal;
-			}
-		}
 
-
-	}
-
-	return -1;
-
-}
 
 uint64_t addNextNumber(std::map<uint64_t,uint64_t> & numberList, uint64_t lastNumberAdded, uint64_t & index)
 {
