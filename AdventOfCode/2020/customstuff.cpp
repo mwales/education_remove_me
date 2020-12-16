@@ -5,7 +5,7 @@
 #include <map>
 #include <cstdlib>
 #include <set>
-
+#include <algorithm>
 
 std::vector<std::string> stringSplit(std::string const & input, char delimeter)
 {
@@ -18,6 +18,34 @@ std::vector<std::string> stringSplit(std::string const & input, char delimeter)
 		{
 			retVal.push_back(curStr);
 			curStr = "";
+		}
+		else
+		{
+			curStr += *singleChar;
+		}
+	}
+
+	retVal.push_back(curStr);
+
+	return retVal;
+}
+
+
+
+std::vector<std::string> stringSplit(std::string const & input, std::vector<char> const & delimeters)
+{
+	std::vector<std::string> retVal;
+	std::string curStr;
+
+	for(auto singleChar = input.begin(); singleChar != input.end(); singleChar++)
+	{
+		if (std::find(delimeters.begin(), delimeters.end(), *singleChar) != delimeters.end())
+		{
+			if (curStr.size() > 0)
+			{
+				retVal.push_back(curStr);
+				curStr = "";
+			}
 		}
 		else
 		{

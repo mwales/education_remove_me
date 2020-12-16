@@ -153,6 +153,7 @@ valueType sumMap(std::map<keyType, valueType> m1)
 
 
 std::vector<std::string> stringSplit(std::string const & input, char delimeter);
+std::vector<std::string> stringSplit(std::string const & input, std::vector<char> const & delimeters);
 
 std::string replaceChar(std::string orig, char before, char after);
 
