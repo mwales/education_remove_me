@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <set>
 
 // VECTOR STUFF
 
@@ -72,6 +73,35 @@ void debugPrintMap(std::map<keyType, valueType> m)
 {
 #ifdef AOC_DEBUG
 	printMap(m);
+#endif
+}
+
+template<typename keyType>
+void printSet(std::set<keyType> s)
+{
+	bool first = true;
+
+	std::cout << "{";
+	for(auto it: s)
+	{
+		if (first)
+		{
+			first = false;
+		}
+		else
+		{
+			std::cout << ",";
+		}
+		std::cout << it;
+	}
+	std::cout << "}";
+}
+
+template<typename keyType>
+void debugPrintSet(std::set<keyType> s)
+{
+#if AOC_DEBUG
+	printSet(s);
 #endif
 }
 
