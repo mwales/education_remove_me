@@ -44,6 +44,39 @@ std::vector<t> append(std::vector<t> a, std::vector<t> b)
 	return retVal;
 }
 
+template <typename t>
+std::vector<t> reverseVector(std::vector<t> const & orig)
+{
+	std::vector<t> rev;
+	for(auto it = orig.rbegin(); it != orig.rend(); it++)
+	{
+		rev.push_back(*it);
+	}
+	return rev;
+}
+
+template <typename t>
+std::ostream& operator<<(std::ostream & os, std::vector<t> data)
+{
+	bool firstItem = true;
+	os << "[";
+	for(auto it: data)
+	{
+		if (firstItem)
+		{
+			firstItem = false;
+		}
+		else
+		{
+			os << ",";
+		}
+
+		os << it;
+	}
+	os << "]";
+	return os;
+}
+
 // MAP STUFF
 
 template<typename keyType, typename valueType>
@@ -140,6 +173,17 @@ std::map<keyType, valueType> mergeMaps(std::map<keyType, valueType> m1,
 	return retVal;
 }
 
+template<typename keyType, typename valueType>
+std::map<keyType, valueType> reverseMap(std::map<keyType, valueType> m1)
+{
+	std::map<valueType, keyType> retVal;
+	for(auto const & it: m1)
+	{
+		retVal[it.second] = it.first;
+	}
+	return retVal;
+}
+
 template<typename sortableType>
 void insertOrdered(std::vector<sortableType>& origList, sortableType x)
 {
@@ -179,6 +223,28 @@ valueType sumMap(std::map<keyType, valueType> m1)
 		retVal += curitem.second;
 	}
 	return retVal;
+}
+
+template <typename t>
+std::ostream& operator<<(std::ostream & os, std::set<t> data)
+{
+	bool firstItem = true;
+	os << "{";
+	for(auto it: data)
+	{
+		if (firstItem)
+		{
+			firstItem = false;
+		}
+		else
+		{
+			os << ",";
+		}
+
+		os << it;
+	}
+	os << "}";
+	return os;
 }
 
 

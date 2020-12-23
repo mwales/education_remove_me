@@ -53,7 +53,10 @@ std::vector<std::string> stringSplit(std::string const & input, std::vector<char
 		}
 	}
 
-	retVal.push_back(curStr);
+	if (curStr.size())
+	{
+		retVal.push_back(curStr);
+	}
 
 	return retVal;
 }
