@@ -281,7 +281,7 @@ MathExpression::MathExpression(std::string text)
 		theOpVal = "+";
 		theRight = new MathExpression("0");
 		return;
-	}
+	}while(theOperators.size())
 
 	theLeft = new MathExpression(mathParts[0]);
 	theOpVal = mathParts[1];
@@ -295,33 +295,109 @@ uint64_t MathExpression::solve()
 	if (theOperators.size() == 0)
 	{
 		DEBUG << "Simple solve = " << atoi(theValue.c_str()) << std::endl;
-		return atoi(theValue.c_str());
+		return strtoull(theValue.c_str(), NULL, 10);
 	}
+
+	std::string origSolve = toString();
+	DEBUG << "****** solving " << origSolve << std::endl;
+
+	uint64_t solution;
 
 	DEBUG << "thOp.size() = " << theOperators.size() << " and theSubExpn.size() = " << theSubExpn.size() << std::endl;
 	assert(theOperators.size() + 1 == theSubExpn.size());
 
-	// Get first left side
-	uint64_t solution = theSubExpn.front()->solve();
-	DEBUG << "First/solution = " << solution << std::endl;
-
-	for(int i = 0; i < theOperators.size(); i++)
+	for(int i = 0; i < theOperators.size();)
 	{
+		uint64_t lhs = theSubExpn[i]->solve();
 		uint64_t rhs = theSubExpn[i+1]->solve();
-		DEBUG << "i=" << i << ", solution=" << solution << ", rhs=" << rhs << std::endl;	
+
+		DEBUG << "Current expression = " << toString() << std::endl;
+		DEBUG << "i=" << i << ", lhs=" << lhs << ", rhs=" << rhs << std::endl;
+
 		if (theOperators[i] == "+")
 		{
-			DEBUG << "lhs + rhs = " << solution << " + " << rhs << " = " << solution + rhs << std::endl;
-			solution += rhs;
+			solution = lhs + rhs;
+			DEBUG << "lhs + rhs = " << lhs << " * " << rhs << " = " << solution << std::endl;
+
 		}
 		else
 		{
-			DEBUG << "lhs + rhs = " << solution << " * " << rhs << " = " << solution * rhs << std::endl;
-			solution *= rhs;
-		}		
+			solution = lhs * rhs;
+			DEBUG << "lhs * rhs IS GETTING SKIPPED FOR NOW" << std::endl;
+			i++;
+			continue;
+		}
+
+
+		// Erase the lhs, and operator.  replace rhs with soln
+		MathExpression* lhsExp = theSubExpn[i];
+		MathExpression* rhsExp = theSubExpn[i+1];
+		DEBUG << "Deleting lhs and rhs" << std::endl;
+		delete lhsExp;
+		delete rhsExp;
+		theSubExpn.erase(theSubExpn.begin() + i);
+		theSubExpn.erase(theSubExpn.begin() + i);
+		MathExpression* replace = new MathExpression(std::to_string(solution));
+		theSubExpn.insert(theSubExpn.begin() + i, replace);
+
+		theOperators.erase(theOperators.begin() + i);
+
+
+		if (theOperators.size() == 0)
+		{
+			DEBUG << "No more terms in this expression, return solution" << std::endl;
+			break;
+		}
 	}
 
-	DEBUG << "Returning solution = " << solution << std::endl;
+	for(int i = 0; i < theOperators.size();)
+	{
+		uint64_t lhs = theSubExpn[i]->solve();
+		uint64_t rhs = theSubExpn[i+1]->solve();
+
+		DEBUG << "Current expression = " << toString() << std::endl;
+		DEBUG << "i=" << i << ", lhs=" << lhs << ", rhs=" << rhs << std::endl;
+
+		if (theOperators[i] == "+")
+		{
+			solution = lhs + rhs;
+			DEBUG << "lhs + rhs = WTF they should be gone already" << std::endl;
+			assert(0);
+		}
+		else
+		{
+
+			solution = lhs * rhs;
+			DEBUG << "lhs * rhs = " << lhs << " * " << rhs << " = " << solution << std::endl;
+
+		}
+
+
+		// Erase the lhs, and operator.  replace rhs with soln
+		MathExpression* lhsExp = theSubExpn[i];
+		MathExpression* rhsExp = theSubExpn[i+1];
+		DEBUG << "Deleting lhs and rhs" << std::endl;
+		delete lhsExp;
+		delete rhsExp;
+		theSubExpn.erase(theSubExpn.begin() + i);
+		theSubExpn.erase(theSubExpn.begin() + i);
+		MathExpression* replace = new MathExpression(std::to_string(solution));
+		theSubExpn.insert(theSubExpn.begin() + i, replace);
+
+		theOperators.erase(theOperators.begin() + i);
+
+
+		if (theOperators.size() == 0)
+		{
+			DEBUG << "No more terms in this expression, return solution" << std::endl;
+			break;
+		}
+	}
+
+	DEBUG << "***** solved " << origSolve << " = " << solution << std::endl;
+
+
+	theValue = std::to_string(solution);
 	return solution;
 }
 
