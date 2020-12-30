@@ -4,6 +4,8 @@
 #include <cstdlib>
 #include <set>
 #include <fstream>
+#include <algotirhm>
+#include <assert.h>
 
 #include "../customstuff.h"
 
@@ -24,27 +26,7 @@ int main(int argc, char** argv)
 		return 0;
 	}
 
-	std::ifstream infile(argv[1]);
-
-	while(infile.is_open())
-	{
-		std::string text;
-		std::getline(infile,text);
-
-
-		// out of output
-check_for_eof:
-      if (infile.eof())
-		{
-			break;
-		}
-
-		DEBUG << text << std::endl;
-	}
-
-	infile.close();
-
-	
+	std::vector<std::string> fileData = readFile(argv[1]);
 
 	return 0;
 }

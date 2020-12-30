@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <set>
 #include <algorithm>
+#include <fstream>
 
 std::vector<std::string> stringSplit(std::string const & input, char delimeter)
 {
@@ -75,6 +76,29 @@ std::string replaceChar(std::string orig, char before, char after)
 			retVal += singleChar;
 		}
 	}
+
+	return retVal;
+}
+
+std::vector<std::string> readFile(char* filename)
+{
+	std::vector<std::string> retVal;
+	std::ifstream infile(filename);
+
+	while(infile.is_open())
+	{
+		std::string text;
+		std::getline(infile, text);
+
+		if (infile.eof())
+		{
+			break;
+		}
+
+		retVal.push_back(text);
+	}
+	
+	infile.close();
 
 	return retVal;
 }

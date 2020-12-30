@@ -55,6 +55,47 @@ std::vector<t> reverseVector(std::vector<t> const & orig)
 	return rev;
 }
 
+
+
+template <typename t>
+std::vector<t> subVec(std::vector<t> const & vec, int startPos, int endBeforePos = -1)
+{
+	std::vector<t> retVal;
+	
+	if (endBeforePos == -1)
+	{
+		endBeforePos = vec.size();
+	}
+	for(int i = startPos; i < endBeforePos; i++)
+	{
+		retVal.push_back(vec[i]);
+	}
+
+	return retVal;
+}
+
+template <typename t>
+std::string toString(std::vector<t> data)
+{
+	std::string retVal;
+	bool first = true;
+	for(auto curNum: data)
+	{
+		if (first)
+		{
+			first = false;
+		}
+		else
+		{
+			retVal += ",";
+		}
+
+		retVal += std::to_string(curNum);
+	}
+	return retVal;
+}
+
+
 template <typename t>
 std::ostream& operator<<(std::ostream & os, std::vector<t> data)
 {
@@ -252,4 +293,7 @@ std::vector<std::string> stringSplit(std::string const & input, char delimeter);
 std::vector<std::string> stringSplit(std::string const & input, std::vector<char> const & delimeters);
 
 std::string replaceChar(std::string orig, char before, char after);
+
+std::vector<std::string> readFile(char* filename);
+
 
