@@ -1,37 +1,20 @@
 #include <iostream>
 #include <vector>
+#include <map>
+#include <cstdlib>
+#include <set>
+#include <fstream>
+#include <algorithm>
+#include <assert.h>
 
-//#define AOC_DEBUG 1
+#include "../customstuff.h"
+
 #ifdef AOC_DEBUG
-	#define DEBUG std::cout
+   #define DEBUG std::cout
 #else
-	#define DEBUG if(0) std::cout
+   #define DEBUG if(0) std::cout
 #endif
 
-
-
-std::vector<std::string> stringSplit(std::string const & input, char delimeter)
-{
-	std::vector<std::string> retVal;
-	std::string curStr;
-
-	for(auto singleChar = input.begin(); singleChar != input.end(); singleChar++)
-	{
-		if (*singleChar == delimeter)
-		{
-			retVal.push_back(curStr);
-			curStr = "";
-		}
-		else
-		{
-			curStr += *singleChar;
-		}
-	}
-
-	retVal.push_back(curStr);
-
-	return retVal;
-}
 
 bool checkPass(int min, int max, char letter, std::string const & pass)
 {
@@ -116,23 +99,25 @@ bool verify(std::string const & rule, std::string const & letter, std::string co
 int main(int argc, char** argv)
 {
 
+	if (argc < 2)
+	{
+		std::cerr << "Provide filename" << std::endl;
+		return 0;
+	}
+
+	std::vector<std::string> fileData = readFile(argv[1]);
+
 	int qtyGood = 0;
 	int qtyGoodPt2 = 0;
 	
-	while(1)
+	for(auto curLine: fileData)
 	{
-		std::string rule;
-		std::string letter;
-		std::string password;
+		std::vector<std::string> parts = stringSplit(curLine, ' ');
+		assert(parts.size() == 3);
 
-		std::cin >> rule;
-		std::cin >> letter;
-		std::cin >> password;
-
-		if (std::cin.eof())
-		{
-			break;
-		}
+		std::string rule = parts[0];
+		std::string letter =  parts[1];
+		std::string password = parts[2];
 
 		bool part2;
 		bool valid = verify(rule, letter, password, part2);
@@ -150,9 +135,9 @@ int main(int argc, char** argv)
 		}
 	}
 
-	std::cout << "Num valid passwords = " << qtyGood << std::endl;
+	std::cout << "Num valid passwords for part 1 = " << qtyGood << std::endl;
 
-	std::cout << "Num valid passwords for part 2= " << qtyGoodPt2 << std::endl;
+	std::cout << "Num valid passwords for part 2 = " << qtyGoodPt2 << std::endl;
 
 	return 0;
 }
