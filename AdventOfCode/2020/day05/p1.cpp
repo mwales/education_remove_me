@@ -3,6 +3,11 @@
 #include <map>
 #include <cstdlib>
 #include <set>
+#include <fstream>
+#include <algorithm>
+#include <assert.h>
+
+#include "../customstuff.h"
 
 //#define AOC_DEBUG 1
 #ifdef AOC_DEBUG
@@ -10,49 +15,6 @@
 #else
 	#define DEBUG if(0) std::cout
 #endif
-
-
-
-std::vector<std::string> stringSplit(std::string const & input, char delimeter)
-{
-	std::vector<std::string> retVal;
-	std::string curStr;
-
-	for(auto singleChar = input.begin(); singleChar != input.end(); singleChar++)
-	{
-		if (*singleChar == delimeter)
-		{
-			retVal.push_back(curStr);
-			curStr = "";
-		}
-		else
-		{
-			curStr += *singleChar;
-		}
-	}
-
-	retVal.push_back(curStr);
-
-	return retVal;
-}
-
-std::string replaceChar(std::string orig, char before, char after)
-{
-	std::string retVal;
-	for(auto singleChar: orig)
-	{
-		if (singleChar == before)
-		{
-			retVal += after;
-		}
-		else
-		{
-			retVal += singleChar;
-		}
-	}
-
-	return retVal;
-}
 
 int getSeatId(std::string pass)
 {
@@ -65,14 +27,19 @@ int getSeatId(std::string pass)
 
 	unsigned long seatId = strtoul(after.c_str(), NULL, 2);
 
-
-
 	DEBUG << "After: " << after << " = " << seatId << std::endl;
 	return seatId;
 }
 
 int main(int argc, char** argv)
 {
+	if (argc < 2)
+	{
+		std::cerr << "Provide filename" << std::endl;
+		return 0;
+	}
+
+	std::vector<std::string> fileData = readFile(argv[1]);
 
 	int maxSeatId = 0;
 
@@ -82,26 +49,16 @@ int main(int argc, char** argv)
 		seatsTaken[i] = false;
 	}
 
-	while(1)
+	for(auto curLine: fileData)
 	{
-		std::string text;
-		std::getline(std::cin,text);
 
-		int sid = getSeatId(text);
+		int sid = getSeatId(curLine);
 		seatsTaken[sid] = true;
 
 		if (sid > maxSeatId)
 		{
 			maxSeatId = sid;
 		}
-
-		// out of output
-check_for_eof:
-		if (std::cin.eof())
-		{
-			break;
-		}
-
 
 	}
 
