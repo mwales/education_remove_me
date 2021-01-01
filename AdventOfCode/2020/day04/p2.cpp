@@ -1,38 +1,19 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <cstdlib>
+#include <set>
+#include <fstream>
+#include <algorithm>
+#include <assert.h>
 
-//#define AOC_DEBUG 1
+#include "../customstuff.h"
+
 #ifdef AOC_DEBUG
-	#define DEBUG std::cout
+   #define DEBUG std::cout
 #else
-	#define DEBUG if(0) std::cout
+   #define DEBUG if(0) std::cout
 #endif
-
-
-
-std::vector<std::string> stringSplit(std::string const & input, char delimeter)
-{
-	std::vector<std::string> retVal;
-	std::string curStr;
-
-	for(auto singleChar = input.begin(); singleChar != input.end(); singleChar++)
-	{
-		if (*singleChar == delimeter)
-		{
-			retVal.push_back(curStr);
-			curStr = "";
-		}
-		else
-		{
-			curStr += *singleChar;
-		}
-	}
-
-	retVal.push_back(curStr);
-
-	return retVal;
-}
 
 bool validateField(std::string field, std::string value)
 {
@@ -196,43 +177,47 @@ int isValidPassport(std::vector<std::string> const & termList)
 
 int main(int argc, char** argv)
 {
-
-	std::vector<std::string> passportFields;
-	int numValid = 0;
-
-	while(1)
+	if (argc < 2)
 	{
-		std::string text;
-		std::getline(std::cin,text);
+		std::cerr << "Provide filename" << std::endl;
+		return 0;
+	}
 
-		std::vector<std::string> terms = stringSplit(text, ' ');
-		
-		if (text == "")
+	std::vector<std::string> fileData = readFile(argv[1]);
+
+	std::vector<std::vector<std::string> > passportCollection;
+	std::vector<std::string> passportFields;
+
+	for(auto curLine: fileData)
+	{
+		std::vector<std::string> terms = stringSplit(curLine, ' ');
+
+		if (curLine == "")
 		{
 			DEBUG << "End of passport detected" << std::endl;
-			numValid += isValidPassport(passportFields);
+			passportCollection.push_back(passportFields);
 			passportFields.clear();
-			goto check_for_eof;
 		}
 
+		passportFields = append(passportFields, terms);
 
-		passportFields.insert(passportFields.end(), terms.begin(), terms.end());
+		DEBUG << curLine << std::endl;
+	}
 
-		// std::cout << text << std::endl;
+	if (passportFields.size())
+	{
+		   passportCollection.push_back(passportFields);
+	}
 
-
-		// out of output
-check_for_eof:
-		if (std::cin.eof())
-		{
-			break;
-		}
-
-
+	int numValid = 0;
+	for(auto singlePassport: passportCollection)
+	{
+		numValid += isValidPassport(singlePassport);
 	}
 
 	std::cout << "Num Valid Passports = " << numValid << std::endl;
 
-
 	return 0;
 }
+
+
