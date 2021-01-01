@@ -107,9 +107,12 @@ However, with so many bus IDs in your list, surely the actual earliest timestamp
 
 What is the earliest timestamp such that all of the listed bus IDs depart at offsets matching their positions in the list?
 
-Answer: 
- 
+Your puzzle answer was 867295486378319.
 
-Although it hasn't changed, you can still get your puzzle input.
+Both parts of this puzzle are complete! They provide two gold stars: **
+
+At this point, all that is left is for you to admire your Advent calendar.
+
+If you still want to see it, you can get your puzzle input.
 
 You can also [Share] this puzzle.
