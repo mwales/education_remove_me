@@ -1,26 +1,25 @@
 #include <iostream>
 #include <vector>
+#include "../customstuff.h"
 
 int main(int argc, char** argv)
 {
-	std::vector<int> data;
 
-	while(true)
-	{
-		int singleNum;
-		std::cin >> singleNum;
-
-
-		if (std::cin.eof())
-		{
-			std::cout << "Done" << std::endl;
-			break;
-		}
-
-		data.push_back(singleNum);
+	if (argc < 2)
+        {
+		std::cerr << "Provide filename" << std::endl;
+		return 0;
 	}
 
-	std::cout << "Num entries = " << data.size() << std::endl;
+        std::vector<std::string> fileData = readFile(argv[1]);
+
+	std::vector<int> data;
+	for(auto curLine: fileData)
+	{
+		data.push_back(atoi(curLine.c_str()));
+	}
+
+	DEBUG << "Num entries = " << data.size() << std::endl;
 
 	for(int i = 0; i < data.size(); i++)
 	{
@@ -49,9 +48,6 @@ int main(int argc, char** argv)
 			}
 		}
 	}
-
-
-
 
 	return 0;
 }
