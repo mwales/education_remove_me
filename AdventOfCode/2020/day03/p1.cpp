@@ -1,5 +1,13 @@
 #include <iostream>
 #include <vector>
+#include <map>
+#include <cstdlib>
+#include <set>
+#include <fstream>
+#include <algorithm>
+#include <assert.h>
+
+#include "../customstuff.h"
 
 // #define AOC_DEBUG
 #ifdef AOC_DEBUG
@@ -8,30 +16,6 @@
 	#define DEBUG if(0) std::cout
 #endif
 
-
-
-std::vector<std::string> stringSplit(std::string const & input, char delimeter)
-{
-	std::vector<std::string> retVal;
-	std::string curStr;
-
-	for(auto singleChar = input.begin(); singleChar != input.end(); singleChar++)
-	{
-		if (*singleChar == delimeter)
-		{
-			retVal.push_back(curStr);
-			curStr = "";
-		}
-		else
-		{
-			curStr += *singleChar;
-		}
-	}
-
-	retVal.push_back(curStr);
-
-	return retVal;
-}
 
 void printRow(std::string const & row, int pos)
 {
@@ -109,26 +93,18 @@ int navSlope(std::vector<std::string> const & slopeRows, int x, int y)
 
 int main(int argc, char** argv)
 {
-	std::vector<std::string> slopeRows;
-	while(true)
+	if (argc < 2)
 	{
-		std::string curRow;
-		std::cin >> curRow;
-
-		if (std::cin.eof())
-		{
-			break;
-		}
-
-		slopeRows.push_back(curRow);
+		std::cerr << "Provide filename" << std::endl;
+		return 0;
 	}
+
+	std::vector<std::string> slopeRows = readFile(argv[1]);
 
 	for(auto &  curRow: slopeRows)
 	{
 		DEBUG << " *** " << curRow << std::endl;
 	}
-
-
 
 	uint64_t a = navSlope(slopeRows, 1, 1);
 	uint64_t b = navSlope(slopeRows, 3, 1);
@@ -138,13 +114,11 @@ int main(int argc, char** argv)
 
 	uint64_t total = a * b * c * d * e;
 
-
 	std::cout << "Trees Hit Pt 1= " << b << std::endl;
 
 	DEBUG << "Part 2 : " << a << ", " << b << ", " << c << ", " << d << ", " << e << std::endl;
 
 	std::cout << "Pt 2 Sol = " << total << std::endl;
-
 
 	return 0;
 }
