@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include <set>
 #include <fstream>
-#include <algotirhm>
+#include <algorithm>
 #include <assert.h>
 
 #include "../customstuff.h"

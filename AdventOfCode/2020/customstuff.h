@@ -288,6 +288,12 @@ std::ostream& operator<<(std::ostream & os, std::set<t> data)
 	return os;
 }
 
+template <typename f, typename s>
+std::ostream& operator<<(std::ostream & os, std::pair<f,s> data)
+{
+	os << "(" << data.first << "," << data.second << ")";
+	return os;
+}
 
 std::vector<std::string> stringSplit(std::string const & input, char delimeter);
 std::vector<std::string> stringSplit(std::string const & input, std::vector<char> const & delimeters);
