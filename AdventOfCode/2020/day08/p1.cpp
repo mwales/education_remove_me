@@ -3,6 +3,11 @@
 #include <map>
 #include <cstdlib>
 #include <set>
+#include <fstream>
+#include <algorithm>
+#include <assert.h>
+
+#include "../customstuff.h"
 
 //#define AOC_DEBUG 1
 #ifdef AOC_DEBUG
@@ -10,93 +15,6 @@
 #else
 	#define DEBUG if(0) std::cout
 #endif
-
-template<typename printableType>
-void printVector(std::vector<printableType> v)
-{
-        std::string retVal;
-        bool first = true;
-        for(auto const & curItem: v)
-        {
-                if (!first)
-                {
-                        DEBUG << ",";
-                }
-                else
-                {
-                        first = false;
-                }
-
-                DEBUG << curItem;
-        }
-}
-
-template<typename sortableType>
-void insertOrdered(std::vector<sortableType>& origList, sortableType x)
-{
-        for(auto it = origList.begin(); it != origList.end(); it++)
-        {
-                if (*it > x)
-                {
-                        origList.insert(it, x);
-                        return;
-                }
-        }
-
-        // If we get here, empty list?
-        origList.push_back(x);
-}
-
-template<typename t>
-std::vector<t> append(std::vector<t> a, std::vector<t> b)
-{
-	std::vector<t> retVal;
-	retVal = a;
-	retVal.insert(retVal.end(), b.begin(), b.end());
-	return retVal;
-}
-
-
-std::vector<std::string> stringSplit(std::string const & input, char delimeter)
-{
-	std::vector<std::string> retVal;
-	std::string curStr;
-
-	for(auto singleChar = input.begin(); singleChar != input.end(); singleChar++)
-	{
-		if (*singleChar == delimeter)
-		{
-			retVal.push_back(curStr);
-			curStr = "";
-		}
-		else
-		{
-			curStr += *singleChar;
-		}
-	}
-
-	retVal.push_back(curStr);
-
-	return retVal;
-}
-
-std::string replaceChar(std::string orig, char before, char after)
-{
-	std::string retVal;
-	for(auto singleChar: orig)
-	{
-		if (singleChar == before)
-		{
-			retVal += after;
-		}
-		else
-		{
-			retVal += singleChar;
-		}
-	}
-
-	return retVal;
-}
 
 typedef struct GciStruct
 {
@@ -242,27 +160,22 @@ void GameConsole::disassemble()
 
 int main(int argc, char** argv)
 {
+	if (argc < 2)
+	{
+		std::cerr << "Provide filename" << std::endl;
+		return 0;
+	}
+
+	std::vector<std::string> fileData = readFile(argv[1]);
+
 	GameConsole gc;
 
-	while(1)
+	for(auto curLine: fileData)
 	{
-		std::string text;
-		std::getline(std::cin,text);
-
-
-		// out of output
-check_for_eof:
-		if (std::cin.eof())
-		{
-			break;
-		}
-
-		gc.addInstruction(text);
-
+		gc.addInstruction(curLine);
 	}
 
 	gc.runMachine();
-
 
 	gc.printState();
 	std::cout << "Part 1 ACCUM = " << gc.theAccum << std::endl;
