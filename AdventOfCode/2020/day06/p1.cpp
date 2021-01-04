@@ -3,6 +3,11 @@
 #include <map>
 #include <cstdlib>
 #include <set>
+#include <fstream>
+#include <algorithm>
+#include <assert.h>
+
+#include "../customstuff.h"
 
 //#define AOC_DEBUG 1
 #ifdef AOC_DEBUG
@@ -11,56 +16,6 @@
 	#define DEBUG if(0) std::cout
 #endif
 
-template<typename t>
-std::vector<t> append(std::vector<t> a, std::vector<t> b)
-{
-	std::vector<t> retVal;
-	retVal = a;
-	retVal.insert(retVal.end(), b.begin(), b.end());
-	return retVal;
-}
-
-
-std::vector<std::string> stringSplit(std::string const & input, char delimeter)
-{
-	std::vector<std::string> retVal;
-	std::string curStr;
-
-	for(auto singleChar = input.begin(); singleChar != input.end(); singleChar++)
-	{
-		if (*singleChar == delimeter)
-		{
-			retVal.push_back(curStr);
-			curStr = "";
-		}
-		else
-		{
-			curStr += *singleChar;
-		}
-	}
-
-	retVal.push_back(curStr);
-
-	return retVal;
-}
-
-std::string replaceChar(std::string orig, char before, char after)
-{
-	std::string retVal;
-	for(auto singleChar: orig)
-	{
-		if (singleChar == before)
-		{
-			retVal += after;
-		}
-		else
-		{
-			retVal += singleChar;
-		}
-	}
-
-	return retVal;
-}
 
 int processGroup(std::vector<std::string> const & people)
 {
@@ -113,45 +68,51 @@ int processGroupPt2(std::vector<std::string> const & people)
 
 int main(int argc, char** argv)
 {
-	std::vector<std::string> peopleInGroup;
+	std::vector<std::vector<std::string> > groups;
+
+	if (argc < 2)
+	{
+		std::cerr << "Provide filename" << std::endl;
+		return 0;
+	}
+
+	std::vector<std::string> fileData = readFile(argv[1]);
 
 	int totalQs = 0;
 	int totalYs = 0;
 
-	while(1)
+	std::vector<std::string> currentGroup;
+	for(auto text: fileData)
 	{
-		std::string text;
-		std::getline(std::cin,text);
-
 		if (text == "")
 		{
-			DEBUG << "End of group" << std::endl;
-			int numQs = processGroup(peopleInGroup);
-
-			DEBUG << "Group answered " << numQs << " questions" << std::endl;
-
-			totalQs += numQs;
-
-			int numYs = processGroupPt2(peopleInGroup);
-
-			DEBUG << "Group Ys " << numYs << std::endl;
-			totalYs += numYs;
-
-			peopleInGroup.clear();
+			groups.push_back(currentGroup);
+			currentGroup.clear();
 		}
 		else
 		{
-			DEBUG << text << std::endl;
-			peopleInGroup.push_back(text);
+			currentGroup.push_back(text);
 		}
-		// out of output
-check_for_eof:
-		if (std::cin.eof())
-		{
-			break;
-		}
+	}
 
+	if (currentGroup.size() != 0)
+	{
+		groups.push_back(currentGroup);
+	}
 
+	for(auto curGroup: groups)
+	{
+		DEBUG << "End of group" << std::endl;
+		int numQs = processGroup(curGroup);
+
+		DEBUG << "Group answered " << numQs << " questions" << std::endl;
+
+		totalQs += numQs;
+
+		int numYs = processGroupPt2(curGroup);
+
+		DEBUG << "Group Ys " << numYs << std::endl;
+		totalYs += numYs;
 	}
 
 	std::cout << "Totals Qs " << totalQs << std::endl;	
