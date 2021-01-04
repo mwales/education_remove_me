@@ -3,7 +3,11 @@
 #include <map>
 #include <cstdlib>
 #include <set>
-#include <utility>
+#include <fstream>
+#include <algorithm>
+#include <assert.h>
+
+#include "../customstuff.h"
 
 //#define AOC_DEBUG 1
 #ifdef AOC_DEBUG
@@ -11,181 +15,6 @@
 #else
 	#define DEBUG if(0) std::cout
 #endif
-
-template<typename printableType>
-void printVector(std::vector<printableType> v)
-{
-        std::string retVal;
-        bool first = true;
-        for(auto const & curItem: v)
-        {
-                if (!first)
-                {
-                        DEBUG << ",";
-                }
-                else
-                {
-                        first = false;
-                }
-
-                DEBUG << curItem;
-        }
-}
-
-template<typename keyType, typename valueType>
-void printMap(std::map<keyType, valueType> m)
-{
-	DEBUG << "{";
-	bool isFirst = true;
-	for(auto singleItem: m)
-	{
-		if (!isFirst)
-		{
-			DEBUG << ", ";
-		}
-		else
-		{
-			isFirst = false;
-		}
-
-		DEBUG << singleItem.first << " -> " << singleItem.second;
-	}
-
-	DEBUG << "}";
-}
-
-template<typename keyType, typename valueType>
-std::map<keyType, valueType> mergeMaps(std::map<keyType, valueType> m1,
-		                       std::map<keyType, valueType> m2)
-{
-	std::map<keyType, valueType> retVal;
-
-	for(auto curitem: m1)
-	{
-		if (retVal.find(curitem.first) == retVal.end())
-		{
-			// Not in list yet
-			retVal[curitem.first] = curitem.second;
-		}
-		else
-		{
-			retVal[curitem.first] += curitem.second;
-		}
-	}
-
-	for(auto curitem: m2)
-	{
-		if (retVal.find(curitem.first) == retVal.end())
-		{
-			// Not in list yet
-			retVal[curitem.first] = curitem.second;
-		}
-		else
-		{
-			retVal[curitem.first] += curitem.second;
-		}
-	}
-
-	return retVal;
-}
-
-template<typename keyType, typename valueType>
-std::map<keyType, valueType> multiplyMap(std::map<keyType, valueType> m1, int val)
-{
-	std::map<keyType, valueType> retVal;
-
-	for(auto curitem: m1)
-	{
-		retVal[curitem.first] = curitem.second * val;
-	}
-	return retVal;
-}
-
-template<typename keyType, typename valueType>
-valueType sumMap(std::map<keyType, valueType> m1)
-{
-	valueType retVal = 0;
-
-	for(auto curitem: m1)
-	{
-		retVal += curitem.second;
-	}
-	return retVal;
-}
-
-
-
-
-
-
-
-
-template<typename sortableType>
-void insertOrdered(std::vector<sortableType>& origList, sortableType x)
-{
-        for(auto it = origList.begin(); it != origList.end(); it++)
-        {
-                if (*it > x)
-                {
-                        origList.insert(it, x);
-                        return;
-                }
-        }
-
-        // If we get here, empty list?
-        origList.push_back(x);
-}
-
-template<typename t>
-std::vector<t> append(std::vector<t> a, std::vector<t> b)
-{
-	std::vector<t> retVal;
-	retVal = a;
-	retVal.insert(retVal.end(), b.begin(), b.end());
-	return retVal;
-}
-
-
-std::vector<std::string> stringSplit(std::string const & input, char delimeter)
-{
-	std::vector<std::string> retVal;
-	std::string curStr;
-
-	for(auto singleChar = input.begin(); singleChar != input.end(); singleChar++)
-	{
-		if (*singleChar == delimeter)
-		{
-			retVal.push_back(curStr);
-			curStr = "";
-		}
-		else
-		{
-			curStr += *singleChar;
-		}
-	}
-
-	retVal.push_back(curStr);
-
-	return retVal;
-}
-
-std::string replaceChar(std::string orig, char before, char after)
-{
-	std::string retVal;
-	for(auto singleChar: orig)
-	{
-		if (singleChar == before)
-		{
-			retVal += after;
-		}
-		else
-		{
-			retVal += singleChar;
-		}
-	}
-
-	return retVal;
-}
 
 typedef std::pair<std::string, int> BagData;
 
@@ -297,24 +126,21 @@ std::map<std::string, int> BagTreeNode::dumpContents()
 
 int main(int argc, char** argv)
 {
+	if (argc < 2)
+	{
+		std::cerr << "Provide filename" << std::endl;
+		return 0;
+	}
+
+	std::vector<std::string> fileData = readFile(argv[1]);
+
 	std::vector<BagRule*> rules;
 
-	while(1)
+	for(auto text: fileData)
 	{
-		std::string text;
-		std::getline(std::cin,text);
-		
-		// out of output
-check_for_eof:
-		if (std::cin.eof())
-		{
-			break;
-		}
-
 		BagRule* bd = new BagRule(text);
 		bd->printBagData();
 		rules.push_back(bd);
-
 	}
 
 	// I did some weird stuff here because I wasn't sure if I was constructing one well
@@ -351,9 +177,8 @@ check_for_eof:
 	std::map<std::string, int> results;
 	results = allBagTreeNodes["shiny gold"]->dumpContents();
 	
-	DEBUG << "Results: ";
-	printMap(results);
-	DEBUG << std::endl;
+	DEBUG << "Results: " << results << std::endl;
+
 
 	DEBUG << "Number of bag types in results: " << results.size() << std::endl;
 

@@ -150,6 +150,28 @@ void debugPrintMap(std::map<keyType, valueType> m)
 #endif
 }
 
+template <typename keyType, typename valueType>
+std::ostream& operator<<(std::ostream & os, std::map<keyType, valueType> data)
+{
+	bool firstItem = true;
+	os << "{";
+	for(auto it: data)
+	{
+		if (firstItem)
+		{
+			firstItem = false;
+		}
+		else
+		{
+			os << ",";
+		}
+
+		os << it.first << "->" << it.second;
+	}
+	os << "}";
+	return os;
+}
+
 template<typename keyType>
 void printSet(std::set<keyType> s)
 {
