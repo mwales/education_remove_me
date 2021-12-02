@@ -8,20 +8,27 @@ def eprint(*args, **kwargs):
 def sumList(ld):
 	retVal = 0
 	for x in ld:
-		retVal += int(x)
+		retVal += x
 	return retVal
 
-def main():
-	f = open(sys.argv[1])
+def main(argv):
+	
+	if (len(argv) < 2):
+		print("Usage: {} inputfile".format(sys.argv[0]))
+		return
+	
+	f = open(argv[1])
 	
 	sonarData = f.read().strip().split("\n")
 	
 	increasingCounter = 0
 	
+	intSonarData = [int(x) for x in sonarData]
+	
 	for i in range(3,len(sonarData)):
 
-		prevList = sonarData[i - 3:i]
-		curList = sonarData[i - 2: i+1]
+		prevList = intSonarData[i - 3:i]
+		curList = intSonarData[i - 2: i+1]
 		
 		prevPoint = sumList(prevList)
 		curPoint = sumList(curList)
@@ -36,4 +43,4 @@ def main():
 
 
 if __name__ == "__main__":
-	main()
+	main(sys.argv)

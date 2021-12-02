@@ -5,18 +5,22 @@ import sys
 def eprint(*args, **kwargs):
 	print(*args, file=sys.stderr, **kwargs)
 
-def main():
-	f = open(sys.argv[1])
+def main(argv):
+	
+	if (len(argv) < 2):
+		print("Usage: {} inputfile".format(sys.argv[0]))
+		return
+	
+	f = open(argv[1])
 	
 	sonarData = f.read().strip().split("\n")
+	intSonarData = [ int(x) for x in sonarData]
 	
 	prevMeas = None
 	increasingCounter = 0
 	
-	for dataPoint in sonarData:
-		eprint(dataPoint)
-		
-		curPoint = int(dataPoint)
+	for curPoint in intSonarData:
+		eprint(curPoint)
 		
 		if (prevMeas != None):
 			
@@ -26,7 +30,9 @@ def main():
 		prevMeas = curPoint
 			
 	print("Num increasing data points: {}".format(increasingCounter))
+	 
+	f.close()
 
 
 if __name__ == "__main__":
-	main()
+	main(sys.argv)
